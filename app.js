@@ -1,6 +1,6 @@
 
-// import { setupDatabase } from './config/db.js';
-// await setupDatabase();
+import { setupDatabase } from './config/db.js';
+await setupDatabase();
 import express, { json } from 'express';
 import { config } from 'dotenv';
 import cors from 'cors';
