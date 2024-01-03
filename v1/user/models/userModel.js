@@ -3,7 +3,7 @@ CREATE TABLE IF NOT EXISTS users (
     _id int NOT NULL AUTO_INCREMENT,
     emp_id varchar(255) NOT NULL,
     username varchar(50) NOT NULL,
-    password varchar(16) NOT NULL,
+    password varchar(255) NOT NULL,
     first_name varchar(255) NOT NULL,
     last_name varchar(255) NOT NULL,
     email varchar(255) NOT NULL,
