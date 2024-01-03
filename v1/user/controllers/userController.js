@@ -2,11 +2,11 @@ import jwt from "jsonwebtoken"
 import { validationResult } from "express-validator";
 import bcrypt from "bcrypt"
 import dotenv from "dotenv"
-import { successResponse, errorResponse, notFoundResponse } from "../../../utils/response.js"
+import { successResponse, errorResponse, notFoundResponse, unAuthorizedResponse } from "../../../utils/response.js"
 import {incrementId} from "../../helpers/functions.js"
 dotenv.config();
 
-import {userRegistrationQuery, getUserDataByUsernameQuery, userDetailQuery, updateTokenQuery, getLastEmployeeIdQuery} from "../models/userQuery.js";
+import {userRegistrationQuery, getUserDataByUsernameQuery, userDetailQuery, updateTokenQuery, getLastEmployeeIdQuery, updateUserPasswordQuery} from "../models/userQuery.js";
 
 export const userRegistration = async (req, res, next) => {
     try {
@@ -22,7 +22,7 @@ export const userRegistration = async (req, res, next) => {
 
         let { username, first_name, last_name, email, password } = req.body;
         email = email.toLowerCase();
-        const [existingUser] = await userDetailQuery([username, email]);
+        const [existingUser] = await userDetailQuery([email]);
         if (existingUser.length) {
             return successResponse(res, '', 'User with this email already exists.');
         }
@@ -86,6 +86,29 @@ export const userLogout = async (req, res, next) => {
         console.log(user_id)
         await updateTokenQuery(["", user_id]);
         return successResponse(res, '', `You have successfully logged out!`);
+    } catch (error) {
+        next(error);
+    }
+}
+
+export const updateUserPassword = async (req, res, next) => {
+    try {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return errorResponse(res, errors.array(), "")
+        }
+        const { email, password, confirm_password } = req.body;
+        let [user_data] = await userDetailQuery([email]);
+        if (user_data.length == 0) {
+            return notFoundResponse(res, '', 'User not found');
+        }
+        if (password === confirm_password) {
+            const password_hash = await bcrypt.hash(password.toString(), 12);
+            await updateUserPasswordQuery([password_hash, email]);
+            return successResponse(res, 'User password updated successfully');
+        } else {
+            return notFoundResponse(res, '', 'Password and confirm password must be same, please try again.');
+        }
     } catch (error) {
         next(error);
     }
