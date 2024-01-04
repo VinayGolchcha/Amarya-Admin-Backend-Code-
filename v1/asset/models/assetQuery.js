@@ -16,3 +16,8 @@ export const insertAssetQuery = (array)=> {
     ) VALUES (?,?,?,?,?,?,?,?,?,?,?);`
     return pool.query(query, array);
 }
+
+export const getLastAssetIdQuery = () =>{
+    let query = `SELECT * FROM assets ORDER BY asset_id DESC LIMIT 1`
+    return pool.query(query);
+}

@@ -15,9 +15,14 @@ export const userRegistration = async (req, res, next) => {
         if (!errors.isEmpty()) {
             return errorResponse(res, errors.array(), "")
         }
-
+        let id = ''
         let [emp_data] = await getLastEmployeeIdQuery();
-        let id = emp_data[0].emp_id
+
+        if (emp_data.length == 0) {
+            id = 'AMEMP000'
+        }else{
+            id = emp_data[0].emp_id
+        }
         const emp_id = await incrementId(id)
 
         let { username, first_name, last_name, email, password } = req.body;
