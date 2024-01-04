@@ -5,7 +5,8 @@ import express, { json } from 'express';
 import { config } from 'dotenv';
 import cors from 'cors';
 import userRoutes from './v1/user/routes/userRoutes.js'
-import assetRoutes from './v1/asset/routes/assetRoutes.js'
+import assetRoutes from './v1/assets/routes/assetRoutes.js'
+import approvalRoutes from './v1/approvals/routes/approvalRoutes.js'
 
 const app = express();
 config();
@@ -15,6 +16,7 @@ app.use(cors());
 // Import & Define API versions
 app.use('/api/v1', userRoutes);
 app.use('/api/v1', assetRoutes);
+app.use('/api/v1', approvalRoutes);
 app.use('/', (req, res) => {
   res.send("Hey, I'm online now!!")
 });
