@@ -16,4 +16,5 @@ CREATE TABLE IF NOT EXISTS assets (
     UNIQUE KEY asset_id (asset_id)
 ) AUTO_INCREMENT = 1111`;
 
-export default assetTable;
+
+export default assetTable
