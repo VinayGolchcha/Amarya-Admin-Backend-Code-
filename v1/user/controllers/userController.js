@@ -32,7 +32,6 @@ export const userRegistration = async (req, res, next) => {
             return successResponse(res, '', 'User with this email already exists.');
         }
         const password_hash = await bcrypt.hash(password.toString(), 12);
-        console.log("Password hash", password_hash);
         const [user_data] = await userRegistrationQuery([
             emp_id,
             username,
