@@ -1,7 +1,7 @@
 const userTable = `
 CREATE TABLE IF NOT EXISTS users (
     _id int NOT NULL AUTO_INCREMENT,
-    emp_id varchar(255) NOT NULL,
+    emp_id varchar(255) NOT NULL UNIQUE,
     username varchar(50) NOT NULL,
     password varchar(255) NOT NULL,
     first_name varchar(255) NOT NULL,
