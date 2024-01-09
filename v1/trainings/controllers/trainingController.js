@@ -3,7 +3,7 @@ import { validationResult } from "express-validator";
 import bcrypt from "bcrypt"
 import dotenv from "dotenv"
 import { successResponse, errorResponse, notFoundResponse, unAuthorizedResponse } from "../../../utils/response.js"
-import { insertTrainingDataQuery, getLastTrainingIdQuery, addUserTrainingInfoQuery, getTrainingDataQuery, displayDataForTrainingCardsQuery, displayTrainingsForUserQuery  } from "../models/trainingQuery.js";
+import { insertTrainingDataQuery, getLastTrainingIdQuery, addUserTrainingInfoQuery, getTrainingDataQuery, displayDataForTrainingCardsQuery, displayTrainingsForUserQuery, deleteUserTrainingDataQuery, getUserDataForTrainingQuery, deleteTrainingDataQuery } from "../models/trainingQuery.js";
 import {incrementId} from "../../helpers/functions.js"
 dotenv.config();
 
@@ -79,7 +79,6 @@ export const requestUserTraining = async (req, res, next) => {
     }
 };
 
-
 export const trainingCardsData = async (req, res, next) => {
     try{
         const errors = validationResult(req);
@@ -100,7 +99,7 @@ export const trainingCardsData = async (req, res, next) => {
     }
 };
 
-export const userTrainingData = async (req, res, next) => {
+export const getUserTrainingData = async (req, res, next) => {
     try{
         const errors = validationResult(req);
 
@@ -116,6 +115,50 @@ export const userTrainingData = async (req, res, next) => {
         }else{ 
             return successResponse(res, data, 'Data Fetched Successfully');
         }
+    }catch(error) {
+        next(error);
+    }
+};
+
+export const deleteUserTrainingData = async (req, res, next) =>{
+    try{
+        const errors = validationResult(req);
+
+        if (!errors.isEmpty()) {
+            return errorResponse(res, errors.array(), "")
+        }
+        const  {emp_id, training_id} = req.body;
+        let [data] = await getUserDataForTrainingQuery([emp_id, training_id]);
+
+        if (data.length == 0) {
+            return errorResponse(res, errors.array(), "Data not found")
+        }else{
+            await deleteUserTrainingDataQuery([emp_id, training_id]);
+            return successResponse(res, "", 'Data Deleted Successfully');
+        }
+
+    }catch(error) {
+        next(error);
+    }
+};
+
+export const deleteTrainingData = async (req, res, next) =>{
+    try{
+        const errors = validationResult(req);
+
+        if (!errors.isEmpty()) {
+            return errorResponse(res, errors.array(), "")
+        }
+        const  {training_id} = req.body;
+        let [data] = await getTrainingDataQuery([training_id]);
+
+        if (data.length == 0) {
+            return errorResponse(res, errors.array(), "Data not found")
+        }else{
+            await deleteTrainingDataQuery([training_id]);
+            return successResponse(res, "", 'Data Deleted Successfully');
+        }
+
     }catch(error) {
         next(error);
     }
