@@ -1,4 +1,4 @@
-export const incrementId = (id)=>{
+export const incrementId = async(id)=>{
 
     if (typeof id !== 'string' || !/^[A-Za-z]+(\d+)$/.test(id)) {
         throw new Error('Invalid input format');
