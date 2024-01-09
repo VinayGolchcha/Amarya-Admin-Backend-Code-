@@ -48,3 +48,18 @@ export const displayTrainingsForUserQuery = (array)=> {
     let query = `SELECT  usertrainings.training_id, usertrainings.course_name, usertrainings.course_description, usertrainings.status, usertrainings.progress_status FROM usertrainings WHERE emp_id = ?`
     return pool.query(query, array);
 };
+
+export const deleteUserTrainingDataQuery = (array)=>{
+    let query = `DELETE FROM usertrainings WHERE emp_id = ? AND training_id = ?`;
+    return pool.query(query, array);
+}
+
+export const getUserDataForTrainingQuery = (array)=>{
+    let query = `SELECT * FROM usertrainings WHERE emp_id = ? AND training_id =?`
+    return pool.query(query, array);
+}
+
+export const deleteTrainingDataQuery = (array)=>{
+    let query = `DELETE FROM trainings WHERE training_id = ?`;
+    return pool.query(query, array);
+}
