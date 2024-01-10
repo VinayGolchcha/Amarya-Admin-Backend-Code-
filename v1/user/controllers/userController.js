@@ -41,7 +41,7 @@ export const userRegistration = async (req, res, next) => {
             completed_projects,
             performance,
             teams,
-            client_report } = req.body;
+            client_report, role = 'user' } = req.body;
         email = email.toLowerCase();
         const [existingUser] = await userDetailQuery([email]);
         if (existingUser.length) {
@@ -72,6 +72,7 @@ export const userRegistration = async (req, res, next) => {
             performance,
             teams,
             client_report,
+            role,
             new Date(),
             new Date()
         ]);

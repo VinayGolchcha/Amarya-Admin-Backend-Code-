@@ -25,6 +25,7 @@ CREATE TABLE IF NOT EXISTS users (
     teams int ,
     client_report int ,
     jwt_token varchar(255) ,
+    role ENUM ('admin', 'user') DEFAULT 'user',
     created_at datetime ,
     updated_at datetime ,
     PRIMARY KEY (_id),
