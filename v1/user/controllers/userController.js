@@ -25,7 +25,23 @@ export const userRegistration = async (req, res, next) => {
         }
         const emp_id = await incrementId(id)
 
-        let { username, first_name, last_name, email, password } = req.body;
+        let { username, first_name, last_name, email, password, state_name,
+            city_name,
+            profile_picture, 
+            blood_group,
+            mobile_number,
+            emergency_contact_number,
+            emergency_contact_person_info,
+            address,
+            dob, 
+            designation,
+            designation_type,
+            joining_date,
+            experience,
+            completed_projects,
+            performance,
+            teams,
+            client_report } = req.body;
         email = email.toLowerCase();
         const [existingUser] = await userDetailQuery([email]);
         if (existingUser.length) {
@@ -39,8 +55,25 @@ export const userRegistration = async (req, res, next) => {
             first_name,
             last_name,
             email,
+            state_name,
+            city_name,
+            profile_picture, 
+            blood_group,
+            mobile_number,
+            emergency_contact_number,
+            emergency_contact_person_info,
+            address,
+            dob, 
+            designation,
+            designation_type,
+            joining_date,
+            experience,
+            completed_projects,
+            performance,
+            teams,
+            client_report,
             new Date(),
-            new Date(),
+            new Date()
         ]);
         return successResponse(res, user_data, 'User successfully registered');
     } catch (error) {
