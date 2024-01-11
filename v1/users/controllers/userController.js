@@ -72,9 +72,7 @@ export const userRegistration = async (req, res, next) => {
             performance,
             teams,
             client_report,
-            role,
-            new Date(),
-            new Date()
+            role
         ]);
         return successResponse(res, user_data, 'User successfully registered');
     } catch (error) {
