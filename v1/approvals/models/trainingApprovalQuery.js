@@ -1,5 +1,18 @@
 import pool from "../../../config/db.js"
 
+export const insertApprovalForTrainingQuery=(array)=>{
+    const query = `INSERT INTO approvals(
+        emp_id,
+        foreign_id,
+        request_type,
+        item,
+        request_date,
+        subject,
+        body
+    ) VALUES (?,?,?,?,?,?,?);`
+    return pool.query(query, array)
+}
+
 export const fetchTrainingDataQuery=(array)=>{
     const query = `SELECT * FROM usertrainings WHERE emp_id = ? AND training_id = ? ;`
     return pool.query(query, array)

@@ -5,6 +5,7 @@ import dotenv from "dotenv"
 import { successResponse, errorResponse, notFoundResponse, unAuthorizedResponse } from "../../../utils/response.js"
 import { insertTrainingDataQuery, getLastTrainingIdQuery, addUserTrainingInfoQuery, getTrainingDataQuery, displayDataForTrainingCardsQuery, displayTrainingsForUserQuery, deleteUserTrainingDataQuery, getUserDataForTrainingQuery, deleteTrainingDataQuery } from "../models/trainingQuery.js";
 import {incrementId} from "../../helpers/functions.js"
+import {insertApprovalForTrainingQuery} from "../../approvals/models/trainingApprovalQuery.js"
 dotenv.config();
 
 export const addNewTraining = async (req, res, next) => {
@@ -31,11 +32,9 @@ export const addNewTraining = async (req, res, next) => {
             course_name,
             course_description,
             roadmap_url,
-            details,
-            new Date(),
-            new Date(),
+            details
         ]);
-        return successResponse(res, 'Training successfully added');
+        return successResponse(res, '', 'Training successfully added');
     } catch (error) {
         next(error);
     }
@@ -49,8 +48,9 @@ export const requestUserTraining = async (req, res, next) => {
             return errorResponse(res, errors.array(), "")
         }
 
-        let { emp_id, training_id, progress_status} = req.body;
+        let { emp_id, training_id, progress_status, request_type} = req.body;
         let [training_data] = await getTrainingDataQuery([training_id])
+        const current_date = new Date().toISOString().split('T')[0];
 
         if(training_data.length == 0 ) {
            return errorResponse(res, errors.array(), "Training Id provided is not correct")
@@ -60,6 +60,7 @@ export const requestUserTraining = async (req, res, next) => {
             const details = training_data[0].details;
             const roadmap_url = training_data[0].roadmap_url;
 
+            await insertApprovalForTrainingQuery([emp_id, training_id, request_type, course_name, current_date, course_description, details ])
             await addUserTrainingInfoQuery([
                 emp_id,
                 training_id,
@@ -67,11 +68,9 @@ export const requestUserTraining = async (req, res, next) => {
                 course_description,
                 details,
                 roadmap_url,
-                progress_status,
-                new Date(),
-                new Date(),
+                progress_status
             ]);
-            return successResponse(res, 'Training successfully added');
+            return successResponse(res, '', 'Training successfully added');
         }
         
     } catch (error) {

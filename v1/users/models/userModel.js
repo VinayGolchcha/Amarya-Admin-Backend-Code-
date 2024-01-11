@@ -26,8 +26,8 @@ CREATE TABLE IF NOT EXISTS users (
     client_report int ,
     jwt_token varchar(255) ,
     role ENUM ('admin', 'user') DEFAULT 'user',
-    created_at datetime ,
-    updated_at datetime ,
+    created_at datetime DEFAULT CURRENT_TIMESTAMP,
+    updated_at datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY (_id),
     UNIQUE KEY email (email)
 ) AUTO_INCREMENT = 1111`;
