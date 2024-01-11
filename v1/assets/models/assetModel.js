@@ -5,13 +5,13 @@ CREATE TABLE IF NOT EXISTS assets (
     asset_type varchar(50) NOT NULL,
     item varchar(50) NOT NULL,
     purchase_date date,
-    warranty_period varchar(50) NOT NULL,
+    warranty_period int NOT NULL,
     price int NOT NULL,
     model_number varchar(50) NOT NULL,
     item_description varchar(255) NOT NULL,
     image_url varchar(255) NOT NULL,
-    created_at datetime ,
-    updated_at datetime ,
+    created_at datetime DEFAULT CURRENT_TIMESTAMP,
+    updated_at datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY (_id),
     UNIQUE KEY asset_id (asset_id)
 ) AUTO_INCREMENT = 1111`;

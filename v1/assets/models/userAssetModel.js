@@ -5,7 +5,7 @@ const assetRequestTable = `CREATE TABLE IF NOT EXISTS userAssets (
     asset_id varchar(255),
     item varchar(50),
     item_details varchar(255),
-    warranty_period varchar(50),
+    warranty_period int,
     requirement_type varchar(50),
     primary_purpose varchar(255),
     model_number varchar(50),

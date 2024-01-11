@@ -40,12 +40,21 @@ export const insertUserAssetDataQuery = (array)=> {
 
 export const fetchUserAssetsQuery = (array) => {
     let query = `
-    SELECT u.username, ua.asset_type, ua.asset_id, ua.item, ua.requirement_type, ua.primary_purpose,
+    SELECT CONCAT(u.first_name, ' ', u.last_name) AS name,u.emp_id, ua.asset_type, ua.asset_id, ua.item, ua.requirement_type, ua.primary_purpose,
     ua.status, ua.issued_from, ua.issued_till, a.warranty_period
     FROM userAssets as ua
     JOIN users as u ON ua.emp_id = u.emp_id
     JOIN assets as a ON ua.asset_id = a.asset_id
-    WHERE ua.emp_id = ?;   `
+    WHERE ua.emp_id = ?;`
+    return pool.query(query, array);
+}
+export const fetchAssetsQuery = (array) => {
+    let query = `
+    SELECT CONCAT(u.first_name, ' ', u.last_name) AS assignee, a.asset_id, a.purchase_date, a.image_url, a.item, a.item_description, ua.issued_from, ua.issued_till, a.warranty_period
+    FROM assets as a
+    JOIN userAssets as ua ON a.asset_id = ua.asset_id
+    JOIN users as u ON u.emp_id = ua.emp_id
+    `
     return pool.query(query, array);
 }
 
