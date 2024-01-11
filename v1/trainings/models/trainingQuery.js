@@ -6,10 +6,8 @@ export const insertTrainingDataQuery = (array) =>{
         course_name,
         course_description,
         roadmap_url,
-        details,
-        created_at,
-        updated_at
-    ) VALUES (?,?,?,?,?,?,?);`
+        details
+    ) VALUES (?,?,?,?,?);`
     return pool.query(query, array);
 }
 
@@ -26,10 +24,8 @@ export const addUserTrainingInfoQuery = (array) =>{
         course_description,
         details,
         roadmap_url,
-        progress_status,
-        created_at,
-        updated_at
-    ) VALUES (?,?,?,?,?,?,?,?,?)`
+        progress_status
+    ) VALUES (?,?,?,?,?,?,?)`
     return pool.query(query, array);
 };
 

@@ -9,8 +9,8 @@ CREATE TABLE IF NOT EXISTS usertrainings (
     roadmap_url varchar(255) NOT NULL,
     status ENUM('rejected', 'approved', 'pending') DEFAULT 'pending' NOT NULL,
     progress_status ENUM('completed', 'in progress'),
-    created_at datetime ,
-    updated_at datetime ,
+    created_at datetime DEFAULT CURRENT_TIMESTAMP,
+    updated_at datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
     PRIMARY KEY (_id),
     FOREIGN KEY (training_id) REFERENCES trainings(training_id),
     FOREIGN KEY (emp_id) REFERENCES users(emp_id)
