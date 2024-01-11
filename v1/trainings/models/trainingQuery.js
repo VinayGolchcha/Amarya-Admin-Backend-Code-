@@ -17,7 +17,7 @@ export const getLastTrainingIdQuery = () =>{
 }
 
 export const addUserTrainingInfoQuery = (array) =>{
-    let query = `INSERT INTO usertrainings (
+    let query = `INSERT INTO userTrainings (
         emp_id,
         training_id,
         course_name,
@@ -41,17 +41,17 @@ export const displayDataForTrainingCardsQuery = ()=> {
 };
 
 export const displayTrainingsForUserQuery = (array)=> {
-    let query = `SELECT  usertrainings.training_id, usertrainings.course_name, usertrainings.course_description, usertrainings.status, usertrainings.progress_status FROM usertrainings WHERE emp_id = ?`
+    let query = `SELECT  userTrainings.training_id, userTrainings.course_name, userTrainings.course_description, userTrainings.status, userTrainings.progress_status FROM userTrainings WHERE emp_id = ?`
     return pool.query(query, array);
 };
 
 export const deleteUserTrainingDataQuery = (array)=>{
-    let query = `DELETE FROM usertrainings WHERE emp_id = ? AND training_id = ?`;
+    let query = `DELETE FROM userTrainings WHERE emp_id = ? AND training_id = ?`;
     return pool.query(query, array);
 }
 
 export const getUserDataForTrainingQuery = (array)=>{
-    let query = `SELECT * FROM usertrainings WHERE emp_id = ? AND training_id =?`
+    let query = `SELECT * FROM userTrainings WHERE emp_id = ? AND training_id =?`
     return pool.query(query, array);
 }
 

@@ -14,12 +14,12 @@ export const insertApprovalForTrainingQuery=(array)=>{
 }
 
 export const fetchTrainingDataQuery=(array)=>{
-    const query = `SELECT * FROM usertrainings WHERE emp_id = ? AND training_id = ? ;`
+    const query = `SELECT * FROM userTrainings WHERE emp_id = ? AND training_id = ? ;`
     return pool.query(query, array)
 }
 
 export const trainingApprovalQuery = async(array1, array2) => {
-    const query1 = `UPDATE usertrainings
+    const query1 = `UPDATE userTrainings
     SET status = ? 
     WHERE emp_id = ? AND training_id = ?`
 
@@ -40,7 +40,7 @@ export const deleteTrainingQuery = async (array) => {
         WHERE foreign_id = ? AND emp_id = ?;
     `;
     const query2 = `
-        DELETE FROM usertrainings 
+        DELETE FROM userTrainings 
         WHERE training_id = ? AND emp_id = ?;
     `
     pool.query(query1, array);
@@ -48,7 +48,7 @@ export const deleteTrainingQuery = async (array) => {
 };
 
 export const trainingRejectionQuery = async(array1, array2) => {
-    const query1 = `UPDATE usertrainings 
+    const query1 = `UPDATE userTrainings 
     SET status = ?
     WHERE emp_id = ? AND training_id = ?;
     `
