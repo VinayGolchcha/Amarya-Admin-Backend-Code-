@@ -8,6 +8,7 @@ import userRoutes from './v1/user/routes/userRoutes.js'
 import assetRoutes from './v1/assets/routes/assetRoutes.js'
 import trainingRoutes from './v1/trainings/routes/trainingRoutes.js'
 import approvalRoutes from './v1/approvals/routes/approvalRoutes.js'
+import announcementRoutes from './v1/announcements/routes/announcementRoutes.js';
 
 const app = express();
 config();
@@ -19,6 +20,7 @@ app.use('/api/v1', userRoutes);
 app.use('/api/v1', assetRoutes);
 app.use('/api/v1', trainingRoutes);
 app.use('/api/v1', approvalRoutes);
+app.use('/api/v1', announcementRoutes);
 app.use('/', (req, res) => {
   res.send("Hey, I'm online now!!")
 });

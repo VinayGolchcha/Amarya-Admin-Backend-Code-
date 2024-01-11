@@ -31,11 +31,9 @@ export const addNewTraining = async (req, res, next) => {
             course_name,
             course_description,
             roadmap_url,
-            details,
-            new Date(),
-            new Date(),
+            details
         ]);
-        return successResponse(res, 'Training successfully added');
+        return successResponse(res, '', 'Training successfully added');
     } catch (error) {
         next(error);
     }
@@ -67,11 +65,9 @@ export const requestUserTraining = async (req, res, next) => {
                 course_description,
                 details,
                 roadmap_url,
-                progress_status,
-                new Date(),
-                new Date(),
+                progress_status
             ]);
-            return successResponse(res, 'Training successfully added');
+            return successResponse(res, '', 'Training successfully added');
         }
         
     } catch (error) {
