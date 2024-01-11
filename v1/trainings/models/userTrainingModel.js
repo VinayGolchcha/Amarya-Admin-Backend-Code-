@@ -1,5 +1,5 @@
 const usertrainingTable = `
-CREATE TABLE IF NOT EXISTS usertrainings (
+CREATE TABLE IF NOT EXISTS userTrainings (
     _id int NOT NULL AUTO_INCREMENT,
     emp_id varchar(255) NOT NULL,
     training_id varchar(255) NOT NULL,

@@ -4,7 +4,7 @@ await setupDatabase();
 import express, { json } from 'express';
 import { config } from 'dotenv';
 import cors from 'cors';
-import userRoutes from './v1/user/routes/userRoutes.js'
+import userRoutes from './v1/users/routes/userRoutes.js'
 import assetRoutes from './v1/assets/routes/assetRoutes.js'
 import trainingRoutes from './v1/trainings/routes/trainingRoutes.js'
 import approvalRoutes from './v1/approvals/routes/approvalRoutes.js'
