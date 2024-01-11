@@ -3,7 +3,7 @@ import { validationResult } from "express-validator";
 import bcrypt from "bcrypt"
 import dotenv from "dotenv"
 import { successResponse, errorResponse, notFoundResponse } from "../../../utils/response.js"
-import { insertAssetQuery, getLastAssetIdQuery, insertUserAssetDataQuery, fetchUserAssetsQuery, deleteAssetQuery, getAssetDataQuery } from "../models/assetQuery.js";
+import { insertAssetQuery, getLastAssetIdQuery, insertUserAssetDataQuery, fetchUserAssetsQuery, deleteAssetQuery, getAssetDataQuery, fetchAssetsQuery } from "../models/assetQuery.js";
 import {insertApprovalQuery} from "../../approvals/models/assetApprovalQuery.js";
 import { incrementId } from "../../helpers/functions.js"
 dotenv.config();
@@ -83,6 +83,22 @@ export const fetchUserAssets = async(req, res, next) => {
         const [data] = await fetchUserAssetsQuery([emp_id])
         if(data.length == 0){
             return notFoundResponse(res, '', 'Data not found for this user.');
+        }
+        return successResponse(res, data, 'Asset data fetched successfully');
+    } catch (error) {
+        next(error);
+    }
+}
+export const fetchAssets = async(req, res, next) => {
+    try {
+        const errors = validationResult(req);
+
+        if (!errors.isEmpty()) {
+            return errorResponse(res, errors.array(), "")
+        }
+        const [data] = await fetchAssetsQuery()
+        if(data.length == 0){
+            return notFoundResponse(res, '', 'Data not found.');
         }
         return successResponse(res, data, 'Asset data fetched successfully');
     } catch (error) {
