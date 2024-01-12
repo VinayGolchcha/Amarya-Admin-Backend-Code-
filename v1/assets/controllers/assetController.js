@@ -3,9 +3,9 @@ import { validationResult } from "express-validator";
 import bcrypt from "bcrypt"
 import dotenv from "dotenv"
 import { successResponse, errorResponse, notFoundResponse } from "../../../utils/response.js"
-import { insertAssetQuery, getLastAssetIdQuery, insertUserAssetDataQuery, fetchUserAssetsQuery, deleteAssetQuery, getAssetDataQuery, fetchAssetsQuery } from "../models/assetQuery.js";
+import { insertAssetQuery, getLastAssetIdQuery, insertUserAssetDataQuery, fetchUserAssetsQuery, deleteAssetQuery, getAssetDataQuery, fetchAssetsQuery, updateAssetQuery } from "../models/assetQuery.js";
 import {insertApprovalQuery} from "../../approvals/models/assetApprovalQuery.js";
-import { incrementId } from "../../helpers/functions.js"
+import { incrementId, createDynamicUpdateQuery } from "../../helpers/functions.js"
 dotenv.config();
 
 
@@ -121,6 +121,35 @@ export const deleteAsset = async(req, res, next) => {
             await deleteAssetQuery([asset_id]);
             return successResponse(res, "", 'Asset Deleted Successfully');
         }
+    } catch (error) {
+        next(error);
+    }
+}
+
+export const updateAsset = async(req, res, next) => {
+    try {
+        const errors = validationResult(req);
+
+        if (!errors.isEmpty()) {
+            return errorResponse(res, errors.array(), "")
+        }
+
+        const req_data = req.body;
+        const id = req.params.id;
+
+        let table = 'assets';
+
+        const condition = {
+            asset_id: id
+        };
+
+        let query_values = await createDynamicUpdateQuery(table, condition, req_data)
+        let [data] = await updateAssetQuery(query_values.updateQuery, query_values.updateValues)
+
+        if (data.affectedRows == 0){
+            return notFoundResponse(res, '', 'Asset not found, wrong input.');
+        }
+        return successResponse(res, data, 'Asset Updated Successfully');
     } catch (error) {
         next(error);
     }
