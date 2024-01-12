@@ -16,11 +16,11 @@ app.use(json());
 app.use(cors());
 
 // Import & Define API versions
-app.use('/api/v1', userRoutes);
-app.use('/api/v1', assetRoutes);
-app.use('/api/v1', trainingRoutes);
-app.use('/api/v1', approvalRoutes);
-app.use('/api/v1', announcementRoutes);
+app.use('/api/v1/user', userRoutes);
+app.use('/api/v1/asset', assetRoutes);
+app.use('/api/v1/training', trainingRoutes);
+app.use('/api/v1/approval', approvalRoutes);
+app.use('/api/v1/announcement', announcementRoutes);
 app.use('/', (req, res) => {
   res.send("Hey, I'm online now!!")
 });

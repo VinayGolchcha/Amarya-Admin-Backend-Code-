@@ -7,7 +7,7 @@ import {assetApprovalByAdmin} from '../controllers/approvalController.js';
 
 
 
-app.put("/asset-approval/:id", assetApprovalByAdmin)
+app.put("/admin/asset-approval/:id", assetApprovalByAdmin)
 app.use("/", router);
 
 export default app;
