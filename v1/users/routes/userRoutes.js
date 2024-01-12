@@ -8,10 +8,10 @@ import {login} from '../../../utils/validation.js';
 
 
 
-app.post('/register', userRegistration);
+app.post('/admin/register', userRegistration);
 app.post('/login', login, userLogin);
 app.get('/logout/:id', userLogout);
-app.post('/updatepassword', updateUserPassword);
+app.post('/update-password', updateUserPassword);
 
 app.use("/", router);
 
