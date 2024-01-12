@@ -3,8 +3,9 @@ import { validationResult } from "express-validator";
 import bcrypt from "bcrypt"
 import dotenv from "dotenv"
 import { successResponse, errorResponse, notFoundResponse, unAuthorizedResponse } from "../../../utils/response.js"
-import { insertTrainingDataQuery, getLastTrainingIdQuery, addUserTrainingInfoQuery, getTrainingDataQuery, displayDataForTrainingCardsQuery, displayTrainingsForUserQuery, deleteUserTrainingDataQuery, getUserDataForTrainingQuery, deleteTrainingDataQuery } from "../models/trainingQuery.js";
-import {incrementId} from "../../helpers/functions.js"
+import { insertTrainingDataQuery, getLastTrainingIdQuery, addUserTrainingInfoQuery, getTrainingDataQuery, displayDataForTrainingCardsQuery, displayTrainingsForUserQuery, deleteUserTrainingDataQuery, 
+    getUserDataForTrainingQuery, deleteTrainingDataQuery, updateTrainingQuery } from "../models/trainingQuery.js";
+import {incrementId, createDynamicUpdateQuery} from "../../helpers/functions.js"
 import {insertApprovalForTrainingQuery} from "../../approvals/models/trainingApprovalQuery.js"
 dotenv.config();
 
@@ -119,27 +120,27 @@ export const getUserTrainingData = async (req, res, next) => {
     }
 };
 
-export const deleteUserTrainingData = async (req, res, next) =>{
-    try{
-        const errors = validationResult(req);
+// export const deleteUserTrainingData = async (req, res, next) =>{
+//     try{
+//         const errors = validationResult(req);
 
-        if (!errors.isEmpty()) {
-            return errorResponse(res, errors.array(), "")
-        }
-        const  {emp_id, training_id} = req.body;
-        let [data] = await getUserDataForTrainingQuery([emp_id, training_id]);
+//         if (!errors.isEmpty()) {
+//             return errorResponse(res, errors.array(), "")
+//         }
+//         const  {emp_id, training_id} = req.body;
+//         let [data] = await getUserDataForTrainingQuery([emp_id, training_id]);
 
-        if (data.length == 0) {
-            return errorResponse(res, errors.array(), "Data not found")
-        }else{
-            await deleteUserTrainingDataQuery([emp_id, training_id]);
-            return successResponse(res, "", 'Data Deleted Successfully');
-        }
+//         if (data.length == 0) {
+//             return errorResponse(res, errors.array(), "Data not found")
+//         }else{
+//             await deleteUserTrainingDataQuery([emp_id, training_id]);
+//             return successResponse(res, "", 'Data Deleted Successfully');
+//         }
 
-    }catch(error) {
-        next(error);
-    }
-};
+//     }catch(error) {
+//         next(error);
+//     }
+// };
 
 export const deleteTrainingData = async (req, res, next) =>{
     try{
@@ -162,3 +163,32 @@ export const deleteTrainingData = async (req, res, next) =>{
         next(error);
     }
 };
+
+export const updateTrainings = async(req, res, next) => {
+    try {
+        const errors = validationResult(req);
+
+        if (!errors.isEmpty()) {
+            return errorResponse(res, errors.array(), "")
+        }
+
+        const req_data = req.body;
+        const id = req.params.id;
+
+        let table = 'trainings';
+
+        const condition = {
+            training_id: id
+        };
+
+        let query_values = await createDynamicUpdateQuery(table, condition, req_data)
+        let [data] = await updateTrainingQuery(query_values.updateQuery, query_values.updateValues)
+
+        if (data.affectedRows == 0){
+            return notFoundResponse(res, '', 'Training not found, wrong input.');
+        }
+        return successResponse(res, data, 'Training Updated Successfully');
+    } catch (error) {
+        next(error);
+    }
+}

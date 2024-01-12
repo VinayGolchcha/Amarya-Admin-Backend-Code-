@@ -66,3 +66,7 @@ export const deleteAssetQuery = async (array) => {
     `;
     return pool.query(query, array);
 };
+
+export const updateAssetQuery = (query, array)=>{
+    return pool.query(query, array);
+}

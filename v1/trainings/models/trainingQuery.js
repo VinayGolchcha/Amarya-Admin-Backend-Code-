@@ -59,3 +59,7 @@ export const deleteTrainingDataQuery = (array)=>{
     let query = `DELETE FROM trainings WHERE training_id = ?`;
     return pool.query(query, array);
 }
+
+export const updateTrainingQuery = (query, array)=>{
+    return pool.query(query, array);
+}
