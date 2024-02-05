@@ -1,17 +1,18 @@
 import express, { Router } from 'express';
 const app = express()
 const router = Router();
+import {crAssVal, assReqVal, fetUserAssVal, delAssVal, upAssVal} from '../../../utils/validation.js'
 import {createAsset, assetRequest, fetchUserAssets, deleteAsset, fetchAssets, updateAsset} from '../controllers/assetController.js';
 
 
 
 
-app.post('/admin/create-asset', createAsset);
-app.post('/asset-request', assetRequest);
-app.post('/user-asset', fetchUserAssets);
+app.post('/admin/create-asset',crAssVal, createAsset);
+app.post('/asset-request',assReqVal, assetRequest);
+app.post('/user-asset',fetUserAssVal, fetchUserAssets);
 app.get('/admin/fetch-assets', fetchAssets);
-app.delete('/admin/delete-asset', deleteAsset);
-app.put('/admin/update-asset/:id', updateAsset);
+app.delete('/admin/delete-asset',delAssVal, deleteAsset);
+app.put('/admin/update-asset/:id',upAssVal, updateAsset);
 
 app.use("/", router);
 
