@@ -1,14 +1,12 @@
-const userLeaveCountTable = `
-CREATE TABLE IF NOT EXISTS userLeaveCounts (
+const leaveTypeCountTable = `
+CREATE TABLE IF NOT EXISTS leaveTypeCounts (
     _id int NOT NULL AUTO_INCREMENT,
-    emp_id varchar(255) NOT NULL,
     leave_type varchar(255) NOT NULL,
+    gender ENUM ('male', 'female', 'both') DEFAULT 'both',
     leave_count int NOT NULL,
-    leave_taken_count int NOT NULL,
     created_at datetime DEFAULT CURRENT_TIMESTAMP,
     updated_at datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    PRIMARY KEY (_id),
-    FOREIGN KEY (emp_id) REFERENCES users(emp_id)
+    PRIMARY KEY (_id)
 ) AUTO_INCREMENT = 1111;
 `
-export default userLeaveCountTable
+export default leaveTypeCountTable
