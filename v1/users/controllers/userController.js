@@ -6,7 +6,8 @@ import { successResponse, errorResponse, notFoundResponse, unAuthorizedResponse 
 import {incrementId} from "../../helpers/functions.js"
 dotenv.config();
 
-import {userRegistrationQuery, getUserDataByUsernameQuery, userDetailQuery, updateTokenQuery, getLastEmployeeIdQuery, updateUserPasswordQuery} from "../models/userQuery.js";
+import {userRegistrationQuery, getUserDataByUsernameQuery, userDetailQuery, updateTokenQuery, 
+        getLastEmployeeIdQuery, updateUserPasswordQuery, getAllLeaveCounts, insertUserLeaveCountQuery} from "../models/userQuery.js";
 
 export const userRegistration = async (req, res, next) => {
     try {
@@ -74,6 +75,13 @@ export const userRegistration = async (req, res, next) => {
             client_report,
             role
         ]);
+        let [leaveTypeAndCount] = await getAllLeaveCounts();
+        for(let i = 0; i < leaveTypeAndCount.length; i++) {
+            let leaveType = leaveTypeAndCount[i].leave_type;
+            let leaveCount = leaveTypeAndCount[i].leave_count;
+            await insertUserLeaveCountQuery([emp_id, leaveType, leaveCount])
+        }
+        
         return successResponse(res, user_data, 'User successfully registered');
     } catch (error) {
         next(error);

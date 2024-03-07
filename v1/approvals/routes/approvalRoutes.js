@@ -1,14 +1,12 @@
 import express, { Router } from 'express';
 const app = express()
 const router = Router();
-// import authenticateToken from '../../../middlewares/auth.js';
-import {assAppVal} from '../../../utils/validation.js'
-import {assetApprovalByAdmin} from '../controllers/approvalController.js';
-// router.use(authenticateToken)
+import {allAppVal} from '../../../utils/validation.js'
+import {approvalByAdmin} from '../controllers/approvalController.js';
 
 
 
-app.put("/admin/asset-approval/:id",assAppVal, assetApprovalByAdmin)
+app.put("/admin/approval",allAppVal, approvalByAdmin)
 app.use("/", router);
 
 export default app;

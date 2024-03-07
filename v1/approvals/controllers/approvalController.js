@@ -1,13 +1,13 @@
-
 import { validationResult } from "express-validator";
 import dotenv from "dotenv"
 import { successResponse, errorResponse, notFoundResponse } from "../../../utils/response.js"
 import {assetApprovalQuery, fetchAssetDataQuery, assetRejectionQuery, deleteAssetQuery} from "../models/assetApprovalQuery.js"
 import {fetchTrainingDataQuery, trainingApprovalQuery, trainingRejectionQuery, deleteTrainingQuery} from "../models/trainingApprovalQuery.js"
+import {leaveApprovalQuery, deleteLeaveQuery, leaveRejectionQuery, getUserLeaveDaysQuery, leaveTakenCountQuery} from "../models/leaveApprovalQuery.js"
 dotenv.config();
 
 
-export const assetApprovalByAdmin = async (req, res, next) => {
+export const approvalByAdmin = async (req, res, next) => {
     try {
         const errors = validationResult(req);
 
@@ -55,10 +55,35 @@ export const assetApprovalByAdmin = async (req, res, next) => {
             }
         };
 
+        const handleLeaveRequest = async () => {
+            let [userLeaveData] = await getUserLeaveDaysQuery([foreign_id])
+            let leave_taken_count = userLeaveData[0].days_count + 1;
+            let leave_type = userLeaveData[0].leave_type
+            let leave_type_count_by_admin = userLeaveData[0].leave_count
+
+            if (status === "approved") {
+                let [userLeaveTakenCount] = await leaveTakenCountQuery([emp_id, leave_type])
+                if(leave_type_count_by_admin >= (userLeaveTakenCount[0].leave_taken_count + leave_taken_count)){
+                    await leaveApprovalQuery([leave_taken_count, emp_id, leave_type], [status, current_date, emp_id, foreign_id], [status, foreign_id, leave_type]);
+                    message = 'Leave approved successfully';
+                }else{
+                    message = `User exceeded the leave count by ${(userLeaveTakenCount[0].leave_taken_count + leave_taken_count) - leave_type_count_by_admin}.`;
+                }
+            } else if (status === "rejected") {
+                await leaveRejectionQuery([status, emp_id, foreign_id], [status, foreign_id, leave_type]);
+                message = 'Leave rejected successfully';
+            } else {
+                await deleteLeaveQuery([emp_id, foreign_id], [foreign_id, leave_type]);
+                message = 'Leave deleted successfully';
+            }
+        };
+
         if (request_type === "inventory") {
             await handleInventoryRequest();
         } else if (request_type === "training") {
             await handleTrainingRequest();
+        }else if(request_type === "leave"){
+            await handleLeaveRequest();
         }
 
         return successResponse(res, "", message);
