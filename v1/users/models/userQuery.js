@@ -31,7 +31,7 @@ export const userRegistrationQuery = (array)=> {
         performance,
         teams,
         client_report,
-        role,
+        role
     ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`
     return pool.query(query, array);
 }
@@ -52,5 +52,15 @@ export const getLastEmployeeIdQuery = () =>{
 
 export const updateUserPasswordQuery = (array) =>{
     let query = `UPDATE users SET password = ? WHERE email = ?`
+    return pool.query(query, array);
+}
+
+export const getAllLeaveCounts = () =>{
+    let query = `SELECT leave_type, leave_count FROM leaveTypeCounts`
+    return pool.query(query);
+}
+
+export const insertUserLeaveCountQuery = (array)=>{
+    let query = `INSERT INTO userLeaveCounts (emp_id, leave_type, leave_count) VALUES(?,?,?)`
     return pool.query(query, array);
 }
