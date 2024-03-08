@@ -2,9 +2,9 @@ import express, { Router } from 'express';
 const app = express()
 const router = Router();
 import { addHoliday, updateHoliday,addLeaveType, addLeaveTypeAndCount, updateLeave, fetchLeavesCount, leaveRequest, fetchListOfLeaves, getAllUsersLeaveCountByAdmin } from '../controllers/leaveController.js';
-import {} from '../../../utils/validation.js';
+import {addHolidayVal} from '../../../utils/validation.js';
 
-app.post('/admin/add-holiday', addHoliday);
+app.post('/admin/add-holiday',addHolidayVal, addHoliday);
 app.put('/admin/update-holiday/:id', updateHoliday);
 app.post('/admin/add-leave-type', addLeaveType);
 app.post('/admin/add-leave-count', addLeaveTypeAndCount);

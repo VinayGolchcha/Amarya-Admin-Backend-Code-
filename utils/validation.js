@@ -133,3 +133,8 @@ export const upPassVal = [
     body('password').isLength({ min: 8 }).withMessage('Password must be at least 8 characters long').notEmpty().withMessage('Password cannot be empty.').custom(passwordValidation),
     body('confirm_password').isLength({ min: 8 }).withMessage('confirm_Password must be at least 8 characters long').notEmpty().withMessage('confirm_Password cannot be empty.').custom(passwordValidation)
 ]
+
+export const addHolidayVal = [
+    body('date').notEmpty().withMessage('date cannot be empty.'),
+    body('holiday').notEmpty().withMessage('holiday cannot be empty.')
+]
