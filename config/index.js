@@ -12,5 +12,5 @@ import leaveTypeTable from "../v1/leaves/models/leaveTypeModel.js";
 import userLeaveCountTable from "../v1/leaves/models/userLeaveCountModel.js";
 
 export default [userTable, assetTable, trainingTable, usertrainingTable, assetRequestTable, approvalTable, announcementTable,
-    holidayTable, leaveDatesAndReasonTable, leaveTypeCountTable, leaveTypeTable, userLeaveCountTable
+    holidayTable, leaveDatesAndReasonTable,leaveTypeTable, leaveTypeCountTable, userLeaveCountTable
 ];
