@@ -13,7 +13,19 @@ export const addAnnouncementQuery = (array)=> {
 }
 
 export const fetchAnnouncementsQuery = ()=> {
-    let query = `SELECT announcements.title, announcements.description, announcements.from_date, announcements.to_date, announcements.priority FROM announcements`
+    let query = `
+        SELECT
+        title,
+        description,
+        priority,
+        DATE_FORMAT(from_date, '%Y-%m-%d') AS from_date,
+        DATE_FORMAT(to_date, '%Y-%m-%d') AS to_date
+    FROM
+        announcements
+    ORDER BY
+        created_at DESC;
+    `
+
     return pool.query(query);
 }
 
