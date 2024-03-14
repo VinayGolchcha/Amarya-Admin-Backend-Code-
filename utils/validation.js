@@ -5,8 +5,8 @@ export const crAnnVal = [
     body('priority').notEmpty().withMessage('priority cannot be empty.').isString().withMessage("priority must be a string."),
     body('from_date').notEmpty().withMessage('from_date cannot be empty.').isDate().withMessage("from_date must be a date."), 
     body('to_date').notEmpty().withMessage('to_date cannot be empty.').isDate().withMessage("to_date must be a date."),
-    body('title').notEmpty().withMessage('title cannot be empty.').isDate().withMessage("title must be a string."),
-    body('description').notEmpty().withMessage('description cannot be empty.').isDate().withMessage("description must be a string.")
+    body('title').notEmpty().withMessage('title cannot be empty.').isString().withMessage("title must be a string."),
+    body('description').notEmpty().withMessage('description cannot be empty.').isString().withMessage("description must be a string.")
 ]
 
 export const upAnnVal = [

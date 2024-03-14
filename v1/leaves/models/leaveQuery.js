@@ -31,6 +31,11 @@ export const fetchLeavesTypesQuery = () => {
     let query = `SELECT _id, leave_type, description FROM leaveTypes`
     return pool.query(query);
 }
+export const fetchLeaveTakenOverviewQuery = (array, limit) => {
+    let query = `SELECT leave_type, from_date, to_date, subject FROM leaveDatesAndReasons WHERE emp_id = ? ORDER BY created_at DESC LIMIT ${limit};
+    `
+    return pool.query(query, array);
+}
 
 export const insertUserLeaveDataQuery = (array) => {
     let query = `INSERT INTO leaveDatesAndReasons (
@@ -88,6 +93,21 @@ export const getAllUsersLeaveCountQuery = async ()=>{
         return await pool.query(query);
     } catch (error) {
         console.error("Error executing getAllUsersLeaveCountQuery:", error);
+        throw error;
+    }
+}
+
+export const getUserLeaveDataQuery = async(array)=>{
+    try {
+        let query = `
+        SELECT leave_type, leave_count, leave_taken_count 
+        FROM
+            userLeaveCounts
+        WHERE emp_id = ?;
+        `
+        return await pool.query(query, array);
+    } catch (error) {
+        console.error("Error executing getUserLeaveDataQuery:", error);
         throw error;
     }
 }
