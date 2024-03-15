@@ -133,3 +133,40 @@ export const upPassVal = [
     body('password').isLength({ min: 8 }).withMessage('Password must be at least 8 characters long').notEmpty().withMessage('Password cannot be empty.').custom(passwordValidation),
     body('confirm_password').isLength({ min: 8 }).withMessage('confirm_Password must be at least 8 characters long').notEmpty().withMessage('confirm_Password cannot be empty.').custom(passwordValidation)
 ]
+
+export const addHolidayVal = [
+    body('date').isDate().withMessage('Invalid date input.').notEmpty().withMessage('Date cannot be empty.'),
+    body('holiday').isString().withMessage('Invalid holiday input.').notEmpty().withMessage('holiday cannot be empty.')
+]
+
+export const updateHolidayVal = [
+    body('date').optional().isDate().withMessage('Invalid date input.').notEmpty().withMessage('Date cannot be empty.'),
+    body('holiday').optional().isString().withMessage('Invalid holiday input.').notEmpty().withMessage('holiday cannot be empty.')
+]
+
+export const addLeaveTypeVal = [
+    body('date').optional().isDate().withMessage('Invalid date input.').notEmpty().withMessage('Date cannot be empty.'),
+    body('leave_type').optional().isString().withMessage('Invalid leave type input.').notEmpty().withMessage('leave type cannot be empty.')
+]
+export const addLeaveCountVal = [
+    body('leave_type_id').isInt().withMessage('Invalid date input.').notEmpty().withMessage('Date cannot be empty.'),
+    body('leave_type').isString().withMessage('Invalid leave type input.').notEmpty().withMessage('leave type cannot be empty.'),
+    body('leave_count').isInt().withMessage('Invalid leave count input.').notEmpty().withMessage('leave count cannot be empty.'),
+    body('gender').isString().withMessage('Invalid gender input.').isIn(['male', 'female', 'both']).withMessage('Invalid gender input.').notEmpty().withMessage('gender cannot be empty.')
+]
+
+export const updateLeaveVal = [
+    param('id').isInt().withMessage('Invalid date input.').notEmpty().withMessage('Date cannot be empty.'),
+    body('leave_type').optional().isString().withMessage('Invalid leave type input.').notEmpty().withMessage('leave type cannot be empty.'),
+    body('leave_count').optional().isInt().withMessage('Invalid leave count input.').notEmpty().withMessage('leave count cannot be empty.'),
+    body('gender').optional().isString().withMessage('Invalid gender input.').isIn(['male', 'female', 'both']).withMessage('Invalid gender input.').notEmpty().withMessage('gender cannot be empty.')
+]
+
+export const leaveRequestVal = [
+    body('leave_type').isString().withMessage('Invalid leave type input.').notEmpty().withMessage('leave type cannot be empty.'),
+    body('subject').isString().withMessage('Invalid subject input.').notEmpty().withMessage('subject cannot be empty.'),
+    body('body').isString().withMessage('Invalid body input.').notEmpty().withMessage('body cannot be empty.'),
+    body('emp_id').notEmpty().withMessage('emp_id cannot be empty.').isAlphanumeric().withMessage('emp_id must be alphanumeric.'),
+    body('from_date').notEmpty().withMessage('from_date cannot be empty.').isDate().withMessage("from_date must be a date."), 
+    body('to_date').notEmpty().withMessage('to_date cannot be empty.').isDate().withMessage("to_date must be a date."),
+]

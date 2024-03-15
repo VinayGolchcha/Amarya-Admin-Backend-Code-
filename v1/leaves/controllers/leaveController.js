@@ -188,9 +188,7 @@ export const leaveRequest = async (req, res, next) => {
 
 export const getAllUsersLeaveCountByAdmin =async (req, res, next) => {
     try {
-        // const {} = req.body
         const [data] = await getAllUsersLeaveCountQuery()
-        console.log(data);
         return successResponse(res, data, "Data fetched successfully");
     } catch (error) {
         next(error);
