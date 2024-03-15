@@ -15,7 +15,8 @@ const app = express();
 config();
 app.use(json());
 app.use(cors());
-
+// Disable the X-Powered-By header
+app.disable('x-powered-by');
 // Import & Define API versions
 app.use('/api/v1/user', userRoutes);
 app.use('/api/v1/asset', assetRoutes);
