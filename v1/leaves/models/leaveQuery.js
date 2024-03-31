@@ -59,10 +59,6 @@ export const insertApprovalForLeaveQuery = (array) => {
     return pool.query(query, array)
 }
 
-export const leaveApprovalQuery = () => {
-
-}
-
 export const getLastLeaveId = () => {
     let query = `SELECT _id from leaveDatesAndReasons ORDER BY _id DESC LIMIT 1`
     return pool.query(query);
