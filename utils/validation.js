@@ -5,8 +5,8 @@ export const crAnnVal = [
     body('priority').notEmpty().withMessage('priority cannot be empty.').isString().withMessage("priority must be a string."),
     body('from_date').notEmpty().withMessage('from_date cannot be empty.').isDate().withMessage("from_date must be a date."), 
     body('to_date').notEmpty().withMessage('to_date cannot be empty.').isDate().withMessage("to_date must be a date."),
-    body('title').notEmpty().withMessage('title cannot be empty.').isDate().withMessage("title must be a string."),
-    body('description').notEmpty().withMessage('description cannot be empty.').isDate().withMessage("description must be a string.")
+    body('title').notEmpty().withMessage('title cannot be empty.').isString().withMessage("title must be a string."),
+    body('description').notEmpty().withMessage('description cannot be empty.').isString().withMessage("description must be a string.")
 ]
 
 export const upAnnVal = [
@@ -128,6 +128,10 @@ export const logOutVal = [
     param('id').notEmpty().withMessage('id cannot be empty.').isAlphanumeric().withMessage('id must be alphanumeric.')
 ]
 
+export const checkUserNameAvailabilityVal = [
+    body('user_name').notEmpty().withMessage('username cannot be empty.').isString().withMessage("username must be a string."),
+]
+
 export const upPassVal = [
     body('email').isEmail().withMessage('Invalid email input.').notEmpty().withMessage('Email cannot be empty.'),
     body('password').isLength({ min: 8 }).withMessage('Password must be at least 8 characters long').notEmpty().withMessage('Password cannot be empty.').custom(passwordValidation),
@@ -156,7 +160,7 @@ export const addLeaveCountVal = [
 ]
 
 export const updateLeaveVal = [
-    param('id').isInt().withMessage('Invalid date input.').notEmpty().withMessage('Date cannot be empty.'),
+    param('id').isInt().withMessage('Invalid id input.').notEmpty().withMessage('id cannot be empty.'),
     body('leave_type').optional().isString().withMessage('Invalid leave type input.').notEmpty().withMessage('leave type cannot be empty.'),
     body('leave_count').optional().isInt().withMessage('Invalid leave count input.').notEmpty().withMessage('leave count cannot be empty.'),
     body('gender').optional().isString().withMessage('Invalid gender input.').isIn(['male', 'female', 'both']).withMessage('Invalid gender input.').notEmpty().withMessage('gender cannot be empty.')
@@ -170,3 +174,74 @@ export const leaveRequestVal = [
     body('from_date').notEmpty().withMessage('from_date cannot be empty.').isDate().withMessage("from_date must be a date."), 
     body('to_date').notEmpty().withMessage('to_date cannot be empty.').isDate().withMessage("to_date must be a date."),
 ]
+
+// createWorksheetVal, createTeamVal, createProjectVal, createCategoryVal, 
+//     updateWorksheetVal, updateTeamVal, updateCategoryVal, updateProjectVal
+
+export const createWorksheetVal = [
+    body('emp_id').notEmpty().withMessage('emp_id cannot be empty.').isAlphanumeric().withMessage('emp_id must be alphanumeric.'),
+    body('team_id').notEmpty().withMessage('Team id cannot be empty.').isInt().withMessage('Invalid team id input.'),
+    body('category_id').notEmpty().withMessage('Category id cannot be empty.').isInt().withMessage('Invalid category id input.'),
+    body('skill_set').isString().withMessage('Invalid skill set input.').notEmpty().withMessage('skill set cannot be empty.'),
+    body('description').isString().withMessage('Invalid description input.').notEmpty().withMessage('description cannot be empty.'),
+]
+
+export const updateWorksheetVal = [
+    param('id').isInt().withMessage('Invalid id input.').notEmpty().withMessage('id cannot be empty.'),
+    param('emp_id').notEmpty().withMessage('emp_id cannot be empty.').isAlphanumeric().withMessage('emp_id must be alphanumeric.'),
+]
+
+export const createTeamVal = [
+    body('team').isString().withMessage('Invalid team input.').notEmpty().withMessage('team cannot be empty.'),
+]
+
+export const updateTeamVal = [
+    param('id').isInt().withMessage('Invalid id input.').notEmpty().withMessage('id cannot be empty.'),
+    body('team').optional().isString().withMessage('Invalid team input.').notEmpty().withMessage('team cannot be empty.'),
+]
+
+export const createSkillVal = [
+    body('skill').isString().withMessage('Invalid team input.').notEmpty().withMessage('team cannot be empty.'),
+]
+
+export const updateSkillVal = [
+    param('id').isInt().withMessage('Invalid id input.').notEmpty().withMessage('id cannot be empty.'),
+    body('skill').optional().isString().withMessage('Invalid skill input.').notEmpty().withMessage('skill cannot be empty.'),
+]
+
+export const createProjectVal = [
+    body('project').isString().withMessage('Invalid project input.').notEmpty().withMessage('project cannot be empty.'),
+    body('category_id').notEmpty().withMessage('Category id cannot be empty.').isInt().withMessage('Invalid category id input.'),
+    body('client_name').isString().withMessage('Invalid client name input').notEmpty().withMessage('client name cannot be empty'),
+    body('project_status').isString().withMessage('Invalid project status input').notEmpty().withMessage('project status cannot be empty'),
+    body('project_lead').isString().withMessage('Invalid project lead input').notEmpty().withMessage('project lead cannot be empty'),
+    body('start_month').optional().isString().withMessage('Invalid start_month input').notEmpty().withMessage('start_month cannot be empty'),
+    body('end_month').optional().isString().withMessage('Invalid end_month input').notEmpty().withMessage('end_month cannot be empty')
+]
+export const updateProjectVal = [
+    param('id').isInt().withMessage('Invalid id input.').notEmpty().withMessage('id cannot be empty.'),
+    body('project').optional().isString().withMessage('Invalid project input.').notEmpty().withMessage('project cannot be empty.'),
+    body('category_id').optional().notEmpty().withMessage('Category id cannot be empty.').isInt().withMessage('Invalid category id input.'),
+    body('client_name').optional().isString().withMessage('Invalid client name input').notEmpty().withMessage('client name cannot be empty'),
+    body('project_status').optional().isString().withMessage('Invalid project status input').notEmpty().withMessage('project status cannot be empty'),
+    body('project_lead').optional().isString().withMessage('Invalid project lead input').notEmpty().withMessage('project lead cannot be empty'),
+    body('start_month').optional().isString().withMessage('Invalid start_month input').notEmpty().withMessage('start_month cannot be empty'),
+    body('end_month').optional().isString().withMessage('Invalid end_month input').notEmpty().withMessage('end_month cannot be empty')
+]
+
+export const createCategoryVal = [
+    body('category').isString().withMessage('Invalid category input.').notEmpty().withMessage('category cannot be empty.'),
+]
+export const updateCategoryVal = [
+    param('id').isInt().withMessage('Invalid id input.').notEmpty().withMessage('id cannot be empty.'),
+    body('category').isString().withMessage('Invalid category input.').notEmpty().withMessage('category cannot be empty.'),
+]
+export const deleteUserWorksheetVal = [
+    param('id').isInt().withMessage('Invalid id input.').notEmpty().withMessage('id cannot be empty.'),
+    param('emp_id').isAlphanumeric().withMessage('Invalid emp id input.').notEmpty().withMessage('emp id cannot be empty.')
+]
+
+export const deleteIdVal = [
+    param('id').isInt().withMessage('Invalid id input.').notEmpty().withMessage('id cannot be empty.')
+]
+
