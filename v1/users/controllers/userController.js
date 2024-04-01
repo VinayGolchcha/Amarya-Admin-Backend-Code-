@@ -139,7 +139,7 @@ export const userLogin = async (req, res, next) => {
                 expiresIn: process.env.JWT_EXPIRATION_TIME,
             });
             await updateTokenQuery([ token, user[0].emp_id]);
-            return successResponse(res, [{ user_id: user[0].emp_id, token: token }], message);
+            return successResponse(res, [{ user_id: user[0].emp_id, token: token, profile_picture:user[0].profile_picture, user_name: user[0].username  }], message);
         }
     }
     catch(error){
