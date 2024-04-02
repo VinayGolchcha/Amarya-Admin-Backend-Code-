@@ -7,7 +7,7 @@ import {incrementId} from "../../helpers/functions.js"
 dotenv.config();
 
 import {userRegistrationQuery, getUserDataByUsernameQuery, userDetailQuery, updateTokenQuery, 
-        getLastEmployeeIdQuery, updateUserPasswordQuery, getAllLeaveCounts, insertUserLeaveCountQuery} from "../models/userQuery.js";
+        getLastEmployeeIdQuery, updateUserPasswordQuery, getAllLeaveCounts, insertUserLeaveCountQuery, checkUserNameAvailabilityQuery} from "../models/userQuery.js";
 
 export const userRegistration = async (req, res, next) => {
     try {
@@ -45,6 +45,10 @@ export const userRegistration = async (req, res, next) => {
             client_report, role = 'user' } = req.body;
         email = email.toLowerCase();
         const [existingUser] = await userDetailQuery([email]);
+        const [existingUserName] = await checkUserNameAvailabilityQuery([username]);
+        if (existingUserName.length) {
+            return successResponse(res, {is_user_name_exists: true}, 'User name already exists, please choose another user name.');
+        }
         if (existingUser.length) {
             return successResponse(res, '', 'User with this email already exists.');
         }
@@ -88,6 +92,25 @@ export const userRegistration = async (req, res, next) => {
     }
 };
 
+export const checkUserNameAvailability = async(req, res, next) =>{
+    try {
+        const errors = validationResult(req);
+
+        if (!errors.isEmpty()) {
+            return errorResponse(res, errors.array(), "")
+        }
+        const {user_name} = req.body;
+        const [existingUserName] = await checkUserNameAvailabilityQuery([user_name]);
+        if (existingUserName.length) {
+            return successResponse(res, {is_user_name_exists: 1}, 'User name already exists, please choose another user name.');
+        }else{
+            return successResponse(res, {is_user_name_exists: 0}, 'User name available.');
+        }
+    } catch (error) {
+        next(error);
+    }
+}
+
 export const userLogin = async (req, res, next) => {
     try {
         const errors = validationResult(req);
@@ -116,7 +139,7 @@ export const userLogin = async (req, res, next) => {
                 expiresIn: process.env.JWT_EXPIRATION_TIME,
             });
             await updateTokenQuery([ token, user[0].emp_id]);
-            return successResponse(res, [{ user_id: user[0].emp_id, token: token }], message);
+            return successResponse(res, [{ user_id: user[0].emp_id, token: token, profile_picture:user[0].profile_picture, user_name: user[0].username  }], message);
         }
     }
     catch(error){
