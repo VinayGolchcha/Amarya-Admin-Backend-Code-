@@ -3,7 +3,7 @@ import {
     createHoliday, updateHolidayQuery, createLeaveType,
     createLeaveCount, updateLeaveQuery, fetchLeavesCountQuery,
     fetchLeavesTypesQuery, insertUserLeaveDataQuery, insertApprovalForLeaveQuery, getLastLeaveId, getLeaveTypeCountByAdmin,
-    getAllUsersLeaveCountQuery
+    getAllUsersLeaveCountQuery, getUserLeaveDataQuery, fetchLeaveTakenOverviewQuery
 } from "../../leaves/models/leaveQuery.js"
 import { leaveTakenCountQuery } from "../../approvals/models/leaveApprovalQuery.js"
 import { successResponse, errorResponse, notFoundResponse, unAuthorizedResponse } from "../../../utils/response.js"
@@ -142,6 +142,23 @@ export const fetchListOfLeaves = async (req, res, next) => {
         next(error);
     }
 }
+export const fetchLeaveTakenOverview = async (req, res, next) => {
+    try {
+        const errors = validationResult(req);
+
+        if (!errors.isEmpty()) {
+            return errorResponse(res, errors.array(), "")
+        }
+        const {emp_id} = req.body;
+        const [data] = await fetchLeaveTakenOverviewQuery([emp_id, limit])
+        if (data.length == 0) {
+            return notFoundResponse(res, '', 'Data not found.');
+        }
+        return successResponse(res, data, 'Leave data fetched successfully');
+    } catch (error) {
+        next(error);
+    }
+}
 
 export const leaveRequest = async (req, res, next) => {
     try {
@@ -189,6 +206,22 @@ export const leaveRequest = async (req, res, next) => {
 export const getAllUsersLeaveCountByAdmin =async (req, res, next) => {
     try {
         const [data] = await getAllUsersLeaveCountQuery()
+        if (data.length == 0) {
+            return notFoundResponse(res, '', 'Data not found.');
+        }
+        return successResponse(res, data, "Data fetched successfully");
+    } catch (error) {
+        next(error);
+    }
+}
+
+export const getUserLeaveData = async (req, res, next) => {
+    try {
+        const {emp_id} = req.body;
+        const [data] = await getUserLeaveDataQuery([emp_id]);
+        if (data.length == 0) {
+            return notFoundResponse(res, '', 'Data not found.');
+        }
         return successResponse(res, data, "Data fetched successfully");
     } catch (error) {
         next(error);
