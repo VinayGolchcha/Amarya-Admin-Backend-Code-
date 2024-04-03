@@ -1,72 +1,137 @@
 import pool from "../../../config/db.js"
 
 export const createHoliday = (array) => {
-    let query = `INSERT INTO holidays SET date = ?, holiday = ?`
-    return pool.query(query, array);
+    try {
+        let query = `INSERT INTO holidays SET date = ?, holiday = ?`
+        return pool.query(query, array);
+    } catch (error) {
+        console.error("Error executing createHoliday:", error);
+        throw error;
+    }
 }
 
 export const updateHolidayQuery = (query, array) => {
-    return pool.query(query, array);
+    try {
+        return pool.query(query, array);
+    } catch (error) {
+        console.error("Error executing updateHolidayQuery:", error);
+        throw error;
+    }
 }
 
 export const updateLeaveQuery = (query, array) => {
-    return pool.query(query, array);
+    try {
+        return pool.query(query, array);
+    } catch (error) {
+        console.error("Error executing updateLeaveQuery:", error);
+        throw error;
+    }
+}
+
+export const deleteLeaveTypeAndCountQuery = async (array) => {
+    try {
+        let query = `DELETE FROM leaveTypeCounts WHERE _id = ? AND leave_type_id`;
+        return await pool.query(query, array);
+    } catch (error) {
+        console.error("Error executing deleteLeaveTypeAndCountQuery:", error);
+        throw error;
+    }
 }
 
 export const createLeaveCount = (array) => {
-    let query = `INSERT INTO leaveTypeCounts SET leave_type_id = ?, leave_type = ?, leave_count = ?, gender = ?`
-    return pool.query(query, array);
+    try {
+        let query = `INSERT INTO leaveTypeCounts SET leave_type_id = ?, leave_type = ?, leave_count = ?, gender = ?`
+        return pool.query(query, array);
+    } catch (error) {
+        console.error("Error executing createLeaveCount:", error);
+        throw error;   
+    }
 }
 
 export const createLeaveType = (array) => {
-    let query = `INSERT INTO leaveTypes SET leave_type = ?, description = ?`
-    return pool.query(query, array);
+    try {
+        let query = `INSERT INTO leaveTypes SET leave_type = ?, description = ?`
+        return pool.query(query, array);
+    } catch (error) {
+        console.error("Error executing createLeaveType:", error);
+        throw error; 
+    }
 }
 
 export const fetchLeavesCountQuery = () => {
-    let query = `SELECT leave_type, leave_count, gender FROM leaveTypeCounts`
-    return pool.query(query);
+    try {
+        let query = `SELECT leave_type, leave_count, gender FROM leaveTypeCounts`
+        return pool.query(query);
+    } catch (error) {
+        console.error("Error executing fetchLeavesCountQuery:", error);
+        throw error; 
+    }
 }
 export const fetchLeavesTypesQuery = () => {
-    let query = `SELECT _id, leave_type, description FROM leaveTypes`
-    return pool.query(query);
+    try {
+        let query = `SELECT _id, leave_type, description FROM leaveTypes`
+        return pool.query(query);
+    } catch (error) {
+        console.error("Error executing fetchLeavesTypesQuery:", error);
+        throw error; 
+    }
 }
 export const fetchLeaveTakenOverviewQuery = (array, limit) => {
-    let query = `SELECT leave_type, from_date, to_date, subject FROM leaveDatesAndReasons WHERE emp_id = ? ORDER BY created_at DESC LIMIT ${limit};
-    `
-    return pool.query(query, array);
+    try {
+        let query = `SELECT leave_type, from_date, to_date, subject FROM leaveDatesAndReasons WHERE emp_id = ? ORDER BY created_at DESC LIMIT ${limit};
+        `
+        return pool.query(query, array);
+    } catch (error) {
+        console.error("Error executing fetchLeaveTakenOverviewQuery:", error);
+        throw error; 
+    }
 }
 
 export const insertUserLeaveDataQuery = (array) => {
-    let query = `INSERT INTO leaveDatesAndReasons (
-        emp_id,
-        leave_type,
-        from_date,
-        to_date,
-        subject,
-        body
-    ) VALUES (?,?,?,?,?,?);`
-    return pool.query(query, array);
+    try {
+        let query = `INSERT INTO leaveDatesAndReasons (
+            emp_id,
+            leave_type,
+            from_date,
+            to_date,
+            subject,
+            body
+        ) VALUES (?,?,?,?,?,?);`
+        return pool.query(query, array);
+    } catch (error) {
+        console.error("Error executing insertUserLeaveDataQuery:", error);
+        throw error; 
+    }
 }
 
 export const insertApprovalForLeaveQuery = (array) => {
-    const query = `INSERT INTO approvals(
-        emp_id,
-        foreign_id,
-        request_type,
-        item,
-        request_date,
-        issued_from,
-        issued_till,
-        subject,
-        body
-    ) VALUES (?,?,?,?,?,?,?,?,?);`
-    return pool.query(query, array)
+    try {
+        const query = `INSERT INTO approvals(
+            emp_id,
+            foreign_id,
+            request_type,
+            item,
+            request_date,
+            issued_from,
+            issued_till,
+            subject,
+            body
+        ) VALUES (?,?,?,?,?,?,?,?,?);`
+        return pool.query(query, array)
+    } catch (error) {
+        console.error("Error executing insertApprovalForLeaveQuery:", error);
+        throw error; 
+    }
 }
 
 export const getLastLeaveId = () => {
-    let query = `SELECT _id from leaveDatesAndReasons ORDER BY _id DESC LIMIT 1`
-    return pool.query(query);
+    try {
+        let query = `SELECT _id from leaveDatesAndReasons ORDER BY _id DESC LIMIT 1`
+        return pool.query(query);
+    } catch (error) {
+        console.error("Error executing getLastLeaveId:", error);
+        throw error;
+    }
 }
 
 export const getLeaveTypeCountByAdmin = async (array) => {
