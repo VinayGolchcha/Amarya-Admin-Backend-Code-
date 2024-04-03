@@ -3,7 +3,7 @@ import {
     createHoliday, updateHolidayQuery, createLeaveType,
     createLeaveCount, updateLeaveQuery, fetchLeavesCountQuery,
     fetchLeavesTypesQuery, insertUserLeaveDataQuery, insertApprovalForLeaveQuery, getLastLeaveId, getLeaveTypeCountByAdmin,
-    getAllUsersLeaveCountQuery, getUserLeaveDataQuery, fetchLeaveTakenOverviewQuery
+    getAllUsersLeaveCountQuery, getUserLeaveDataQuery, fetchLeaveTakenOverviewQuery, deleteLeaveTypeAndCountQuery
 } from "../../leaves/models/leaveQuery.js"
 import { leaveTakenCountQuery } from "../../approvals/models/leaveApprovalQuery.js"
 import { successResponse, errorResponse, notFoundResponse, unAuthorizedResponse } from "../../../utils/response.js"
@@ -75,7 +75,7 @@ export const addLeaveTypeAndCount = async (req, res, next) => {
         }
         const { leave_type_id, leave_type, leave_count, gender } = req.body;
         await createLeaveCount([leave_type_id, leave_type, leave_count, gender]);
-        return successResponse(res, '', `Leave added successfully.`);
+        return successResponse(res, '', `Leave count added successfully.`);
     } catch (error) {
         next(error);
     }
@@ -110,7 +110,53 @@ export const updateLeave = async (req, res, next) => {
     }
 }
 
-export const fetchLeavesCount = async (req, res, next) => {
+export const updateLeaveTypeAndCount = async (req, res, next) => {
+    try {
+        const errors = validationResult(req);
+
+        if (!errors.isEmpty()) {
+            return errorResponse(res, errors.array(), "")
+        }
+
+        const req_data = req.body;
+        const id = req.params.id;
+        const leave_type_id = req.params.leaveTypeId;
+        let table = 'leaveTypeCounts';
+
+        const condition = {
+            _id: id,
+            leave_type_id:leave_type_id
+        };
+
+        let query_values = await createDynamicUpdateQuery(table, condition, req_data)
+        let [data] = await updateLeaveQuery(query_values.updateQuery, query_values.updateValues)
+
+        if (data.affectedRows == 0) {
+            return notFoundResponse(res, '', 'Data not found, wrong input.');
+        }
+        return successResponse(res, data, 'Data Updated Successfully');
+    } catch (error) {
+        next(error);
+    }
+}
+
+export const deleteLeaveTypeAndCount  = async (req, res,next) => {
+    try {
+        const errors = validationResult(req);
+
+        if (!errors.isEmpty()) {
+            return errorResponse(res, errors.array(), "")
+        }
+        const id = req.params.id;
+        const leave_type_id = req.params.leaveTypeId;
+        await deleteLeaveTypeAndCountQuery([id, leave_type_id])
+        return successResponse(res, 'Data deleted Successfully');
+    } catch (error) {
+        next(error);
+    }
+}
+
+export const fetchLeaveTypesAndTheirCount = async (req, res, next) => {
     try {
         const errors = validationResult(req);
 

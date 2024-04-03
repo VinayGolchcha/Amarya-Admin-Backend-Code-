@@ -51,6 +51,9 @@ export const fetchProjects = async(req, res, next) =>{
             return errorResponse(res, errors.array(), "")
         }
         const [data] = await getAllProjectQuery();
+        if (data.length == 0) {
+            return notFoundResponse(res, '', 'Data not found.');
+        }
         return successResponse(res, data,'Projects fetched successfully.');
     } catch (error) {
         next(error);

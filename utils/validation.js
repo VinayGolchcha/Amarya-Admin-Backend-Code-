@@ -153,10 +153,21 @@ export const addLeaveTypeVal = [
     body('leave_type').optional().isString().withMessage('Invalid leave type input.').notEmpty().withMessage('leave type cannot be empty.')
 ]
 export const addLeaveCountVal = [
-    body('leave_type_id').isInt().withMessage('Invalid date input.').notEmpty().withMessage('Date cannot be empty.'),
+    body('leave_type_id').isInt().withMessage('Invalid leave_type_id input.').notEmpty().withMessage('leave_type_id cannot be empty.'),
     body('leave_type').isString().withMessage('Invalid leave type input.').notEmpty().withMessage('leave type cannot be empty.'),
     body('leave_count').isInt().withMessage('Invalid leave count input.').notEmpty().withMessage('leave count cannot be empty.'),
     body('gender').isString().withMessage('Invalid gender input.').isIn(['male', 'female', 'both']).withMessage('Invalid gender input.').notEmpty().withMessage('gender cannot be empty.')
+]
+export const updateLeaveTypeAndCountVal = [
+    param('id').isInt().withMessage('Invalid id input.').notEmpty().withMessage('id cannot be empty.'),
+    param('leaveTypeId').isInt().withMessage('Invalid leaveTypeId input.').notEmpty().withMessage('leaveTypeId cannot be empty.'),
+    body('leave_type').optional().isString().withMessage('Invalid leave type input.').notEmpty().withMessage('leave type cannot be empty.'),
+    body('leave_count').optional().isInt().withMessage('Invalid leave count input.').notEmpty().withMessage('leave count cannot be empty.'),
+    body('gender').optional().isString().withMessage('Invalid gender input.').isIn(['male', 'female', 'both']).withMessage('Invalid gender input.').notEmpty().withMessage('gender cannot be empty.')
+]
+export const deleteLeaveTypeAndCountVal = [
+    param('id').isInt().withMessage('Invalid id input.').notEmpty().withMessage('id cannot be empty.'),
+    param('leaveTypeId').isInt().withMessage('Invalid leaveTypeId input.').notEmpty().withMessage('leaveTypeId cannot be empty.')
 ]
 
 export const updateLeaveVal = [
