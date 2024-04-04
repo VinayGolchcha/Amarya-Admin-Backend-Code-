@@ -2,7 +2,7 @@ import express, { Router } from 'express';
 const app = express()
 const router = Router();
 import { addHoliday, updateHoliday,addLeaveType, addLeaveTypeAndCount, updateLeave, fetchLeaveTypesAndTheirCount, leaveRequest, fetchListOfLeaves, getAllUsersLeaveCountByAdmin, getUserLeaveData, fetchLeaveTakenOverview, updateLeaveTypeAndCount, deleteLeaveTypeAndCount } from '../controllers/leaveController.js';
-import {addHolidayVal, updateHolidayVal, addLeaveTypeVal, addLeaveCountVal, updateLeaveVal, leaveRequestVal, updateLeaveTypeAndCountVal, deleteLeaveTypeAndCountVal} from '../../../utils/validation.js';
+import {addHolidayVal, updateHolidayVal, addLeaveTypeVal, addLeaveCountVal, updateLeaveVal, leaveRequestVal, updateLeaveTypeAndCountVal, deleteLeaveTypeAndCountVal, getAllLeaveCountVal} from '../../../utils/validation.js';
 
 app.post('/admin/add-holiday',addHolidayVal,addHolidayVal, addHoliday);
 app.put('/admin/update-holiday/:id',updateHolidayVal, updateHoliday);
@@ -14,7 +14,7 @@ app.put('/admin/update-leave/:id',updateLeaveVal, updateLeave);
 app.get('/fetch-leave-type-and-count', fetchLeaveTypesAndTheirCount);
 app.get('/fetch-leaves-list', fetchListOfLeaves);
 app.post('/leave-request',leaveRequestVal, leaveRequest);
-app.get('/admin/get-all-leave-count', getAllUsersLeaveCountByAdmin);
+app.get('/get-all-leave-count/:id',getAllLeaveCountVal, getAllUsersLeaveCountByAdmin);
 app.get('/user-leave-data', getUserLeaveData);
 app.get('/get-leave-overview', fetchLeaveTakenOverview);
 
