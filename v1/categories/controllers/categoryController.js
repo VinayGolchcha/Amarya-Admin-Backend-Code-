@@ -1,6 +1,8 @@
 import { successResponse, errorResponse, notFoundResponse, unAuthorizedResponse } from "../../../utils/response.js"
 import { createDynamicUpdateQuery } from "../../helpers/functions.js";
 import { deleteCategoryQuery, getAllCategoryQuery, insertCategoryQuery, updateCategoryWorksheetQuery } from "../models/query.js";
+import { validationResult } from "express-validator";
+
 
 
 export const createCategoryForWorksheet = async (req, res, next) => {
@@ -49,6 +51,9 @@ export const fetchCategoryForWorkSheet = async(req, res, next) =>{
             return errorResponse(res, errors.array(), "")
         }
         const [data] = await getAllCategoryQuery();
+        if (data.length == 0) {
+            return notFoundResponse(res, '', 'Data not found.');
+        }
         return successResponse(res, data,'Categories fetched successfully.');
     } catch (error) {
         next(error);

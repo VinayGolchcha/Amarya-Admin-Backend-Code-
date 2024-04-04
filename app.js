@@ -37,7 +37,7 @@ app.use('/api/v1/team', teamRoutes);
 app.use('/api/v1/skillSet', skillSetRoutes);
 app.use('/api/v1/category', categoryRoutes);
 app.use('/api/v1/project', projectRoutes);
-
+// Catch-all route for undefined routes
 app.use('/', (req, res) => {
   res.send("Hey, I'm online now!!")
 });

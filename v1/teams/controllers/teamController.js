@@ -51,6 +51,9 @@ export const fetchTeams = async(req, res, next) =>{
             return errorResponse(res, errors.array(), "")
         }
         const [data] = await getAllTeamQuery();
+        if (data.length == 0) {
+            return notFoundResponse(res, '', 'Data not found.');
+        }
         return successResponse(res, data,'Teams fetched successfully.');
     } catch (error) {
         next(error);
