@@ -113,3 +113,32 @@ export const insertUserLeaveCountQuery = (array)=>{
         throw error;
     }
 }
+export const updateUserProfileQuery = async (query,array) => {
+    try {
+        return pool.query(query, array);
+    } catch (error) {
+        console.error("Error executing updateUserProfileQuery:", error);
+        throw error;
+    }
+}
+
+export const getUserDataQuery = async (array) =>{
+    try {
+        let query = `SELECT * FROM users WHERE emp_id = ?`
+        return await pool.query(query, array);
+    } catch (error) {
+        console.error("Error executing  getUserDataQuery", error);
+        throw error;
+    }
+}
+
+export const getFetchAllEmployeQuery = async (array) =>{
+    try {
+        let query = `SELECT * FROM users`
+        return await pool.query(query, array);
+    } catch (error) {
+        console.error("Error executing getfetchAllEmployeQuery", error);
+        throw error;
+    }
+}
+

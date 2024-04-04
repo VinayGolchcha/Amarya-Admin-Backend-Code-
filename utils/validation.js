@@ -242,4 +242,35 @@ export const deleteUserWorksheetVal = [
 export const deleteIdVal = [
     param('id').isInt().withMessage('Invalid id input.').notEmpty().withMessage('id cannot be empty.')
 ]
+export const getDataVal = [
+    body('emp_id').notEmpty().withMessage('id cannot be empty.').isString().withMessage("id must be an String."),
+   
+]
+ export const upProfileVal=[
+    param('id').isString().withMessage('Invalid id input.').notEmpty().withMessage('id cannot be empty.'),
+    body('username').optional().notEmpty().withMessage('username cannot be empty.').isString().withMessage("username must be a string."),
+    body('first_name').optional().notEmpty().withMessage('first_name cannot be empty.').isString().withMessage("first_name must be a string."),
+    body('last_name').optional().notEmpty().withMessage('last_name cannot be empty.').isString().withMessage("last_name must be a string."),
+    body('email').optional().isEmail().withMessage('Invalid email input.').notEmpty().withMessage('Email cannot be empty.'),
+    body('state_name').optional().notEmpty().withMessage('state_name cannot be empty.').isString().withMessage("state_name must be a string."),
+    body('city_name').optional().notEmpty().withMessage('city_name cannot be empty.').isString().withMessage("city_name must be a string."),
+    body('profile_picture').optional().notEmpty().withMessage('profile_picture cannot be empty.').isURL().withMessage('Invalid URL format'),
+    body('blood_group').optional().custom((value) => isValidBloodGroup(value)).withMessage('Invalid blood group format'),
+    body('mobile_number').optional().notEmpty().withMessage('mobile_number cannot be empty').isInt().withMessage('mobile_number should be an integer').isLength({ min: 10, max: 10 }).withMessage('mobile_number must be of 10 digits.'),
+    body('emergency_contact_number').optional().notEmpty().withMessage('emergency_contact_number cannot be empty.')
+    .isInt().withMessage('emergency_contact_number should be an integer.').isLength({ min: 10, max: 10 }).withMessage('emergency_contact_number must be of 10 digits.'),
+    body('emergency_contact_person_info').optional().notEmpty().withMessage('emergency_contact_person_info cannot be empty.')
+    .isString().withMessage('emergency_contact_person_info must be a string.'),
+    body('address').optional().notEmpty().withMessage('address cannot be empty.').isString().withMessage('address must be a string.'),
+    body('dob').optional().notEmpty().withMessage('dob cannot be empty.').isDate().withMessage("dob must be a date."),
+    body('designation').optional().notEmpty().withMessage('designation cannot be empty.').isString().withMessage('designation must be a string.'),
+    body('designation_type').optional().notEmpty().withMessage('designation_type cannot be empty.').isString().withMessage('designation_type must be a string.'),
+    body('joining_date').optional().notEmpty().withMessage('joining_date cannot be empty.').isDate().withMessage("joining_date must be a date."),
+    body('experience').optional().notEmpty().withMessage('experience cannot be empty.').isNumeric().withMessage("experience must be an integer."),
+    body('completed_projects').optional().notEmpty().withMessage('completed_projects cannot be empty.').isInt().withMessage("completed_projects must be an integer."),
+    body('performance').optional().notEmpty().withMessage('performance cannot be empty.').isNumeric().withMessage("performance must be an integer."),
+    body('teams').optional().notEmpty().withMessage('teams cannot be empty.').isInt().withMessage("teams must be an integer."),
+    body('client_report').optional().notEmpty().withMessage('client_report cannot be empty.').isInt().withMessage("client_report must be an integer."),
+]
+ 
 

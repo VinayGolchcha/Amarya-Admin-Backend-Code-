@@ -3,11 +3,12 @@ import { validationResult } from "express-validator";
 import bcrypt from "bcrypt"
 import dotenv from "dotenv"
 import { successResponse, errorResponse, notFoundResponse, unAuthorizedResponse } from "../../../utils/response.js"
-import {incrementId} from "../../helpers/functions.js"
+import {incrementId,createDynamicUpdateQuery} from "../../helpers/functions.js"
+
 dotenv.config();
 
 import {userRegistrationQuery, getUserDataByUsernameQuery, userDetailQuery, updateTokenQuery, 
-        getLastEmployeeIdQuery, updateUserPasswordQuery, getAllLeaveCounts, insertUserLeaveCountQuery, checkUserNameAvailabilityQuery} from "../models/userQuery.js";
+        getLastEmployeeIdQuery, updateUserPasswordQuery, getAllLeaveCounts, insertUserLeaveCountQuery, checkUserNameAvailabilityQuery,updateUserProfileQuery,getFetchAllEmployeQuery,getUserDataQuery} from "../models/userQuery.js";
 
 export const userRegistration = async (req, res, next) => {
     try {
@@ -180,3 +181,65 @@ export const updateUserPassword = async (req, res, next) => {
         next(error);
     }
 }
+
+export const updateUserProfile = async(req, res, next) => {
+    try {
+        const errors = validationResult(req);
+
+        if (!errors.isEmpty()) {
+            return errorResponse(res, errors.array(), "")
+        }
+        const user_id = req.params.id;
+        let table = 'users';
+
+        const condition = {
+            emp_id: user_id,
+        };
+        const req_data = req.body; 
+        let query_values = await createDynamicUpdateQuery(table, condition, req_data)
+        //console.log(query_values.updateQuery, query_values.updateValues)
+        await updateUserProfileQuery(query_values.updateQuery, query_values.updateValues);
+        return successResponse(res, 'User profile Updated');
+    } catch (error) {
+        next(error);
+    }
+}
+
+export const getUserData= async(req,res,next)=>{
+    try {
+        const errors = validationResult(req);
+
+        if (!errors.isEmpty()) {
+            return errorResponse(res, errors.array(), "")
+        }
+        const  {emp_id} = req.body;
+        const [data] = await getUserDataQuery([emp_id])
+        if(data.length == 0){
+            return notFoundResponse(res, '', 'Employee Data  not found.');
+        }
+        return successResponse(res, data, ' Employee Data Found successfully');
+    } catch (error) {
+        next(error);
+    }
+
+}
+
+
+export const getFetchAllEmploye= async(req,res,next)=>{
+    try {
+        const errors = validationResult(req);
+
+        if (!errors.isEmpty()) {
+            return errorResponse(res, errors.array(), "")
+        }
+        const [data] = await getFetchAllEmployeQuery()
+        if(data.length == 0){
+            return notFoundResponse(res, '', 'employee not found.');
+        }
+        return successResponse(res, data, ' All employee fetched successfully');
+    } catch (error) {
+        next(error);
+    }
+}
+
+
