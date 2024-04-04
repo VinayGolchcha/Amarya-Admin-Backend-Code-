@@ -19,7 +19,7 @@ export const errorHandler = (err, req, res, next) => {
     }
 
     // Respond with the appropriate status code and error message
-    res.status(statusCode).json({ error: message });
+    res.status(statusCode).json({ status: "failure", message: message });
 
     // Example: throwing an error forcefully
     // throw new Error('This is a forcefully thrown error!');
