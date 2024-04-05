@@ -57,7 +57,10 @@ export const approvalByAdmin = async (req, res, next) => {
 
         const handleLeaveRequest = async () => {
             let [userLeaveData] = await getUserLeaveDaysQuery([foreign_id])
-            let leave_taken_count = userLeaveData[0].days_count + 1;
+            if(userLeaveData.length===0) {
+                message = "Leave data not found."
+            }else{
+                let leave_taken_count = userLeaveData[0].days_count + 1;
             let leave_type = userLeaveData[0].leave_type
             let leave_type_count_by_admin = userLeaveData[0].leave_count
 
@@ -65,16 +68,19 @@ export const approvalByAdmin = async (req, res, next) => {
                 let [userLeaveTakenCount] = await leaveTakenCountQuery([emp_id, leave_type])
                 if(leave_type_count_by_admin >= (userLeaveTakenCount[0].leave_taken_count + leave_taken_count)){
                     await leaveApprovalQuery([leave_taken_count, emp_id, leave_type], [status, current_date, emp_id, foreign_id], [status, foreign_id, leave_type]);
-                    message = 'Leave approved successfully';
+                    message = 'Leave approved successfully.';
                 }else{
                     message = `User exceeded the leave count by ${(userLeaveTakenCount[0].leave_taken_count + leave_taken_count) - leave_type_count_by_admin}.`;
                 }
             } else if (status === "rejected") {
                 await leaveRejectionQuery([status, emp_id, foreign_id], [status, foreign_id, leave_type]);
-                message = 'Leave rejected successfully';
-            } else {
+                message = 'Leave rejected successfully.';
+            } else if(status === "deleted"){
                 await deleteLeaveQuery([emp_id, foreign_id], [foreign_id, leave_type]);
                 message = 'Leave deleted successfully';
+            }else{
+                message = "Leave data not found."
+            }
             }
         };
 

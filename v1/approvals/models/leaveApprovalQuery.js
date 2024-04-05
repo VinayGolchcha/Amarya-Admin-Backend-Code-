@@ -49,7 +49,7 @@ export const getUserLeaveDaysQuery = async (array) => {
         return result;
 
     } catch (error) {
-        console.error("Error executing query:", error);
+        console.error("Error executing getUserLeaveDaysQuery:", error);
         // Handle the error appropriately
         throw error;
     }
