@@ -113,3 +113,23 @@ export const insertUserLeaveCountQuery = (array)=>{
         throw error;
     }
 }
+
+export const insertOtpQuery = (array) => {
+    try {
+        let query = `UPDATE users SET otp = ? WHERE email = ? AND is_registered = 1`
+        return pool.query(query, array);
+    } catch (error) {
+        console.error("Error executing insertUserLeaveCountQuery:", error);
+        throw error;
+    }
+}
+
+export const getOtpQuery = (array) => {
+    try {
+        let query = `SELECT otp FROM users WHERE email = ? AND is_registered = 1`
+        return pool.query(query, array);
+    } catch (error) {
+        console.error("Error executing insertUserLeaveCountQuery:", error);
+        throw error;
+    }
+}
