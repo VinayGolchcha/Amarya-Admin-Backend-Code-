@@ -7,7 +7,7 @@ import {incrementId} from "../../helpers/functions.js"
 dotenv.config();
 
 import {userRegistrationQuery, getUserDataByUsernameQuery, userDetailQuery, updateTokenQuery, 
-        getLastEmployeeIdQuery, updateUserPasswordQuery, getAllLeaveCounts, insertUserLeaveCountQuery, checkUserNameAvailabilityQuery} from "../models/userQuery.js";
+        getLastEmployeeIdQuery, updateUserPasswordQuery, getAllLeaveCounts, insertUserLeaveCountQuery, checkUserNameAvailabilityQuery, insertOtpQuery, getOtpQuery} from "../models/userQuery.js";
 
 export const userRegistration = async (req, res, next) => {
     try {
@@ -105,6 +105,47 @@ export const checkUserNameAvailability = async(req, res, next) =>{
             return successResponse(res, {is_user_name_exists: 1}, 'User name already exists, please choose another user name.');
         }else{
             return successResponse(res, {is_user_name_exists: 0}, 'User name available.');
+        }
+    } catch (error) {
+        next(error);
+    }
+}
+
+export const sendOtpForPasswordUpdate = async (req, res, next) => {
+    try {
+        const errors = validationResult(req);
+
+        if (!errors.isEmpty()) {
+            return errorResponse(res, errors.array(), "")
+        }
+        const { email } = req.body;
+        const otp = Math.floor(1000 + Math.random() * 9000); // Generate a 4-digit OTP
+        const otpdata = await insertOtpQuery([otp, email])
+        if (otpdata[0].changedRows === 0) {
+            return errorResponse(res, '', 'Sorry, User not found. Please take a moment to register for an account.');
+        } else {
+            const data = await sendMail(email, `${otp} is the OTP for password update. Enter the Otp and then change password after the OTP is verified!\n\n\n\nRegards,\nAmarya Business Consultancy`, 'Password Change Verification');
+            return successResponse(res, data, 'OTP for password update has been sent successfully.');
+        }
+    } catch (error) {
+        next(error);
+    }
+}
+
+export const verifyEmailForPasswordUpdate = async (req, res, next)=> {
+    try{
+        let { otp, email } = req.body;
+        const errors = validationResult(req);
+
+        if (!errors.isEmpty()) {
+            return errorResponse(res, errors.array(), "")
+        }
+        otp = parseInt(otp, 10);
+        const [user_otp] = await getOtpQuery([email]);
+        if (otp === user_otp[0].otp) {
+            return successResponse(res, [{ email: email}], 'OTP verified successfully.');
+        } else {
+            return errorResponse(res, '', 'Invalid OTP');
         }
     } catch (error) {
         next(error);

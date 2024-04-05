@@ -254,3 +254,10 @@ export const deleteIdVal = [
     param('id').isInt().withMessage('Invalid id input.').notEmpty().withMessage('id cannot be empty.')
 ]
 
+export const sendOtpVal = [
+    body('email').isEmail().withMessage('Invalid email input.').notEmpty().withMessage('Email cannot be empty.')
+]
+export const verifyOtpVal = [
+    body('email').isEmail().withMessage('Invalid email input.').notEmpty().withMessage('Email cannot be empty.'),
+    body('otp').isNumeric().withMessage('Invalid otp input.').notEmpty().withMessage('otp cannot be empty.')
+]
