@@ -113,3 +113,8 @@ export const insertUserLeaveCountQuery = (array)=>{
         throw error;
     }
 }
+
+export const getUserDataByUserIdQuery = (array)=> {
+    let query = `SELECT * FROM users WHERE emp_id = ?`
+    return pool.query(query, array);
+}

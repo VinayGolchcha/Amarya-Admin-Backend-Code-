@@ -76,6 +76,9 @@ export const getTrnVal = [
 ]
 
 export const delTrnVal = [
+    body('id').notEmpty().withMessage('id cannot be empty.'),
+]
+export const delholidayVal = [
     body('training_id').notEmpty().withMessage('training_id cannot be empty.').isAlphanumeric().withMessage('training_id must be alphanumeric.'),
 ]
 
@@ -242,4 +245,31 @@ export const deleteUserWorksheetVal = [
 export const deleteIdVal = [
     param('id').isInt().withMessage('Invalid id input.').notEmpty().withMessage('id cannot be empty.')
 ]
+
+  
+  export const addPolicyVal = [
+    body("policy_type").notEmpty().withMessage("policy type cannot be empty"),
+    body("policy_description").notEmpty().withMessage("policy description cannot be empty")
+  ];
+  
+  export const delPolicyVal = [
+    body("id")
+      .notEmpty()
+      .withMessage("id cannot be empty.")
+      .isInt()
+      .withMessage("id must be an integer."),
+  ];
+  
+  export const upPolicyVal = [
+    body("policy_type")
+      .notEmpty()
+      .withMessage("policy type cannot be empty.")
+      .isString()
+      .withMessage("policy type must be a string."),
+    body("policy_description")
+      .notEmpty()
+      .withMessage("policy_description cannot be empty.")
+      .isString()
+      .withMessage("policy_description must be a string."),
+  ]
 
