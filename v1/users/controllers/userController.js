@@ -7,7 +7,8 @@ import {incrementId} from "../../helpers/functions.js"
 dotenv.config();
 
 import {userRegistrationQuery, getUserDataByUsernameQuery, userDetailQuery, updateTokenQuery, 
-        getLastEmployeeIdQuery, updateUserPasswordQuery, getAllLeaveCounts, insertUserLeaveCountQuery, checkUserNameAvailabilityQuery} from "../models/userQuery.js";
+        getLastEmployeeIdQuery, updateUserPasswordQuery, getAllLeaveCounts, insertUserLeaveCountQuery, checkUserNameAvailabilityQuery,
+        getUserDataByUserIdQuery} from "../models/userQuery.js";
 
 export const userRegistration = async (req, res, next) => {
     try {
@@ -178,5 +179,21 @@ export const updateUserPassword = async (req, res, next) => {
         }
     } catch (error) {
         next(error);
+    }
+}
+export const handleGetUserProfile = async(req,res,next) => {
+    try{
+        const emp_id = req.body.emp_id;
+        const [user] = await getUserDataByUserIdQuery([emp_id]);
+        if (user.length == 0 ){
+            return notFoundResponse(res, '', 'User not found');
+        }
+        else{
+            return successResponse(res, [user]);
+        }
+
+    }
+    catch(err){
+        next(err);
     }
 }
