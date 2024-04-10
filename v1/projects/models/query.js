@@ -31,7 +31,7 @@ export const updateProjectWorksheetQuery = async (query,array) => {
 
 export const deleteProjectQuery = async (array) => {
     try {
-        let query = `DELETE FROM projects WHERE _id = ?`;
+        let query = `DELETE FROM projects WHERE _id = ? AND category_id = ?`;
         return await pool.query(query, array);
     } catch (error) {
         console.error("Error executing deleteProjectQuery:", error);

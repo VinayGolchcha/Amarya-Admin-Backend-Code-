@@ -48,7 +48,8 @@ export const setupDatabase = async() => {
         console.log('all tables created');
     }
     catch(err){
-        console.log(err);
+        console.error('Error connecting to the database:', err);
+        throw new Error('Failed to connect to the database');
     }
 }
 
