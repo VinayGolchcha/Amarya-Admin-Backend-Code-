@@ -250,6 +250,9 @@ export const deleteUserWorksheetVal = [
     param('id').isInt().withMessage('Invalid id input.').notEmpty().withMessage('id cannot be empty.'),
     param('emp_id').isAlphanumeric().withMessage('Invalid emp id input.').notEmpty().withMessage('emp id cannot be empty.')
 ]
+export const fetchUserWorksheetVal = [
+    param('emp_id').isAlphanumeric().withMessage('Invalid emp id input.').notEmpty().withMessage('emp id cannot be empty.')
+]
 
 export const deleteIdVal = [
     param('id').isInt().withMessage('Invalid id input.').notEmpty().withMessage('id cannot be empty.')
