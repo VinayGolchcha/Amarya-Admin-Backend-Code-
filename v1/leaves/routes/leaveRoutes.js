@@ -16,7 +16,7 @@ app.get('/admin/get-all-leave-count', getAllUsersLeaveCountByAdmin);
 app.get('/user-leave-data', getUserLeaveData);
 app.get('/get-leave-overview', fetchLeaveTakenOverview);
 app.get('/fetch-holiday-list', fetchHolidayList);
-app.put('/admin/delete-holiday', delTrnVal ,deleteHoliday);
+app.delete('/admin/delete-holiday', delTrnVal ,deleteHoliday);
 
 app.use("/", router);
 
