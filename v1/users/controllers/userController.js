@@ -7,12 +7,9 @@ import {incrementId,createDynamicUpdateQuery} from "../../helpers/functions.js"
 
 dotenv.config();
 
-import {userRegistrationQuery, getUserDataByUsernameQuery, userDetailQuery, updateTokenQuery, 
-<<<<<<< HEAD
-        getLastEmployeeIdQuery, updateUserPasswordQuery, getAllLeaveCounts, insertUserLeaveCountQuery, checkUserNameAvailabilityQuery,updateUserProfileQuery,getFetchAllEmployeQuery,getUserDataQuery} from "../models/userQuery.js";
-=======
-        getLastEmployeeIdQuery, updateUserPasswordQuery, getAllLeaveCounts, insertUserLeaveCountQuery, checkUserNameAvailabilityQuery, insertOtpQuery, getOtpQuery} from "../models/userQuery.js";
->>>>>>> 7c7780fb0fd9887875e39ffe8a97d51d4e40d6c6
+import {userRegistrationQuery, getUserDataByUsernameQuery, userDetailQuery, updateTokenQuery,getLastEmployeeIdQuery, updateUserPasswordQuery, getAllLeaveCounts, insertUserLeaveCountQuery, checkUserNameAvailabilityQuery,updateUserProfileQuery,getFetchAllEmployeQuery,getUserDataQuery} from "../models/userQuery.js";
+import{ getLastEmployeeIdQuery, updateUserPasswordQuery, getAllLeaveCounts, insertUserLeaveCountQuery, checkUserNameAvailabilityQuery, insertOtpQuery, getOtpQuery,
+        getUserDataByUserIdQuery} from "../models/userQuery.js";
 
 export const userRegistration = async (req, res, next) => {
     try {
@@ -288,3 +285,19 @@ export const getFetchAllEmploye= async(req,res,next)=>{
 }
 
 
+export const handleGetUserProfile = async(req,res,next) => {
+    try{
+        const emp_id = req.body.emp_id;
+        const [user] = await getUserDataByUserIdQuery([emp_id]);
+        if (user.length == 0 ){
+            return notFoundResponse(res, '', 'User not found');
+        }
+        else{
+            return successResponse(res, [user]);
+        }
+
+    }
+    catch(err){
+        next(err);
+    }
+}

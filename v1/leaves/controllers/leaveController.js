@@ -3,7 +3,7 @@ import {
     createHoliday, updateHolidayQuery, createLeaveType,
     createLeaveCount, updateLeaveQuery, fetchLeavesCountQuery,
     fetchLeavesTypesQuery, insertUserLeaveDataQuery, insertApprovalForLeaveQuery, getLastLeaveId, getLeaveTypeCountByAdmin,
-    getAllUsersLeaveCountQuery, getUserLeaveDataQuery, fetchLeaveTakenOverviewQuery, deleteLeaveTypeAndCountQuery
+    getAllUsersLeaveCountQuery, getUserLeaveDataQuery, fetchLeaveTakenOverviewQuery, deleteLeaveTypeAndCountQuery, fetchHolidayListQuery, getHolidayDataQuery, deleteHolidayQuery
 } from "../../leaves/models/leaveQuery.js"
 import { leaveTakenCountQuery } from "../../approvals/models/leaveApprovalQuery.js"
 import { successResponse, errorResponse, notFoundResponse, unAuthorizedResponse } from "../../../utils/response.js"
@@ -54,6 +54,34 @@ export const updateHoliday = async (req, res, next) => {
     }
 }
 
+export const fetchHolidayList = async (req,res,next) => {
+    try {
+        const [data] = await fetchHolidayListQuery();
+        return successResponse(res, data, 'Holiday List fetched successfully');
+    }catch(err) {
+        next(err);
+    }
+}
+export const deleteHoliday = async(req,res,next) => {
+    try{
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return errorResponse(res, errors.array(), "")
+        }
+        const {id} = req.body;
+        console.log(req.body);
+        const [data] = await getHolidayDataQuery([id]);
+        if (data.length == 0) {
+            return errorResponse(res, errors.array(), "Data not found");
+        }else{
+            await deleteHolidayQuery([id]);
+            return successResponse(res, "", 'Data Deleted Successfully');
+        }
+    }catch(err){
+        next(err);
+    }
+
+}
 export const addLeaveType = async (req, res, next) => {
     try {
         const errors = validationResult(req);

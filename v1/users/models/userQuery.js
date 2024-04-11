@@ -164,3 +164,9 @@ export const getOtpQuery = (array) => {
     }
 }
 >>>>>>> 7c7780fb0fd9887875e39ffe8a97d51d4e40d6c6
+
+
+export const getUserDataByUserIdQuery = (array)=> {
+    let query = `SELECT * FROM users WHERE emp_id = ?`
+    return pool.query(query, array);
+}
