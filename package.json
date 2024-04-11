@@ -4,7 +4,7 @@
   "description": "amarya-admin-backend-code",
   "type": "module",
   "scripts": {
-    "start": "nodemon app.js"
+    "start": "node app.js"
   },
   "dependencies": {
     "bcrypt": "^5.1.1",
@@ -12,9 +12,14 @@
     "dotenv": "^16.3.1",
     "express": "^4.18.2",
     "express-validator": "^7.0.1",
+    "googleapis": "^134.0.0",
     "helmet": "^7.1.0",
     "jsonwebtoken": "^9.0.2",
+    "moment": "^2.30.1",
+    "moment-timezone": "^0.5.45",
     "mysql2": "^3.6.5",
-    "nodemon": "^3.0.2"
+    "node-cron": "^3.0.3",
+    "nodemon": "^3.0.2",
+    "xlsx-populate": "^1.21.0"
   }
 }

@@ -185,13 +185,14 @@ export const leaveRequestVal = [
     body('from_date').notEmpty().withMessage('from_date cannot be empty.').isDate().withMessage("from_date must be a date."), 
     body('to_date').notEmpty().withMessage('to_date cannot be empty.').isDate().withMessage("to_date must be a date."),
 ]
-
-
+export const getAllLeaveCountVal = [
+    param('id').isAlphanumeric().withMessage('Invalid id input.').notEmpty().withMessage('id cannot be empty.'),
+]
 export const createWorksheetVal = [
     body('emp_id').notEmpty().withMessage('emp_id cannot be empty.').isAlphanumeric().withMessage('emp_id must be alphanumeric.'),
     body('team_id').notEmpty().withMessage('Team id cannot be empty.').isInt().withMessage('Invalid team id input.'),
     body('category_id').notEmpty().withMessage('Category id cannot be empty.').isInt().withMessage('Invalid category id input.'),
-    body('skill_set').isString().withMessage('Invalid skill set input.').notEmpty().withMessage('skill set cannot be empty.'),
+    body('skill_set_id').isString().withMessage('Invalid skill set input.').notEmpty().withMessage('skill set cannot be empty.'),
     body('description').isString().withMessage('Invalid description input.').notEmpty().withMessage('description cannot be empty.'),
 ]
 
@@ -247,6 +248,9 @@ export const updateCategoryVal = [
 ]
 export const deleteUserWorksheetVal = [
     param('id').isInt().withMessage('Invalid id input.').notEmpty().withMessage('id cannot be empty.'),
+    param('emp_id').isAlphanumeric().withMessage('Invalid emp id input.').notEmpty().withMessage('emp id cannot be empty.')
+]
+export const fetchUserWorksheetVal = [
     param('emp_id').isAlphanumeric().withMessage('Invalid emp id input.').notEmpty().withMessage('emp id cannot be empty.')
 ]
 
