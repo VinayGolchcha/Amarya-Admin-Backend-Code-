@@ -10,6 +10,40 @@ export const createHoliday = (array) => {
     }
 }
 
+export const fetchHolidayListQuery = async () => {
+    try{
+        let query = `SELECT _id, date, holiday FROM holidays`
+        return await pool.query(query);
+    } catch (error) {
+        console.error("Error executing fetchHolidayListQuery:", error);
+        throw error;
+    }
+}
+
+export const getHolidayDataQuery = async (array)=>{
+    try{
+    let query = `SELECT date, holiday FROM holidays WHERE _id = ? `
+    return  await pool.query(query, array);
+    }catch(err){
+        console.error("Error executing getHolidayDataQuery:", error);
+        throw error;
+    } 
+};
+
+
+export const deleteHolidayQuery = async (array) => {
+    try{
+        let query = `DELETE From holidays WHERE _id = ? `
+        return await pool.query(query, array); 
+    }catch(err){
+        console.error("Error executing deleteHolidayQuery:", error);
+        throw error;
+    }
+
+
+}
+
+
 export const updateHolidayQuery = (query, array) => {
     try {
         return pool.query(query, array);
@@ -76,6 +110,8 @@ export const fetchLeavesTypesQuery = () => {
         throw error; 
     }
 }
+
+
 export const fetchLeaveTakenOverviewQuery = (array, limit) => {
     try {
         let query = `SELECT leave_type, from_date, to_date, subject FROM leaveDatesAndReasons WHERE emp_id = ? ORDER BY created_at DESC LIMIT ${limit};

@@ -2,7 +2,7 @@ import express, { Router } from 'express';
 const app = express()
 const router = Router();
 // import authenticateToken from '../../../middlewares/auth.js';
-import {userRegistration, userLogin, userLogout, updateUserPassword, checkUserNameAvailability, verifyEmailForPasswordUpdate, sendOtpForPasswordUpdate} from '../controllers/userController.js';
+import {userRegistration, userLogin, userLogout, updateUserPassword, checkUserNameAvailability, verifyEmailForPasswordUpdate, sendOtpForPasswordUpdate, handleGetUserProfile} from '../controllers/userController.js';
 import {userRegVal, userLogVal, logOutVal, upPassVal, checkUserNameAvailabilityVal,sendOtpVal, verifyOtpVal} from '../../../utils/validation.js';
 // router.use(authenticateToken)
 
@@ -15,6 +15,8 @@ app.post('/check-user-name', checkUserNameAvailabilityVal, checkUserNameAvailabi
 app.post('/send-otp-password-verification', sendOtpVal, sendOtpForPasswordUpdate);
 app.post('/verify-email-for-password-update', verifyOtpVal, verifyEmailForPasswordUpdate);
 app.post('/update-password', upPassVal, updateUserPassword);
+app.get('/get-userprofile' , handleGetUserProfile);
+
 
 app.use("/", router);
 
