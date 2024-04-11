@@ -76,6 +76,9 @@ export const getTrnVal = [
 ]
 
 export const delTrnVal = [
+    body('id').notEmpty().withMessage('id cannot be empty.'),
+]
+export const delholidayVal = [
     body('training_id').notEmpty().withMessage('training_id cannot be empty.').isAlphanumeric().withMessage('training_id must be alphanumeric.'),
 ]
 

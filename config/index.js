@@ -15,8 +15,10 @@ import teamTable from "../v1/teams/models/teamModel.js";
 import projectTable from "../v1/projects/models/projectModel.js";
 import worksheetTable from "../v1/worksheets/models/worksheetModel.js";
 import skillSetTable from "../v1/skillsets/models/skillsetModel.js";
+import temporary_notesTable from "../v1/stickynotes/models/stickynotesModel.js";
+import policiesTable from "../v1/policies/models/policiesModel.js";
 
 export default [userTable, assetTable, trainingTable, usertrainingTable, assetRequestTable, approvalTable, announcementTable,
     holidayTable, leaveDatesAndReasonTable,leaveTypeTable, leaveTypeCountTable, userLeaveCountTable, categoryTable, teamTable,
-    projectTable, worksheetTable, skillSetTable
+    projectTable, worksheetTable, skillSetTable , temporary_notesTable , policiesTable
 ];
