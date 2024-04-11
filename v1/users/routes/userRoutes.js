@@ -19,7 +19,8 @@ app.post('/verify-email-for-password-update', verifyOtpVal, verifyEmailForPasswo
 app.post('/update-password', upPassVal, updateUserPassword);
 app.put('/admin/update-profile/:id',upProfileVal,updateUserProfile);
 app.get('/admin/fetch-all-employe',getFetchAllEmploye);
-app.get('/admin/user-data',getDataVal,getUserData);app.get('/get-userprofile' , handleGetUserProfile);
+app.get('/admin/user-data',getDataVal,getUserData);
+app.get('/get-userprofile' , handleGetUserProfile);
 
 
 app.use("/", router);
