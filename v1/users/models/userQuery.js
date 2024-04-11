@@ -113,15 +113,26 @@ export const insertUserLeaveCountQuery = (array)=>{
         throw error;
     }
 }
+<<<<<<< HEAD
 export const updateUserProfileQuery = async (query,array) => {
     try {
         return pool.query(query, array);
     } catch (error) {
         console.error("Error executing updateUserProfileQuery:", error);
+=======
+
+export const insertOtpQuery = (array) => {
+    try {
+        let query = `UPDATE users SET otp = ? WHERE email = ? AND is_registered = 1`
+        return pool.query(query, array);
+    } catch (error) {
+        console.error("Error executing insertUserLeaveCountQuery:", error);
+>>>>>>> 7c7780fb0fd9887875e39ffe8a97d51d4e40d6c6
         throw error;
     }
 }
 
+<<<<<<< HEAD
 export const getUserDataQuery = async (array) =>{
     try {
         let query = `SELECT * FROM users WHERE emp_id = ?`
@@ -142,3 +153,14 @@ export const getFetchAllEmployeQuery = async (array) =>{
     }
 }
 
+=======
+export const getOtpQuery = (array) => {
+    try {
+        let query = `SELECT otp FROM users WHERE email = ? AND is_registered = 1`
+        return pool.query(query, array);
+    } catch (error) {
+        console.error("Error executing insertUserLeaveCountQuery:", error);
+        throw error;
+    }
+}
+>>>>>>> 7c7780fb0fd9887875e39ffe8a97d51d4e40d6c6

@@ -285,3 +285,10 @@ export const getDataVal = [
 ]
  
 
+export const sendOtpVal = [
+    body('email').isEmail().withMessage('Invalid email input.').notEmpty().withMessage('Email cannot be empty.')
+]
+export const verifyOtpVal = [
+    body('email').isEmail().withMessage('Invalid email input.').notEmpty().withMessage('Email cannot be empty.'),
+    body('otp').isNumeric().withMessage('Invalid otp input.').notEmpty().withMessage('otp cannot be empty.')
+]
