@@ -5,9 +5,9 @@ const app = express()
 const router = Router();
 
 app.post('/create-project',createProjectVal, createProject);
-app.put("/update-project/:id",updateProjectVal, updateProject);
+app.put("/update-project/:id/:category_id",updateProjectVal, updateProject);
 app.get('/fetch-all-projects', fetchProjects);
-app.delete('/delete-project/:id',deleteIdVal, deleteProject);
+app.delete('/delete-project/:id/:category_id',deleteIdVal, deleteProject);
 
 
 app.use("/", router);

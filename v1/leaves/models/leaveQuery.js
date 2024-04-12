@@ -180,14 +180,15 @@ export const getLeaveTypeCountByAdmin = async (array) => {
     }
 }
 
-export const getAllUsersLeaveCountQuery = async ()=>{
+export const getAllUsersLeaveCountQuery = async (array)=>{
     try {
         let query = 
         `SELECT emp_id, leave_type, leave_count, leave_taken_count 
         FROM userLeaveCounts
+        WHERE emp_id = ?
         GROUP BY emp_id, leave_type, leave_count, leave_taken_count;
         `
-        return await pool.query(query);
+        return await pool.query(query, array);
     } catch (error) {
         console.error("Error executing getAllUsersLeaveCountQuery:", error);
         throw error;

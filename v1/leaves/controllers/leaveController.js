@@ -279,7 +279,8 @@ export const leaveRequest = async (req, res, next) => {
 
 export const getAllUsersLeaveCountByAdmin =async (req, res, next) => {
     try {
-        const [data] = await getAllUsersLeaveCountQuery()
+        const emp_id = req.params.id
+        const [data] = await getAllUsersLeaveCountQuery([emp_id]);
         if (data.length == 0) {
             return notFoundResponse(res, '', 'Data not found.');
         }

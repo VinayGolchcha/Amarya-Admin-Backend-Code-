@@ -2,7 +2,7 @@ import { validationResult } from "express-validator";
 import dotenv from "dotenv"
 import { successResponse, errorResponse, notFoundResponse, unAuthorizedResponse } from "../../../utils/response.js"
 import { incrementId, createDynamicUpdateQuery } from "../../helpers/functions.js"
-import { deleteSkillSetQuery, insertSkillSetQuery, updateSkillSetQuery } from "../models/query.js";
+import { deleteSkillSetQuery, getAllSkillSetQuery, insertSkillSetQuery, updateSkillSetQuery } from "../models/query.js";
 dotenv.config();
 export const createSkillSet = async (req, res, next) => {
     try {
@@ -52,7 +52,7 @@ export const fetchSkillSets = async(req, res, next) =>{
         if (data.length == 0) {
             return notFoundResponse(res, '', 'Data not found.');
         }
-        return successResponse(res, data,'Projects fetched successfully.');
+        return successResponse(res, data,'Skills fetched successfully.');
     } catch (error) {
         next(error);
     }
@@ -67,7 +67,7 @@ export const deleteSkillSet = async (req, res, next) => {
         }
         const skill_set_id = req.params.id
         await deleteSkillSetQuery([skill_set_id]);
-        return successResponse(res, 'category deleted successfully.');
+        return successResponse(res, 'Skill deleted successfully.');
     } catch (error) {
         next(error);
     }
