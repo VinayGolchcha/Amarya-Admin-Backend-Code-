@@ -268,3 +268,26 @@ export const verifyOtpVal = [
     body('email').isEmail().withMessage('Invalid email input.').notEmpty().withMessage('Email cannot be empty.'),
     body('otp').isNumeric().withMessage('Invalid otp input.').notEmpty().withMessage('otp cannot be empty.')
 ]
+
+export const addPolicyVal = [
+    body('policy_type').isString().withMessage('Invalid policy_type input.').notEmpty().withMessage('policy type cannot be empty.'),
+    body('policy_description').isString().withMessage('Invalid policy_description input.').notEmpty().withMessage('policy description cannot be empty.'),
+]
+
+export const delPolicyVal = [
+    body('id').isInt().withMessage('Invalid id input.').notEmpty().withMessage('id cannot be empty.')
+]
+
+export const upPolicyVal = [
+    body('policy_type').isString().withMessage('Invalid policy_type input.').notEmpty().withMessage('policy type cannot be empty.'),
+    body('policy_description').isString().withMessage('Invalid policy_description input.').notEmpty().withMessage('policy description cannot be empty.'),
+]
+
+export const adStiNo = [
+    body('emp_id').isString().withMessage('Invalid emp_id input.').notEmpty().withMessage('emp_id cannot be empty.'),
+    body('note').isString().withMessage('Invalid note input.').notEmpty().withMessage('note cannot be empty.'),
+]
+
+export const delStiNo = [
+    body('_id').isInt().withMessage('Invalid id input.').notEmpty().withMessage('id cannot be empty.')
+]
