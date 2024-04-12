@@ -5,6 +5,8 @@ import dotenv from "dotenv"
 import { successResponse, errorResponse, notFoundResponse, unAuthorizedResponse } from "../../../utils/response.js"
 import {incrementId} from "../../helpers/functions.js"
 import {sendMail} from "../../../config/nodemailer.js"
+import {getTeamQuery} from "../../teams/models/query.js"
+import {insertTeamToUser} from "../models/userTeamsQuery.js"
 dotenv.config();
 
 import {userRegistrationQuery, getUserDataByUsernameQuery, userDetailQuery, updateTokenQuery, 
@@ -44,15 +46,20 @@ export const userRegistration = async (req, res, next) => {
             completed_projects,
             performance,
             teams,
+            team_id,
             client_report, role = 'user' } = req.body;
         email = email.toLowerCase();
         const [existingUser] = await userDetailQuery([email]);
         const [existingUserName] = await checkUserNameAvailabilityQuery([username]);
+        const [team_exists] = await getTeamQuery([team_id]);
         if (existingUserName.length) {
             return successResponse(res, {is_user_name_exists: true}, 'User name already exists, please choose another user name.');
         }
         if (existingUser.length) {
             return successResponse(res, '', 'User with this email already exists.');
+        }
+        if (team_exists.length == 0){
+            return successResponse(res, '', 'No team with this name exists.');
         }
         const password_hash = await bcrypt.hash(password.toString(), 12);
         const [user_data] = await userRegistrationQuery([
@@ -81,6 +88,10 @@ export const userRegistration = async (req, res, next) => {
             client_report,
             role
         ]);
+
+        const [data]= await insertTeamToUser([emp_id, team_id]);
+        console.log(data);
+    
         let [leaveTypeAndCount] = await getAllLeaveCounts();
         for(let i = 0; i < leaveTypeAndCount.length; i++) {
             let leaveType = leaveTypeAndCount[i].leave_type;
@@ -94,24 +105,24 @@ export const userRegistration = async (req, res, next) => {
     }
 };
 
-export const checkUserNameAvailability = async(req, res, next) =>{
-    try {
-        const errors = validationResult(req);
+// export const checkUserNameAvailability = async(req, res, next) =>{
+//     try {
+//         const errors = validationResult(req);
 
-        if (!errors.isEmpty()) {
-            return errorResponse(res, errors.array(), "")
-        }
-        const {user_name} = req.body;
-        const [existingUserName] = await checkUserNameAvailabilityQuery([user_name]);
-        if (existingUserName.length) {
-            return successResponse(res, {is_user_name_exists: 1}, 'User name already exists, please choose another user name.');
-        }else{
-            return successResponse(res, {is_user_name_exists: 0}, 'User name available.');
-        }
-    } catch (error) {
-        next(error);
-    }
-}
+//         if (!errors.isEmpty()) {
+//             return errorResponse(res, errors.array(), "")
+//         }
+//         const {user_name} = req.body;
+//         const [existingUserName] = await checkUserNameAvailabilityQuery([user_name]);
+//         if (existingUserName.length) {
+//             return successResponse(res, {is_user_name_exists: 1}, 'User name already exists, please choose another user name.');
+//         }else{
+//             return successResponse(res, {is_user_name_exists: 0}, 'User name available.');
+//         }
+//     } catch (error) {
+//         next(error);
+//     }
+// }
 
 export const sendOtpForPasswordUpdate = async (req, res, next) => {
     try {

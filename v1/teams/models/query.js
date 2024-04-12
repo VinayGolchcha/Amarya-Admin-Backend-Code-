@@ -38,3 +38,12 @@ export const deleteTeamQuery = async (array) => {
         throw error;
     }
 }
+export const getTeamQuery = async (array) => {
+    try {
+        let query = `SELECT * FROM teams WHERE _id = ?`
+        return pool.query(query,array);
+    } catch (error) {
+        console.error("Error executing getAllTeamQuery:", error);
+        throw error;
+    }
+}
