@@ -55,6 +55,7 @@ export const userDetailQuery = (array)=>{
         throw error;
     }
 }
+
 export const checkUserNameAvailabilityQuery = (array)=>{
     try {
         let query = `SELECT * FROM users WHERE username = ?`
@@ -116,7 +117,7 @@ export const insertUserLeaveCountQuery = (array)=>{
 
 export const insertOtpQuery = (array) => {
     try {
-        let query = `UPDATE users SET otp = ? WHERE email = ? AND is_registered = 1`
+        let query = `UPDATE users SET otp = ? WHERE email = ?`
         return pool.query(query, array);
     } catch (error) {
         console.error("Error executing insertUserLeaveCountQuery:", error);
@@ -126,7 +127,7 @@ export const insertOtpQuery = (array) => {
 
 export const getOtpQuery = (array) => {
     try {
-        let query = `SELECT otp FROM users WHERE email = ? AND is_registered = 1`
+        let query = `SELECT otp FROM users WHERE email = ?`
         return pool.query(query, array);
     } catch (error) {
         console.error("Error executing insertUserLeaveCountQuery:", error);
