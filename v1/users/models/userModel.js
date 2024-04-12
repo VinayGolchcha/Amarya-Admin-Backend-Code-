@@ -23,6 +23,7 @@ CREATE TABLE IF NOT EXISTS users (
     completed_projects int ,
     performance float ,
     teams int ,
+    otp int DEFAULT NULL,
     client_report int ,
     jwt_token varchar(255) ,
     role ENUM ('admin', 'user') DEFAULT 'user',
