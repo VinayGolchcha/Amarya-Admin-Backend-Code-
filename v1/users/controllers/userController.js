@@ -4,6 +4,7 @@ import bcrypt from "bcrypt"
 import dotenv from "dotenv"
 import { successResponse, errorResponse, notFoundResponse, unAuthorizedResponse } from "../../../utils/response.js"
 import {incrementId} from "../../helpers/functions.js"
+import {sendMail} from "../../../config/nodemailer.js"
 dotenv.config();
 
 import {userRegistrationQuery, getUserDataByUsernameQuery, userDetailQuery, updateTokenQuery, 
@@ -142,12 +143,19 @@ export const verifyEmailForPasswordUpdate = async (req, res, next)=> {
             return errorResponse(res, errors.array(), "")
         }
         otp = parseInt(otp, 10);
-        const [user_otp] = await getOtpQuery([email]);
-        if (otp === user_otp[0].otp) {
-            return successResponse(res, [{ email: email}], 'OTP verified successfully.');
-        } else {
-            return errorResponse(res, '', 'Invalid OTP');
+        const [user_exist] = await userDetailQuery([email])
+
+        if (user_exist.length > 0) {
+            const [user_otp] = await getOtpQuery([email]);
+            if (otp === user_otp[0].otp) {
+                return successResponse(res, [{ email: email}], 'OTP verified successfully.');
+            } else {
+                return errorResponse(res, '', 'Invalid OTP');
+            }
+        }else{
+            return errorResponse(res, '', 'User not found');
         }
+        
     } catch (error) {
         next(error);
     }
