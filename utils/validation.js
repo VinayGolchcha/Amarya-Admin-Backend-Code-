@@ -50,14 +50,6 @@ export const fetUserAssVal = [
     body('emp_id').notEmpty().withMessage('emp_id cannot be empty.').isAlphanumeric().withMessage('emp_id must be alphanumeric.'),
 ]
 
-export const delAssVal = [
-    body('asset_id').notEmpty().withMessage('asset_id cannot be empty.').isAlphanumeric().withMessage('asset_id must be alphanumeric.'),
-]
-
-export const upAssVal = [
-    param('id').notEmpty().withMessage('id cannot be empty.').isAlphanumeric().withMessage('id must be an alphanumeric')
-]
-
 export const addTrnVal = [
     body('course_name').notEmpty().withMessage('course_name cannot be empty.').isString().withMessage("course_name must be a string."),
     body('course_description').notEmpty().withMessage('course_description cannot be empty.').isString().withMessage("course_description must be a string."),
@@ -75,9 +67,6 @@ export const getTrnVal = [
     body('emp_id').notEmpty().withMessage('emp_id cannot be empty.').isAlphanumeric().withMessage('emp_id must be alphanumeric.'),
 ]
 
-export const delTrnVal = [
-    body('id').notEmpty().withMessage('id cannot be empty.'),
-]
 export const delholidayVal = [
     body('training_id').notEmpty().withMessage('training_id cannot be empty.').isAlphanumeric().withMessage('training_id must be alphanumeric.'),
 ]
@@ -101,8 +90,7 @@ export const userRegVal = [
     body('last_name').notEmpty().withMessage('last_name cannot be empty.').isString().withMessage("last_name must be a string."),
     body('email').isEmail().withMessage('Invalid email input.').notEmpty().withMessage('Email cannot be empty.'),
     body('password').isLength({ min: 8 }).withMessage('Password must be at least 8 characters long').notEmpty().withMessage('Password cannot be empty.').custom(passwordValidation),
-    body('state_name').notEmpty().withMessage('state_name cannot be empty.').isString().withMessage("state_name must be a string."),
-    body('city_name').notEmpty().withMessage('city_name cannot be empty.').isString().withMessage("city_name must be a string."),
+    body('gender').notEmpty().withMessage('gender cannot be empty.').isString().withMessage("gender must be a string."),
     body('profile_picture').optional().notEmpty().withMessage('profile_picture cannot be empty.').isURL().withMessage('Invalid URL format'),
     body('blood_group').custom((value) => isValidBloodGroup(value)).withMessage('Invalid blood group format'),
     body('mobile_number').notEmpty().withMessage('mobile_number cannot be empty').isInt().withMessage('mobile_number should be an integer').isLength({ min: 10, max: 10 }).withMessage('mobile_number must be of 10 digits.'),
@@ -228,8 +216,7 @@ export const createProjectVal = [
     body('client_name').isString().withMessage('Invalid client name input').notEmpty().withMessage('client name cannot be empty'),
     body('project_status').isString().withMessage('Invalid project status input').notEmpty().withMessage('project status cannot be empty'),
     body('project_lead').isString().withMessage('Invalid project lead input').notEmpty().withMessage('project lead cannot be empty'),
-    body('start_month').optional().isString().withMessage('Invalid start_month input').notEmpty().withMessage('start_month cannot be empty'),
-    body('end_month').optional().isString().withMessage('Invalid end_month input').notEmpty().withMessage('end_month cannot be empty')
+    body('start_month').optional().isString().withMessage('Invalid start_month input').notEmpty().withMessage('start_month cannot be empty')
 ]
 export const updateProjectVal = [
     param('id').isInt().withMessage('Invalid id input.').notEmpty().withMessage('id cannot be empty.'),

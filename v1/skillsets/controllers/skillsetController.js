@@ -2,8 +2,10 @@ import { validationResult } from "express-validator";
 import dotenv from "dotenv"
 import { successResponse, errorResponse, notFoundResponse, unAuthorizedResponse } from "../../../utils/response.js"
 import { incrementId, createDynamicUpdateQuery } from "../../helpers/functions.js"
-import { deleteSkillSetQuery, getAllSkillSetQuery, insertSkillSetQuery, updateSkillSetQuery } from "../models/query.js";
+import { deleteSkillSetQuery, getAllSkillSetQuery, insertSkillSetQuery, updateSkillSetQuery, checkSameSkillQuery, getSkillsQuery } from "../models/query.js";
 dotenv.config();
+
+
 export const createSkillSet = async (req, res, next) => {
     try {
         const errors = validationResult(req);
@@ -12,6 +14,12 @@ export const createSkillSet = async (req, res, next) => {
             return errorResponse(res, errors.array(), "")
         }
         const {skill} = req.body;
+        const [exist_skill] = await checkSameSkillQuery([skill])
+
+        if (exist_skill.length > 0){
+            return errorResponse(res, '', 'Sorry, Skill already exists.');
+        }
+
         await insertSkillSetQuery([skill]);
         return successResponse(res, 'skill created successfully.');
     } catch (error) {
@@ -32,10 +40,15 @@ export const updateSkillSet = async(req, res, next) => {
         const condition = {
             _id: skill_id,
         };
-        const req_data = req.body; // {skill}
+        const req_data = req.body; 
+        const [exist_skill_id] = await getSkillsQuery([skill_id])
+
+        if (exist_skill_id.length == 0) {
+            return errorResponse(res, '', 'Sorry, Skill not found.');
+        }
         let query_values = await createDynamicUpdateQuery(table, condition, req_data)
-        await updateSkillSetQuery(query_values.updateQuery, query_values.updateValues);
-        return successResponse(res, 'skill updated successfully.');
+        let [data] = await updateSkillSetQuery(query_values.updateQuery, query_values.updateValues);
+        return successResponse(res, data, 'Skill updated successfully.');
     } catch (error) {
         next(error);
     }
@@ -65,8 +78,13 @@ export const deleteSkillSet = async (req, res, next) => {
         if (!errors.isEmpty()) {
             return errorResponse(res, errors.array(), "")
         }
-        const skill_set_id = req.params.id
-        await deleteSkillSetQuery([skill_set_id]);
+        const skill_id = req.params.id
+        const [exist_skill_id] = await getSkillsQuery([skill_id])
+
+        if (exist_skill_id.length == 0) {
+            return errorResponse(res, '', 'Sorry, Skill not found.');
+        }
+        await deleteSkillSetQuery([skill_id]);
         return successResponse(res, 'Skill deleted successfully.');
     } catch (error) {
         next(error);

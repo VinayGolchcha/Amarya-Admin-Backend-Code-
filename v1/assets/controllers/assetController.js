@@ -47,6 +47,35 @@ export const createAsset = async (req, res, next) => {
     }
 }
 
+export const updateAsset = async(req, res, next) => {
+    try {
+        const errors = validationResult(req);
+
+        if (!errors.isEmpty()) {
+            return errorResponse(res, errors.array(), "")
+        }
+
+        const req_data = req.body;
+        const id = req.params.id;
+
+        let table = 'assets';
+
+        const condition = {
+            asset_id: id
+        };
+
+        let query_values = await createDynamicUpdateQuery(table, condition, req_data)
+        let [data] = await updateAssetQuery(query_values.updateQuery, query_values.updateValues)
+
+        if (data.affectedRows == 0){
+            return notFoundResponse(res, '', 'Asset not found, wrong input.');
+        }
+        return successResponse(res, data, 'Asset Updated Successfully');
+    } catch (error) {
+        next(error);
+    }
+}
+
 export const assetRequest = async (req, res, next) => {
     try {
         const errors = validationResult(req);
@@ -79,7 +108,7 @@ export const fetchUserAssets = async(req, res, next) => {
         if (!errors.isEmpty()) {
             return errorResponse(res, errors.array(), "")
         }
-        const {emp_id} = req.body;
+        const {emp_id} = req.body.emp_id;
         const [data] = await fetchUserAssetsQuery([emp_id])
         if(data.length == 0){
             return notFoundResponse(res, '', 'Data not found for this user.');
@@ -89,6 +118,7 @@ export const fetchUserAssets = async(req, res, next) => {
         next(error);
     }
 }
+
 export const fetchAssets = async(req, res, next) => {
     try {
         const errors = validationResult(req);
@@ -113,7 +143,8 @@ export const deleteAsset = async(req, res, next) => {
         if (!errors.isEmpty()) {
             return errorResponse(res, errors.array(), "")
         }
-        const {asset_id} = req.body;
+        const asset_id = req.params.id;
+
         const [data] = await getAssetDataQuery([asset_id])
         if (data.length == 0) {
             return errorResponse(res, errors.array(), "Data not found")
@@ -121,35 +152,6 @@ export const deleteAsset = async(req, res, next) => {
             await deleteAssetQuery([asset_id]);
             return successResponse(res, "", 'Asset Deleted Successfully');
         }
-    } catch (error) {
-        next(error);
-    }
-}
-
-export const updateAsset = async(req, res, next) => {
-    try {
-        const errors = validationResult(req);
-
-        if (!errors.isEmpty()) {
-            return errorResponse(res, errors.array(), "")
-        }
-
-        const req_data = req.body;
-        const id = req.params.id;
-
-        let table = 'assets';
-
-        const condition = {
-            asset_id: id
-        };
-
-        let query_values = await createDynamicUpdateQuery(table, condition, req_data)
-        let [data] = await updateAssetQuery(query_values.updateQuery, query_values.updateValues)
-
-        if (data.affectedRows == 0){
-            return notFoundResponse(res, '', 'Asset not found, wrong input.');
-        }
-        return successResponse(res, data, 'Asset Updated Successfully');
     } catch (error) {
         next(error);
     }

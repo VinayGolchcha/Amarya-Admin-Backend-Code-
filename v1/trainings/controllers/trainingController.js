@@ -4,7 +4,7 @@ import bcrypt from "bcrypt"
 import dotenv from "dotenv"
 import { successResponse, errorResponse, notFoundResponse, unAuthorizedResponse } from "../../../utils/response.js"
 import { insertTrainingDataQuery, getLastTrainingIdQuery, addUserTrainingInfoQuery, getTrainingDataQuery, displayDataForTrainingCardsQuery, displayTrainingsForUserQuery, deleteUserTrainingDataQuery, 
-    getUserDataForTrainingQuery, deleteTrainingDataQuery, updateTrainingQuery } from "../models/trainingQuery.js";
+    getUserDataForTrainingQuery, deleteTrainingDataQuery, updateTrainingQuery, checkSameTrainingQuery, checkExisitingUserTrainingDataQuery, displayAllUsersTrainingDataQuery } from "../models/trainingQuery.js";
 import {incrementId, createDynamicUpdateQuery} from "../../helpers/functions.js"
 import {insertApprovalForTrainingQuery} from "../../approvals/models/trainingApprovalQuery.js"
 dotenv.config();
@@ -26,8 +26,13 @@ export const addNewTraining = async (req, res, next) => {
             id = training_data[0].training_id
         }
         const training_id = await incrementId(id)
-
         const {course_name, course_description, roadmap_url, details} = req.body;
+
+        const [exist_training] = await checkSameTrainingQuery([course_name])
+        if (exist_training.length > 0){
+            return errorResponse(res, '', 'Sorry, Training with this name already exists.');
+        }
+     
         await insertTrainingDataQuery([
             training_id,
             course_name,
@@ -51,10 +56,13 @@ export const requestUserTraining = async (req, res, next) => {
 
         let { emp_id, training_id, progress_status, request_type} = req.body;
         let [training_data] = await getTrainingDataQuery([training_id])
+        let [existing_training_data] = await checkExisitingUserTrainingDataQuery([emp_id, training_id])
         const current_date = new Date().toISOString().split('T')[0];
 
         if(training_data.length == 0 ) {
-           return errorResponse(res, errors.array(), "Training Id provided is not correct")
+           return errorResponse(res, '', "Training Id provided is not correct")
+        }else if (existing_training_data.length > 0){
+            return errorResponse(res, '', `Current training is already registered with the given employee's id.`);
         }else{
             const course_name = training_data[0].course_name;
             const course_description = training_data[0].course_description;
@@ -120,51 +128,7 @@ export const getUserTrainingData = async (req, res, next) => {
     }
 };
 
-// export const deleteUserTrainingData = async (req, res, next) =>{
-//     try{
-//         const errors = validationResult(req);
-
-//         if (!errors.isEmpty()) {
-//             return errorResponse(res, errors.array(), "")
-//         }
-//         const  {emp_id, training_id} = req.body;
-//         let [data] = await getUserDataForTrainingQuery([emp_id, training_id]);
-
-//         if (data.length == 0) {
-//             return errorResponse(res, errors.array(), "Data not found")
-//         }else{
-//             await deleteUserTrainingDataQuery([emp_id, training_id]);
-//             return successResponse(res, "", 'Data Deleted Successfully');
-//         }
-
-//     }catch(error) {
-//         next(error);
-//     }
-// };
-
-export const deleteTrainingData = async (req, res, next) =>{
-    try{
-        const errors = validationResult(req);
-
-        if (!errors.isEmpty()) {
-            return errorResponse(res, errors.array(), "")
-        }
-        const  {training_id} = req.body;
-        let [data] = await getTrainingDataQuery([training_id]);
-
-        if (data.length == 0) {
-            return errorResponse(res, errors.array(), "Data not found")
-        }else{
-            await deleteTrainingDataQuery([training_id]);
-            return successResponse(res, "", 'Data Deleted Successfully');
-        }
-
-    }catch(error) {
-        next(error);
-    }
-};
-
-export const updateTrainings = async(req, res, next) => {
+export const updateTrainingData = async(req, res, next) => {
     try {
         const errors = validationResult(req);
 
@@ -192,3 +156,45 @@ export const updateTrainings = async(req, res, next) => {
         next(error);
     }
 }
+
+export const deleteTrainingData = async (req, res, next) =>{
+    try{
+        const errors = validationResult(req);
+
+        if (!errors.isEmpty()) {
+            return errorResponse(res, errors.array(), "")
+        }
+        const id = req.params.id;
+        let [data] = await getTrainingDataQuery([id]);
+
+        if (data.length == 0) {
+            return errorResponse(res, errors.array(), "Data not found")
+        }else{
+            await deleteTrainingDataQuery([id]);
+            return successResponse(res, "", 'Data Deleted Successfully');
+        }
+
+    }catch(error) {
+        next(error);
+    }
+};
+
+export const getEveryUserTrainingData = async (req, res, next) => {
+    try{
+        const errors = validationResult(req);
+
+        if (!errors.isEmpty()) {
+            return errorResponse(res, errors.array(), "")
+        }
+
+        let [data] = await displayAllUsersTrainingDataQuery()
+
+        if(data.length == 0) {
+            return errorResponse(res, "" ,"No trainings alloted till now.")
+        }else{ 
+            return successResponse(res, data, 'Data Fetched Successfully');
+        }
+    }catch(error) {
+        next(error);
+    }
+};

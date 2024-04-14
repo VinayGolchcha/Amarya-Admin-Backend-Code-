@@ -20,8 +20,7 @@ export const userRegistrationQuery = (array)=> {
             first_name,
             last_name,
             email,
-            state_name,
-            city_name,
+            gender,
             profile_picture, 
             blood_group,
             mobile_number,
@@ -38,7 +37,7 @@ export const userRegistrationQuery = (array)=> {
             teams,
             client_report,
             role
-        ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`
+        ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`
         return pool.query(query, array);
     } catch (error) {
         console.error("Error executing userRegistrationQuery:", error);
@@ -138,4 +137,13 @@ export const getOtpQuery = (array) => {
 export const getUserDataByUserIdQuery = (array)=> {
     let query = `SELECT * FROM users WHERE emp_id = ?`
     return pool.query(query, array);
+}
+
+export const updateUserProfileQuery = async (query,array) => {
+    try {
+        return pool.query(query, array);
+    } catch (error) {
+        console.error("Error executing updateUserProfileQuery:", error);
+        throw error;
+    }
 }

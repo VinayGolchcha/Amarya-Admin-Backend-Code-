@@ -3,7 +3,7 @@ import {
   handleAddStickeyNotes,
   handleDeleteStickyNotes,
   handleGetStickyNotes,
-} from "../../stickynotes/controllers/stickynotesControllers.js";
+} from "../controllers/stickynotesControllers.js";
 import { adStiNo, delStiNo } from "../../../utils/validation.js";
 const app = express();
 const router = Router();
