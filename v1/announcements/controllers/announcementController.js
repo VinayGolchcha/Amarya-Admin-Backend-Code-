@@ -4,7 +4,6 @@ import bcrypt from "bcrypt"
 import dotenv from "dotenv"
 import { successResponse, errorResponse, notFoundResponse } from "../../../utils/response.js"
 import { addAnnouncementQuery, fetchAnnouncementsQuery, deleteAnnouncementQuery, updateAnnouncementQuery} from "../models/announcementQuery.js";
-// import { incrementId } from "../../helpers/functions.js"
 dotenv.config();
 
 
@@ -63,7 +62,7 @@ export const deleteAnnouncements = async(req, res, next) => {
             return errorResponse(res, errors.array(), "")
         }
 
-        const {id} = req.body;
+        const id = req.params.id;
     
         let [data] = await deleteAnnouncementQuery([id])
 

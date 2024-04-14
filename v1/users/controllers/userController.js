@@ -3,13 +3,13 @@ import { validationResult } from "express-validator";
 import bcrypt from "bcrypt"
 import dotenv from "dotenv"
 import { successResponse, errorResponse, notFoundResponse, unAuthorizedResponse } from "../../../utils/response.js"
-import {incrementId} from "../../helpers/functions.js"
+import { incrementId, createDynamicUpdateQuery } from "../../helpers/functions.js"
 import {sendMail} from "../../../config/nodemailer.js"
 import {getTeamQuery} from "../../teams/models/query.js"
 import {insertTeamToUser} from "../models/userTeamsQuery.js"
 dotenv.config();
 
-import {userRegistrationQuery, getUserDataByUsernameQuery, userDetailQuery, updateTokenQuery, 
+import {userRegistrationQuery, getUserDataByUsernameQuery, userDetailQuery, updateTokenQuery, updateUserProfileQuery,
         getLastEmployeeIdQuery, updateUserPasswordQuery, getAllLeaveCounts, insertUserLeaveCountQuery, checkUserNameAvailabilityQuery, insertOtpQuery, getOtpQuery,
         getUserDataByUserIdQuery} from "../models/userQuery.js";
 
@@ -30,8 +30,8 @@ export const userRegistration = async (req, res, next) => {
         }
         const emp_id = await incrementId(id)
 
-        let { username, first_name, last_name, email, password, state_name,
-            city_name,
+        let { username, first_name, last_name, email, password,
+            gender,
             profile_picture, 
             blood_group,
             mobile_number,
@@ -69,8 +69,7 @@ export const userRegistration = async (req, res, next) => {
             first_name,
             last_name,
             email,
-            state_name,
-            city_name,
+            gender,
             profile_picture, 
             blood_group,
             mobile_number,
@@ -90,7 +89,6 @@ export const userRegistration = async (req, res, next) => {
         ]);
 
         const [data]= await insertTeamToUser([emp_id, team_id]);
-        console.log(data);
     
         let [leaveTypeAndCount] = await getAllLeaveCounts();
         for(let i = 0; i < leaveTypeAndCount.length; i++) {
@@ -104,25 +102,6 @@ export const userRegistration = async (req, res, next) => {
         next(error);
     }
 };
-
-// export const checkUserNameAvailability = async(req, res, next) =>{
-//     try {
-//         const errors = validationResult(req);
-
-//         if (!errors.isEmpty()) {
-//             return errorResponse(res, errors.array(), "")
-//         }
-//         const {user_name} = req.body;
-//         const [existingUserName] = await checkUserNameAvailabilityQuery([user_name]);
-//         if (existingUserName.length) {
-//             return successResponse(res, {is_user_name_exists: 1}, 'User name already exists, please choose another user name.');
-//         }else{
-//             return successResponse(res, {is_user_name_exists: 0}, 'User name available.');
-//         }
-//     } catch (error) {
-//         next(error);
-//     }
-// }
 
 export const sendOtpForPasswordUpdate = async (req, res, next) => {
     try {
@@ -241,7 +220,8 @@ export const updateUserPassword = async (req, res, next) => {
         next(error);
     }
 }
-export const handleGetUserProfile = async(req,res,next) => {
+
+export const getUserProfile = async(req,res,next) => {
     try{
         const emp_id = req.body.emp_id;
         const [user] = await getUserDataByUserIdQuery([emp_id]);
@@ -251,7 +231,35 @@ export const handleGetUserProfile = async(req,res,next) => {
         else{
             return successResponse(res, [user]);
         }
+    }
+    catch(err){
+        next(err);
+    }
+}
 
+export const updateUserProfile = async(req, res, next) => {
+    try{
+        const errors = validationResult(req);
+
+        if (!errors.isEmpty()) {
+            return errorResponse(res, errors.array(), "")
+        }
+        const id = req.params.id;
+        let table = 'users';
+        const condition = {
+            emp_id: id
+        };
+        const req_data = req.body;
+
+        let [exist_id] = await getUserDataByUserIdQuery([id])
+
+        if (exist_id.length > 0) {
+            let query_values = await createDynamicUpdateQuery(table, condition, req_data)
+            let [data] = await updateUserProfileQuery(query_values.updateQuery, query_values.updateValues);
+            return successResponse(res, data, 'User profile updated successfully.');
+        }else{
+            return notFoundResponse(res, '', 'User not found.');
+        }
     }
     catch(err){
         next(err);

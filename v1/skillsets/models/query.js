@@ -20,10 +20,20 @@ export const updateSkillSetQuery = async (query, array) => {
 
 export const getAllSkillSetQuery = async (array) => {
     try {
-        let query = `SELECT * FROM skillSets`
+        let query = `SELECT _id, skill FROM skillSets`
         return pool.query(query, array);
     } catch (error) {
-        console.error("Error executing updateSkillSetQuery:", error);
+        console.error("Error executing getAllSkillSetQuery:", error);
+        throw error;
+    }
+}
+
+export const getSkillsQuery = async (array) => {
+    try {
+        let query = `SELECT * FROM skillSets WHERE _id = ?`
+        return pool.query(query, array);
+    } catch (error) {
+        console.error("Error executing getSkillsQuery:", error);
         throw error;
     }
 }
@@ -34,6 +44,16 @@ export const deleteSkillSetQuery = async(array) => {
         return pool.query(query,array)
     } catch (error) {
         console.error("Error executing deleteSkillSetQuery:", error);
+        throw error;
+    }
+}
+
+export const checkSameSkillQuery = async (array) => {
+    try {
+        let query = `SELECT * FROM skillSets WHERE skill = ?`
+        return pool.query(query,array);
+    } catch (error) {
+        console.error("Error executing checkSameSkillQuery:", error);
         throw error;
     }
 }

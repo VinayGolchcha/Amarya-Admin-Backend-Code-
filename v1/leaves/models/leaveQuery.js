@@ -10,6 +10,16 @@ export const createHoliday = (array) => {
     }
 }
 
+export const checkSameHolidayQuery = async (array) => {
+    try {
+        let query = `SELECT * FROM holidays WHERE date = ?`
+        return pool.query(query,array);
+    } catch (error) {
+        console.error("Error executing checkSameHolidayQuery:", error);
+        throw error;
+    }
+}
+
 export const fetchHolidayListQuery = async () => {
     try{
         let query = `SELECT _id, date, holiday FROM holidays`
@@ -30,19 +40,15 @@ export const getHolidayDataQuery = async (array)=>{
     } 
 };
 
-
 export const deleteHolidayQuery = async (array) => {
     try{
-        let query = `DELETE From holidays WHERE _id = ? `
+        let query = `DELETE FROM holidays WHERE _id = ? `
         return await pool.query(query, array); 
     }catch(err){
         console.error("Error executing deleteHolidayQuery:", error);
         throw error;
     }
-
-
 }
-
 
 export const updateHolidayQuery = (query, array) => {
     try {
@@ -53,21 +59,61 @@ export const updateHolidayQuery = (query, array) => {
     }
 }
 
+export const checkSameLeaveTypeNameQuery = (array) => {
+    try {
+        let query = `SELECT * FROM leaveTypes WHERE leave_type = ?`
+        return pool.query(query, array);
+    } catch (error) {
+        console.error("Error executing checkSameLeaveTypeNameQuery:", error);
+        throw error; 
+    }
+}
+
+export const createLeaveType = (array) => {
+    try {
+        let query = `INSERT INTO leaveTypes SET leave_type = ?, description = ?`
+        return pool.query(query, array);
+    } catch (error) {
+        console.error("Error executing createLeaveType:", error);
+        throw error; 
+    }
+}
+
+export const fetchLeavesTypesQuery = () => {
+    try {
+        let query = `SELECT _id, leave_type, description FROM leaveTypes`
+        return pool.query(query);
+    } catch (error) {
+        console.error("Error executing fetchLeavesTypesQuery:", error);
+        throw error; 
+    }
+}
+
+export const getLeavesTypesQuery = (array) => {
+    try {
+        let query = `SELECT * FROM leaveTypes WHERE _id = ?`
+        return pool.query(query,array);
+    } catch (error) {
+        console.error("Error executing fetchLeavesTypesQuery:", error);
+        throw error; 
+    }
+}
+
+export const deleteLeaveTypeQuery = async (array) => {
+    try{
+        let query = `DELETE FROM leaveTypes WHERE _id = ? `
+        return await pool.query(query, array); 
+    }catch(err){
+        console.error("Error executing deleteLeaveTypeQuery:", error);
+        throw error;
+    }
+}
+
 export const updateLeaveQuery = (query, array) => {
     try {
         return pool.query(query, array);
     } catch (error) {
         console.error("Error executing updateLeaveQuery:", error);
-        throw error;
-    }
-}
-
-export const deleteLeaveTypeAndCountQuery = async (array) => {
-    try {
-        let query = `DELETE FROM leaveTypeCounts WHERE _id = ? AND leave_type_id`;
-        return await pool.query(query, array);
-    } catch (error) {
-        console.error("Error executing deleteLeaveTypeAndCountQuery:", error);
         throw error;
     }
 }
@@ -82,13 +128,13 @@ export const createLeaveCount = (array) => {
     }
 }
 
-export const createLeaveType = (array) => {
+export const deleteLeaveTypeAndCountQuery = async (array) => {
     try {
-        let query = `INSERT INTO leaveTypes SET leave_type = ?, description = ?`
-        return pool.query(query, array);
+        let query = `DELETE FROM leaveTypeCounts WHERE _id = ? AND leave_type_id`;
+        return await pool.query(query, array);
     } catch (error) {
-        console.error("Error executing createLeaveType:", error);
-        throw error; 
+        console.error("Error executing deleteLeaveTypeAndCountQuery:", error);
+        throw error;
     }
 }
 
@@ -101,16 +147,6 @@ export const fetchLeavesCountQuery = () => {
         throw error; 
     }
 }
-export const fetchLeavesTypesQuery = () => {
-    try {
-        let query = `SELECT _id, leave_type, description FROM leaveTypes`
-        return pool.query(query);
-    } catch (error) {
-        console.error("Error executing fetchLeavesTypesQuery:", error);
-        throw error; 
-    }
-}
-
 
 export const fetchLeaveTakenOverviewQuery = (array, limit) => {
     try {

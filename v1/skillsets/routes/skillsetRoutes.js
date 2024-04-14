@@ -4,10 +4,10 @@ import { deleteIdVal,createSkillVal, updateSkillVal } from '../../../utils/valid
 const app = express()
 const router = Router();
 
-app.post('/create-skill', createSkillVal, createSkillSet);
-app.put("/update-skill/:id", updateSkillVal,updateSkillSet);
-app.get('/fetch-skills', fetchSkillSets);
-app.delete('/delete-skill/:id', deleteIdVal, deleteSkillSet);
+app.post('/admin/create-skill', createSkillVal, createSkillSet);
+app.put("/admin/update-skill/:id", updateSkillVal,updateSkillSet);
+app.get('/admin/fetch-skills', fetchSkillSets);
+app.delete('/admin/delete-skill/:id', deleteIdVal, deleteSkillSet);
 
 app.use("/", router);
 
