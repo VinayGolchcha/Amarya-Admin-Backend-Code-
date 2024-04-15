@@ -1,6 +1,6 @@
 import { successResponse, errorResponse, notFoundResponse, unAuthorizedResponse } from "../../../utils/response.js"
 import { createDynamicUpdateQuery } from "../../helpers/functions.js";
-import { deleteCategoryQuery, getAllCategoryQuery, insertCategoryQuery, updateCategoryWorksheetQuery } from "../models/query.js";
+import { deleteCategoryQuery, getAllCategoryQuery, insertCategoryQuery, updateCategoryWorksheetQuery, checkSameCategoryQuery, getCategoryQuery } from "../models/query.js";
 import { validationResult } from "express-validator";
 
 
@@ -13,6 +13,12 @@ export const createCategoryForWorksheet = async (req, res, next) => {
             return errorResponse(res, errors.array(), "")
         }
         const {category} = req.body;
+        const [exist_category] = await checkSameCategoryQuery([category])
+
+        if (exist_category.length > 0){
+            return errorResponse(res, '', 'Sorry, Category already exists.');
+        }
+
         await insertCategoryQuery([category]);
         return successResponse(res, 'category created successfully.');
     } catch (error) {
@@ -33,11 +39,16 @@ export const updateCategoryForWorksheet = async(req, res, next) => {
         const condition = {
             _id: category_id
         };
-        // const {emp_id, team_id, category_id, skill_set, description} = req.body;
+
         const req_data = req.body;
+        const [exist_category_id] = await getCategoryQuery([category_id])
+
+        if (exist_category_id.length == 0) {
+            return errorResponse(res, '', 'Sorry, Category not found.');
+        }
         let query_values = await createDynamicUpdateQuery(table, condition, req_data)
-        await updateCategoryWorksheetQuery(query_values.updateQuery, query_values.updateValues);
-        return successResponse(res, 'Category updated successfully.');
+        let [data] = await updateCategoryWorksheetQuery(query_values.updateQuery, query_values.updateValues);
+        return successResponse(res, data, 'Category updated successfully.');
     } catch (error) {
         next(error);
     }
@@ -68,6 +79,11 @@ export const deleteCategoryForWorksheet = async (req, res, next) => {
             return errorResponse(res, errors.array(), "")
         }
         const category_id = req.params.id
+        const [exist_category_id] = await getCategoryQuery([category_id])
+
+        if (exist_category_id.length == 0) {
+            return errorResponse(res, '', 'Sorry, Category not found.');
+        }
         await deleteCategoryQuery([category_id]);
         return successResponse(res, 'category deleted successfully.');
     } catch (error) {

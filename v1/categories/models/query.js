@@ -19,12 +19,22 @@ export const updateCategoryWorksheetQuery = async (query,array) => {
     }
 };
 
-export const getAllCategoryQuery = async () => {
+export const getAllCategoryQuery = async (array) => {
     try {
-        let query = `SELECT * FROM categories`
+        let query = `SELECT _id, category FROM categories`
         return pool.query(query);
     } catch (error) {
         console.error("Error executing getAllCategoryQuery:", error);
+        throw error;
+    }
+}
+
+export const getCategoryQuery = async (array) => {
+    try {
+        let query = `SELECT * FROM categories WHERE _id = ?`
+        return pool.query(query, array);
+    } catch (error) {
+        console.error("Error executing getCategoryQuery:", error);
         throw error;
     }
 }
@@ -35,6 +45,16 @@ export const deleteCategoryQuery = async (array) => {
         return await pool.query(query, array);
     } catch (error) {
         console.error("Error executing deleteCategoryQuery:", error);
+        throw error;
+    }
+}
+
+export const checkSameCategoryQuery = async (array) => {
+    try {
+        let query = `SELECT * FROM categories WHERE category = ?`
+        return pool.query(query,array);
+    } catch (error) {
+        console.error("Error executing checkSameCategoryQuery:", error);
         throw error;
     }
 }

@@ -2,7 +2,7 @@ import { validationResult } from "express-validator";
 import dotenv from "dotenv"
 import { successResponse, errorResponse, notFoundResponse, unAuthorizedResponse } from "../../../utils/response.js"
 import { incrementId, createDynamicUpdateQuery } from "../../helpers/functions.js"
-import { deleteTeamQuery, getAllTeamQuery, insertTeamQuery, updateTeamWorksheetQuery } from "../models/query.js";
+import { deleteTeamQuery, getAllTeamQuery, insertTeamQuery, updateTeamWorksheetQuery, checkSameTeamNameQuery, getTeamQuery } from "../models/query.js";
 dotenv.config();
 
 export const createTeam = async (req, res, next) => {
@@ -13,6 +13,11 @@ export const createTeam = async (req, res, next) => {
             return errorResponse(res, errors.array(), "")
         }
         const {team} = req.body;
+
+        let [exist_team_name] = await checkSameTeamNameQuery([team])
+        if (exist_team_name.length > 0){
+            return errorResponse(res, '', 'Sorry, Team with this name already exists.');
+        }
         await insertTeamQuery([team]);
         return successResponse(res, 'Team created successfully.');
     } catch (error) {
@@ -29,15 +34,20 @@ export const updateTeam = async(req, res, next) => {
         }
         const id = req.params.id;
         let table = 'teams';
-
         const condition = {
             _id: id
         };
-        // const {emp_id, team_id, category_id, skill_set, description} = req.body;
         const req_data = req.body;
-        let query_values = await createDynamicUpdateQuery(table, condition, req_data)
-        await updateTeamWorksheetQuery(query_values.updateQuery, query_values.updateValues);
-        return successResponse(res, 'Team updated successfully.');
+
+        let [exist_id] = await getTeamQuery([id])
+
+        if (exist_id.length > 0) {
+            let query_values = await createDynamicUpdateQuery(table, condition, req_data)
+            let [data] = await updateTeamWorksheetQuery(query_values.updateQuery, query_values.updateValues);
+            return successResponse(res, data, 'Team updated successfully.');
+        }else{
+            return notFoundResponse(res, '', 'Team not found.');
+        }
     } catch (error) {
         next(error);
     }
@@ -68,6 +78,11 @@ export const deleteTeam = async (req, res, next) => {
             return errorResponse(res, errors.array(), "")
         }
         const team_id = req.params.id
+
+        let [exist_id] = await getTeamQuery([team_id])
+        if (exist_id.length == 0){
+            return errorResponse(res, '', 'Team not found');
+        }
         await deleteTeamQuery([team_id]);
         return successResponse(res, 'Team deleted successfully.');
     } catch (error) {

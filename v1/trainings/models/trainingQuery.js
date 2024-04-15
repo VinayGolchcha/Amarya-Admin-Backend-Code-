@@ -36,12 +36,12 @@ export const getTrainingDataQuery = (array)=>{
 
 
 export const displayDataForTrainingCardsQuery = ()=> {
-    let query = `SELECT  trainings.training_id, trainings.course_name, trainings.course_description, trainings.roadmap_url FROM trainings`
+    let query = `SELECT training_id, course_name, course_description, roadmap_url FROM trainings`
     return pool.query(query);
 };
 
 export const displayTrainingsForUserQuery = (array)=> {
-    let query = `SELECT  userTrainings.training_id, userTrainings.course_name, userTrainings.course_description, userTrainings.status, userTrainings.progress_status FROM userTrainings WHERE emp_id = ?`
+    let query = `SELECT  training_id, course_name, course_description, status, progress_status FROM userTrainings WHERE emp_id = ?`
     return pool.query(query, array);
 };
 
@@ -62,4 +62,35 @@ export const deleteTrainingDataQuery = (array)=>{
 
 export const updateTrainingQuery = (query, array)=>{
     return pool.query(query, array);
+}
+
+export const checkSameTrainingQuery = async (array) => {
+    try {
+        let query = `SELECT * FROM trainings WHERE course_name = ?`
+        return pool.query(query, array);
+    } catch (error) {
+        console.error("Error executing checkSameTrainingQuery:", error);
+        throw error;
+    }
+}
+
+export const checkExisitingUserTrainingDataQuery = async (array) => {
+    try {
+        let query = `SELECT * FROM userTrainings WHERE emp_id = ? AND training_id = ?`
+        return pool.query(query, array);
+    } catch (error) {
+        console.error("Error executing checkExisitingUserTrainingDataQuery:", error);
+        throw error;
+    }
+}
+
+
+export const displayAllUsersTrainingDataQuery = async () => {
+    try {
+        let query = `SELECT  training_id, course_name, course_description,emp_id, progress_status, created_at FROM userTrainings`
+        return pool.query(query);
+    } catch (error) {
+        console.error("Error executing displayAllUsersTrainingDataQuery:", error);
+        throw error;
+    }
 }

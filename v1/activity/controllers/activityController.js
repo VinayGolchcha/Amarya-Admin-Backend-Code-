@@ -1,20 +1,10 @@
-import {
-  successResponse,
-  errorResponse,
-  notFoundResponse,
-} from "../../../utils/response.js";
+import {successResponse, errorResponse, notFoundResponse} from "../../../utils/response.js";
 import { validationResult } from "express-validator";
-import {
-  addAnnouncementQuery,
-  fetchActivityQuery,
-  updateAnnouncementQuery,
-  deleteActivityQuery
-} from "../../announcements/models/announcementQuery.js";
+import {addAnnouncementQuery, fetchActivityQuery, updateAnnouncementQuery, deleteActivityQuery} from "../../announcements/models/announcementQuery.js";
 import dotenv from "dotenv";
-// import { incrementId } from "../../helpers/functions.js"
 dotenv.config();
 
-export const handleAddActivity = async (req, res, next) => {
+export const addActivity = async (req, res, next) => {
   try {
     const errors = validationResult(req);
 
@@ -55,7 +45,7 @@ export const handleAddActivity = async (req, res, next) => {
   }
 };
 
-export const handleUpdateActivity = async (req, res, next) => {
+export const updateActivity = async (req, res, next) => {
   try {
     const errors = validationResult(req);
 
@@ -104,7 +94,7 @@ export const handleUpdateActivity = async (req, res, next) => {
   }
 };
 
-export const handleGetAllActivities = async (req, res, next) => {
+export const getAllActivities = async (req, res, next) => {
   try {
     const errors = validationResult(req);
 
@@ -119,7 +109,7 @@ export const handleGetAllActivities = async (req, res, next) => {
   }
 };
 
-export const handleFilterByDate = async (req, res, next) => {
+export const filterActivityByDate = async (req, res, next) => {
   try {
     const errors = validationResult(req);
 
@@ -127,16 +117,10 @@ export const handleFilterByDate = async (req, res, next) => {
       return errorResponse(res, errors.array(), "");
     }
     const date = req.body.date;
-    let array = await fetchActivityQuery();
-    const result = array[0].filter((item) =>
-      item.created_at.toISOString().includes(date)
-    );
+    let array = await fetchActivityQuery([date]);
+    const result = array[0].filter((item) => item.created_at.toISOString().includes(date));
     if (result.length === 0) {
-      return notFoundResponse(
-        res,
-        result,
-        "Activity not found in specified date"
-      );
+      return notFoundResponse(res, result, "Activity not found in specified date");
     }
     return successResponse(res, result, "Activiy Fetched Successfully");
   } catch (err) {
@@ -144,7 +128,7 @@ export const handleFilterByDate = async (req, res, next) => {
   }
 };
 
-export const handleDeleteActivity = async(req,res,next) => {
+export const deleteActivity = async(req,res,next) => {
   try {
     const errors = validationResult(req);
 
@@ -156,11 +140,8 @@ export const handleDeleteActivity = async(req,res,next) => {
     if (data.affectedRows == 0){
       return notFoundResponse(res, '', 'Activity not found, wrong input.');
     }
-  return successResponse(res, '', 'Activity Deleted Successfully');
-
-    
+    return successResponse(res, '', 'Activity Deleted Successfully');
   } catch (err) {
     next(err);
   }
-
 };

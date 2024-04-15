@@ -5,10 +5,10 @@ import { deleteIdVal, createTeamVal, updateTeamVal } from '../../../utils/valida
 const app = express()
 const router = Router();
 
-app.post('/create-team', createTeamVal, createTeam);
-app.put('/update-team/:id', updateTeamVal, updateTeam);
-app.get('/fetch-all-teams', fetchTeams);
-app.delete('/delete-team/:id', deleteIdVal,deleteTeam);
+app.post('/admin/create-team', createTeamVal, createTeam);
+app.put('/admin/update-team/:id', updateTeamVal, updateTeam);
+app.get('/admin/fetch-all-teams', fetchTeams);
+app.delete('/admin/delete-team/:id', deleteIdVal,deleteTeam);
 
 
 app.use("/", router);

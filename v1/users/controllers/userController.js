@@ -3,7 +3,10 @@ import { validationResult } from "express-validator";
 import bcrypt from "bcrypt"
 import dotenv from "dotenv"
 import { successResponse, errorResponse, notFoundResponse, unAuthorizedResponse } from "../../../utils/response.js"
-import {incrementId,createDynamicUpdateQuery} from "../../helpers/functions.js"
+import { incrementId, createDynamicUpdateQuery ,createDynamicUpdateQuery} from "../../helpers/functions.js"
+import {sendMail} from "../../../config/nodemailer.js"
+import {getTeamQuery} from "../../teams/models/query.js"
+import {insertTeamToUser} from "../models/userTeamsQuery.js"
 
 dotenv.config();
 
@@ -28,8 +31,8 @@ export const userRegistration = async (req, res, next) => {
         }
         const emp_id = await incrementId(id)
 
-        let { username, first_name, last_name, email, password, state_name,
-            city_name,
+        let { username, first_name, last_name, email, password,
+            gender,
             profile_picture, 
             blood_group,
             mobile_number,
@@ -44,15 +47,20 @@ export const userRegistration = async (req, res, next) => {
             completed_projects,
             performance,
             teams,
+            team_id,
             client_report, role = 'user' } = req.body;
         email = email.toLowerCase();
         const [existingUser] = await userDetailQuery([email]);
         const [existingUserName] = await checkUserNameAvailabilityQuery([username]);
+        const [team_exists] = await getTeamQuery([team_id]);
         if (existingUserName.length) {
             return successResponse(res, {is_user_name_exists: true}, 'User name already exists, please choose another user name.');
         }
         if (existingUser.length) {
             return successResponse(res, '', 'User with this email already exists.');
+        }
+        if (team_exists.length == 0){
+            return successResponse(res, '', 'No team with this name exists.');
         }
         const password_hash = await bcrypt.hash(password.toString(), 12);
         const [user_data] = await userRegistrationQuery([
@@ -62,8 +70,7 @@ export const userRegistration = async (req, res, next) => {
             first_name,
             last_name,
             email,
-            state_name,
-            city_name,
+            gender,
             profile_picture, 
             blood_group,
             mobile_number,
@@ -81,6 +88,9 @@ export const userRegistration = async (req, res, next) => {
             client_report,
             role
         ]);
+
+        const [data]= await insertTeamToUser([emp_id, team_id]);
+    
         let [leaveTypeAndCount] = await getAllLeaveCounts();
         for(let i = 0; i < leaveTypeAndCount.length; i++) {
             let leaveType = leaveTypeAndCount[i].leave_type;
@@ -93,25 +103,6 @@ export const userRegistration = async (req, res, next) => {
         next(error);
     }
 };
-
-export const checkUserNameAvailability = async(req, res, next) =>{
-    try {
-        const errors = validationResult(req);
-
-        if (!errors.isEmpty()) {
-            return errorResponse(res, errors.array(), "")
-        }
-        const {user_name} = req.body;
-        const [existingUserName] = await checkUserNameAvailabilityQuery([user_name]);
-        if (existingUserName.length) {
-            return successResponse(res, {is_user_name_exists: 1}, 'User name already exists, please choose another user name.');
-        }else{
-            return successResponse(res, {is_user_name_exists: 0}, 'User name available.');
-        }
-    } catch (error) {
-        next(error);
-    }
-}
 
 export const sendOtpForPasswordUpdate = async (req, res, next) => {
     try {
@@ -143,12 +134,19 @@ export const verifyEmailForPasswordUpdate = async (req, res, next)=> {
             return errorResponse(res, errors.array(), "")
         }
         otp = parseInt(otp, 10);
-        const [user_otp] = await getOtpQuery([email]);
-        if (otp === user_otp[0].otp) {
-            return successResponse(res, [{ email: email}], 'OTP verified successfully.');
-        } else {
-            return errorResponse(res, '', 'Invalid OTP');
+        const [user_exist] = await userDetailQuery([email])
+
+        if (user_exist.length > 0) {
+            const [user_otp] = await getOtpQuery([email]);
+            if (otp === user_otp[0].otp) {
+                return successResponse(res, [{ email: email}], 'OTP verified successfully.');
+            } else {
+                return errorResponse(res, '', 'Invalid OTP');
+            }
+        }else{
+            return errorResponse(res, '', 'User not found');
         }
+        
     } catch (error) {
         next(error);
     }
@@ -285,7 +283,8 @@ export const getFetchAllEmploye= async(req,res,next)=>{
 }
 
 
-export const handleGetUserProfile = async(req,res,next) => {
+
+export const getUserProfile = async(req,res,next) => {
     try{
         const emp_id = req.body.emp_id;
         const [user] = await getUserDataByUserIdQuery([emp_id]);
@@ -295,7 +294,35 @@ export const handleGetUserProfile = async(req,res,next) => {
         else{
             return successResponse(res, [user]);
         }
+    }
+    catch(err){
+        next(err);
+    }
+}
 
+export const updateUserProfile = async(req, res, next) => {
+    try{
+        const errors = validationResult(req);
+
+        if (!errors.isEmpty()) {
+            return errorResponse(res, errors.array(), "")
+        }
+        const id = req.params.id;
+        let table = 'users';
+        const condition = {
+            emp_id: id
+        };
+        const req_data = req.body;
+
+        let [exist_id] = await getUserDataByUserIdQuery([id])
+
+        if (exist_id.length > 0) {
+            let query_values = await createDynamicUpdateQuery(table, condition, req_data)
+            let [data] = await updateUserProfileQuery(query_values.updateQuery, query_values.updateValues);
+            return successResponse(res, data, 'User profile updated successfully.');
+        }else{
+            return notFoundResponse(res, '', 'User not found.');
+        }
     }
     catch(err){
         next(err);

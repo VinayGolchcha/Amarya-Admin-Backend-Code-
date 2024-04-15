@@ -20,8 +20,7 @@ export const userRegistrationQuery = (array)=> {
             first_name,
             last_name,
             email,
-            state_name,
-            city_name,
+            gender,
             profile_picture, 
             blood_group,
             mobile_number,
@@ -38,7 +37,7 @@ export const userRegistrationQuery = (array)=> {
             teams,
             client_report,
             role
-        ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`
+        ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`
         return pool.query(query, array);
     } catch (error) {
         console.error("Error executing userRegistrationQuery:", error);
@@ -55,6 +54,7 @@ export const userDetailQuery = (array)=>{
         throw error;
     }
 }
+
 export const checkUserNameAvailabilityQuery = (array)=>{
     try {
         let query = `SELECT * FROM users WHERE username = ?`
@@ -124,7 +124,7 @@ export const updateUserProfileQuery = async (query,array) => {
 
 export const insertOtpQuery = (array) => {
     try {
-        let query = `UPDATE users SET otp = ? WHERE email = ? AND is_registered = 1`
+        let query = `UPDATE users SET otp = ? WHERE email = ?`
         return pool.query(query, array);
     } catch (error) {
         console.error("Error executing insertUserLeaveCountQuery:", error);
@@ -154,7 +154,7 @@ export const getFetchAllEmployeQuery = async (array) =>{
 
 export const getOtpQuery = (array) => {
     try {
-        let query = `SELECT otp FROM users WHERE email = ? AND is_registered = 1`
+        let query = `SELECT otp FROM users WHERE email = ?`
         return pool.query(query, array);
     } catch (error) {
         console.error("Error executing insertUserLeaveCountQuery:", error);
@@ -166,4 +166,13 @@ export const getOtpQuery = (array) => {
 export const getUserDataByUserIdQuery = (array)=> {
     let query = `SELECT * FROM users WHERE emp_id = ?`
     return pool.query(query, array);
+}
+
+export const updateUserProfileQuery = async (query,array) => {
+    try {
+        return pool.query(query, array);
+    } catch (error) {
+        console.error("Error executing updateUserProfileQuery:", error);
+        throw error;
+    }
 }

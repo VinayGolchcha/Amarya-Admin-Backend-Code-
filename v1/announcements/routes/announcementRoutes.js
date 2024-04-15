@@ -8,7 +8,7 @@ import {createAnnouncement, fetchAnnouncements, deleteAnnouncements, updateAnnou
 
 app.post('/admin/add-announcement',crAnnVal, createAnnouncement);
 app.get('/admin/fetch-announcement', fetchAnnouncements);
-app.delete('/admin/delete-announcement',delAnnVal, deleteAnnouncements);
+app.delete('/admin/delete-announcement/:id', deleteAnnouncements);
 app.put('/admin/update-announcement/:id',upAnnVal, updateAnnouncements);
 
 app.use("/", router);

@@ -5,6 +5,7 @@ CREATE TABLE IF NOT EXISTS projects (
     project varchar(255) NOT NULL,
     client_name varchar(255) NOT NULL,
     project_status varchar(255) NOT NULL,
+    project_manager varchar(255) NOT NULL,
     project_lead varchar(255) NOT NULL,
     start_month varchar(255) NOT NULL,
     end_month varchar(255),

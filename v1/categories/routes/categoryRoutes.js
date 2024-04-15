@@ -4,10 +4,10 @@ import { createCategoryForWorksheet, fetchCategoryForWorkSheet, updateCategoryFo
 const app = express()
 const router = Router();
 
-app.post('/create-category',createCategoryVal, createCategoryForWorksheet);
-app.put("/update-category/:id",updateCategoryVal, updateCategoryForWorksheet);
-app.get('/fetch-all-categories', fetchCategoryForWorkSheet);
-app.delete('/delete-category/:id',deleteIdVal, deleteCategoryForWorksheet);
+app.post('/admin/create-category',createCategoryVal, createCategoryForWorksheet);
+app.put('/admin/update-category/:id',updateCategoryVal, updateCategoryForWorksheet);
+app.get('/admin/fetch-all-categories', fetchCategoryForWorkSheet);
+app.delete('/admin/delete-category/:id',deleteIdVal, deleteCategoryForWorksheet);
 
 app.use("/", router);
 

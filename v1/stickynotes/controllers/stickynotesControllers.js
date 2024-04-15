@@ -1,10 +1,18 @@
+import { validationResult } from "express-validator";
 import pool from "../../../config/db.js";
+import { errorResponse } from "../../../utils/response.js";
 
 export const handleAddStickeyNotes = async (req, res) => {
   try {
     // const { note } = req.body;
-    const { note, emp_id } = req.body;
+    
+    const errors = validationResult(req);
+    console.log(errors);
 
+    if (!errors.isEmpty()) {
+        return errorResponse(res, errors.array(), "")
+    }
+    const { note, emp_id } = req.body;
     // Insert note into the database
     const result = await pool.query(
       "INSERT INTO temporary_notes (note , emp_id) VALUES (? , ?)",
