@@ -16,11 +16,11 @@ app.get('/logout/:id', logOutVal, userLogout);
 app.post('/send-otp-password-verification', sendOtpVal, sendOtpForPasswordUpdate);
 app.post('/verify-email-for-password-update', verifyOtpVal, verifyEmailForPasswordUpdate);
 app.post('/update-password', upPassVal, updateUserPassword);
-app.post('/get-user-profile' , getUserProfile);updateUserProfile
-app.put('/update-user-profile/:id' , updateUserProfile);
-app.put('/update-user-profile/:id',upProfileVal,updateUserProfile);
+app.post('/get-user-profile' , getDataVal,getUserProfile);
+app.put('/update-user-profile/:id' ,upProfileVal, updateUserProfile);
 app.get('/admin/fetch-all-employe',getFetchAllEmploye);
-app.get('/get-user-profile',getDataVal,getUserProfile);
+//app.put('/update-user-profile/:id',,updateUserProfile);
+//app.get('/get-user-profile',getDataVal,getUserProfile);
 app.get('/get-userprofile' , handleGetUserProfile);
 
 

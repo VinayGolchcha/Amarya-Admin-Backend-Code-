@@ -113,15 +113,6 @@ export const insertUserLeaveCountQuery = (array)=>{
         throw error;
     }
 }
-export const updateUserProfileQuery = async (query,array) => {
-    try {
-        return pool.query(query, array);
-    } catch (error) {
-        console.error("Error executing updateUserProfileQuery:", error);
-        throw error;
-    }
-}
-
 export const insertOtpQuery = (array) => {
     try {
         let query = `UPDATE users SET otp = ? WHERE email = ?`
