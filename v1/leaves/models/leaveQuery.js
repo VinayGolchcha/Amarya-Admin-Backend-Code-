@@ -103,7 +103,7 @@ export const deleteLeaveTypeQuery = async (array) => {
     try{
         let query = `DELETE FROM leaveTypes WHERE _id = ? `
         return await pool.query(query, array); 
-    }catch(err){
+    }catch(error){
         console.error("Error executing deleteLeaveTypeQuery:", error);
         throw error;
     }
@@ -130,7 +130,7 @@ export const createLeaveCount = (array) => {
 
 export const deleteLeaveTypeAndCountQuery = async (array) => {
     try {
-        let query = `DELETE FROM leaveTypeCounts WHERE _id = ? AND leave_type_id`;
+        let query = `DELETE FROM leaveTypeCounts WHERE _id = ? AND leave_type_id = ?`;
         return await pool.query(query, array);
     } catch (error) {
         console.error("Error executing deleteLeaveTypeAndCountQuery:", error);
