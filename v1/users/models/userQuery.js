@@ -132,7 +132,7 @@ export const insertOtpQuery = (array) => {
     }
 }
 
-export const getUserDataQuery = async (array) =>{
+export const getUserProfileQuery = async (array) =>{
     try {
         let query = `SELECT * FROM users WHERE emp_id = ?`
         return await pool.query(query, array);

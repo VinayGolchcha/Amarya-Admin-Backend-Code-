@@ -7,8 +7,8 @@ import {incrementId,createDynamicUpdateQuery} from "../../helpers/functions.js"
 
 dotenv.config();
 
-import {userRegistrationQuery, getUserDataByUsernameQuery, userDetailQuery, updateTokenQuery,getLastEmployeeIdQuery, updateUserPasswordQuery, getAllLeaveCounts, insertUserLeaveCountQuery, checkUserNameAvailabilityQuery,updateUserProfileQuery,getFetchAllEmployeQuery,getUserDataQuery} from "../models/userQuery.js";
-import{ getLastEmployeeIdQuery, updateUserPasswordQuery, getAllLeaveCounts, insertUserLeaveCountQuery, checkUserNameAvailabilityQuery, insertOtpQuery, getOtpQuery,
+import {userRegistrationQuery, getUserDataByUsernameQuery, userDetailQuery, updateTokenQuery,getLastEmployeeIdQuery, updateUserPasswordQuery, getAllLeaveCounts, insertUserLeaveCountQuery, updateUserProfileQuery,getFetchAllEmployeQuery,getUserProfileQuery} from "../models/userQuery.js";
+import{checkUserNameAvailabilityQuery, insertOtpQuery, getOtpQuery,
         getUserDataByUserIdQuery} from "../models/userQuery.js";
 
 export const userRegistration = async (req, res, next) => {
@@ -247,7 +247,7 @@ export const updateUserProfile = async(req, res, next) => {
     }
 }
 
-export const getUserData= async(req,res,next)=>{
+export const getUserProfile= async(req,res,next)=>{
     try {
         const errors = validationResult(req);
 
@@ -255,7 +255,7 @@ export const getUserData= async(req,res,next)=>{
             return errorResponse(res, errors.array(), "")
         }
         const  {emp_id} = req.body;
-        const [data] = await getUserDataQuery([emp_id])
+        const [data] = await getUserProfileQuery([emp_id])
         if(data.length == 0){
             return notFoundResponse(res, '', 'Employee Data  not found.');
         }

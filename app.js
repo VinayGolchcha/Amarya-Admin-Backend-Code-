@@ -20,7 +20,8 @@ import projectRoutes from './v1/projects/routes/projectRoutes.js';
 import skillSetRoutes from './v1/skillsets/routes/skillsetRoutes.js';
 import stickeynotesRoutes from "./v1/stickynotes/routes/stickeynotesRoutes.js";
 import activityRoutes from "./v1/activity/routes/activityRoutes.js";
-import policiesRoutes from "./v1/policies/routes/policiesRoutes.js"
+import dashBoardRoutes from "./v1/dashboard/routes/dashBoardRoutes.js";
+//import policiesRoutes from "./v1/policies/routes/policiesRoutes.js"
 
 const app = express();
 config();
