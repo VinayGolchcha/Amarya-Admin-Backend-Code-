@@ -1,15 +1,9 @@
 import express, { Router } from 'express';
 const app = express()
 const router = Router();
-<<<<<<< HEAD
-import { addHoliday, updateHoliday,addLeaveType, addLeaveTypeAndCount, updateLeave, fetchLeaveTypesAndTheirCount, leaveRequest, fetchListOfLeaves, getAllUsersLeaveCountByAdmin, getUserLeaveData, fetchLeaveTakenOverview, updateLeaveTypeAndCount, deleteLeaveTypeAndCount, fetchHolidayList, deleteHoliday } from '../controllers/leaveController.js';
-import {addHolidayVal, updateHolidayVal, addLeaveTypeVal, addLeaveCountVal, updateLeaveVal, leaveRequestVal, updateLeaveTypeAndCountVal, deleteLeaveTypeAndCountVal, getAllLeaveCountVal, delTrnVal} from '../../../utils/validation.js';
-=======
-import { addHoliday, updateHoliday,addLeaveType, addLeaveTypeAndCount, updateLeaveType, deleteLeaveType,
-    fetchLeaveTypesAndTheirCount, leaveRequest, fetchListOfLeaves, getAllUsersLeaveCountByAdmin, 
-    getUserLeaveData, fetchLeaveTakenOverview, updateLeaveTypeAndCount, deleteLeaveTypeAndCount,fetchHolidayList, deleteHoliday } from '../controllers/leaveController.js';
+import { addHoliday, updateHoliday,addLeaveType, addLeaveTypeAndCount, fetchLeaveTypesAndTheirCount, leaveRequest, fetchListOfLeaves, getAllUsersLeaveCountByAdmin, getUserLeaveData, fetchLeaveTakenOverview, updateLeaveTypeAndCount, deleteLeaveTypeAndCount, fetchHolidayList, deleteHoliday,updateLeaveType,deleteLeaveType} from '../controllers/leaveController.js';
 import {addHolidayVal, updateHolidayVal, addLeaveTypeVal, addLeaveCountVal, updateLeaveVal, leaveRequestVal, updateLeaveTypeAndCountVal, deleteLeaveTypeAndCountVal, getAllLeaveCountVal} from '../../../utils/validation.js';
->>>>>>> 00d07fd40bf4b9d3299369dc5b3483ee291e90dd
+
 
 app.post('/admin/add-holiday',addHolidayVal, addHoliday);
 app.put('/admin/update-holiday/:id',updateHolidayVal, updateHoliday);

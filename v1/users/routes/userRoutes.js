@@ -2,9 +2,9 @@ import express, { Router } from 'express';
 const app = express()
 const router = Router();
 //import authenticateToken from '../../../middlewares/auth.js';
-import {updateUserProfile,getFetchAllEmploye,getUserProfile,userRegistration, userLogin, userLogout, updateUserPassword, checkUserNameAvailability} from '../controllers/userController.js';
-import {upProfileVal,getDataVal,userRegVal, userLogVal, logOutVal, upPassVal, checkUserNameAvailabilityVal} from '../../../utils/validation.js';
-import {verifyEmailForPasswordUpdate, sendOtpForPasswordUpdate, handleGetUserProfile} from '../controllers/userController.js';
+import {updateUserProfile,getFetchAllEmploye,getUserProfile,userRegistration, userLogin, userLogout, updateUserPassword} from '../controllers/userController.js';
+import {upProfileVal,getDataVal,userRegVal, userLogVal, logOutVal, upPassVal} from '../../../utils/validation.js';
+import {verifyEmailForPasswordUpdate, sendOtpForPasswordUpdate} from '../controllers/userController.js';
 import { sendOtpVal, verifyOtpVal} from '../../../utils/validation.js';
 //router.use(authenticateToken)
 
@@ -21,7 +21,7 @@ app.put('/update-user-profile/:id' ,upProfileVal, updateUserProfile);
 app.get('/admin/fetch-all-employe',getFetchAllEmploye);
 //app.put('/update-user-profile/:id',,updateUserProfile);
 //app.get('/get-user-profile',getDataVal,getUserProfile);
-app.get('/get-userprofile' , handleGetUserProfile);
+//app.get('/get-userprofile' , handleGetUserProfile);
 
 
 app.use("/", router);

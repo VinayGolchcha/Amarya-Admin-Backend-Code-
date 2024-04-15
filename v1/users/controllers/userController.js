@@ -3,7 +3,7 @@ import { validationResult } from "express-validator";
 import bcrypt from "bcrypt"
 import dotenv from "dotenv"
 import { successResponse, errorResponse, notFoundResponse, unAuthorizedResponse } from "../../../utils/response.js"
-import { incrementId, createDynamicUpdateQuery ,createDynamicUpdateQuery} from "../../helpers/functions.js"
+import { incrementId, createDynamicUpdateQuery} from "../../helpers/functions.js"
 import {sendMail} from "../../../config/nodemailer.js"
 import {getTeamQuery} from "../../teams/models/query.js"
 import {insertTeamToUser} from "../models/userTeamsQuery.js"
