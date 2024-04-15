@@ -1,8 +1,8 @@
 import express, { Router } from "express";
 import {
-  handleAddStickeyNotes,
-  handleDeleteStickyNotes,
-  handleGetStickyNotes,
+  addStickeyNotes,
+  deleteStickyNotes,
+  getStickyNotes,
 } from "../controllers/stickynotesControllers.js";
 import { adStiNo, delStiNo } from "../../../utils/validation.js";
 const app = express();
@@ -11,11 +11,11 @@ const router = Router();
 // app.js (continued)
 
 // Store temporary note
-app.post("/add-stickynotes",adStiNo, handleAddStickeyNotes);
+app.post("/add-stickynotes",adStiNo, addStickeyNotes);
 
 // Retrieve temporary notes
-app.get("/notes", handleGetStickyNotes);
-app.delete("/delete-stickynotes",  delStiNo, handleDeleteStickyNotes);
+app.get("/notes", getStickyNotes);
+app.delete("/delete-stickynotes",  delStiNo, deleteStickyNotes);
 app.use("/", router);
 
 export default app;
