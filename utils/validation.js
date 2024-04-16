@@ -168,6 +168,12 @@ export const leaveRequestVal = [
 export const getAllLeaveCountVal = [
     param('id').isAlphanumeric().withMessage('Invalid id input.').notEmpty().withMessage('id cannot be empty.'),
 ]
+
+export const fetchLeaveOverviewVal=[
+    body('emp_id').notEmpty().withMessage('emp_id cannot be empty.').isAlphanumeric().withMessage('emp_id must be alphanumeric.'),
+    body('status').optional().notEmpty().withMessage('status cannot be empty.').isString().withMessage('status must be a string.'),
+    body('from_date').optional().notEmpty().withMessage('from_date cannot be empty.').isDate().withMessage("from_date must be a date.")
+]
 export const createWorksheetVal = [
     body('emp_id').notEmpty().withMessage('emp_id cannot be empty.').isAlphanumeric().withMessage('emp_id must be alphanumeric.'),
     body('team_id').notEmpty().withMessage('Team id cannot be empty.').isInt().withMessage('Invalid team id input.'),

@@ -148,10 +148,14 @@ export const fetchLeavesCountQuery = () => {
     }
 }
 
-export const fetchLeaveTakenOverviewQuery = (array, limit) => {
+export const fetchLeaveTakenOverviewQuery = (array, date) => {
     try {
-        let query = `SELECT leave_type, from_date, to_date, subject FROM leaveDatesAndReasons WHERE emp_id = ? ORDER BY created_at DESC LIMIT ${limit};
-        `
+        let query = `SELECT leave_type, from_date, to_date, subject FROM leaveDatesAndReasons WHERE emp_id = ? AND status = ?`
+        if (date) {
+            query += ` AND DATE(from_date) = ?`;
+            array.push(date);
+        }
+        query += ` ORDER BY created_at DESC`
         return pool.query(query, array);
     } catch (error) {
         console.error("Error executing fetchLeaveTakenOverviewQuery:", error);
