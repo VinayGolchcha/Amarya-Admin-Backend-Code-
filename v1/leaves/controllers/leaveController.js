@@ -194,8 +194,9 @@ export const fetchLeaveTakenOverview = async (req, res, next) => {
         if (!errors.isEmpty()) {
             return errorResponse(res, errors.array(), "")
         }
-        const {emp_id} = req.body;
-        const [data] = await fetchLeaveTakenOverviewQuery([emp_id, limit])
+        let {emp_id, status, from_date} = req.body;
+        status = status || "approved";
+        const [data] = await fetchLeaveTakenOverviewQuery([emp_id, status], from_date)
         if (data.length == 0) {
             return notFoundResponse(res, '', 'Data not found.');
         }
