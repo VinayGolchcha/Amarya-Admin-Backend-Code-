@@ -82,8 +82,9 @@ export const feedbackForm= async(req,res,next)=>{
   if (!errors.isEmpty()) {
       return errorResponse(res, errors.array(), "")
   }
-  const { subject,description} = req.body; 
+  const {emp_id, subject,description,Date} = req.body; 
   await feedbackFormQuery([
+    emp_id,
     subject,
     description,
     new Date(),

@@ -51,6 +51,7 @@ export const getUserProfileQuery= async (array) =>{
 }
 export const feedbackFormQuery= async(array)=>{
     let query= `INSERT INTO feedbackform (
+        emp_id
         subject,
         description,
         created_at,
