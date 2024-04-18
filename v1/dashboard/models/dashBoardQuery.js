@@ -51,11 +51,10 @@ export const getUserProfileQuery= async (array) =>{
 }
 export const feedbackFormQuery= async(array)=>{
     let query= `INSERT INTO feedbackform (
-        emp_id
+        user_id,
         subject,
-        description,
-        created_at,
-    )VALUE (?,?);`
+        description
+    )VALUE (?,?,?);`
     return pool.query(query, array);
 }
 

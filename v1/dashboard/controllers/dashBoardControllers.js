@@ -82,12 +82,11 @@ export const feedbackForm= async(req,res,next)=>{
   if (!errors.isEmpty()) {
       return errorResponse(res, errors.array(), "")
   }
-  const {emp_id, subject,description,Date} = req.body; 
+  const {user_id,subject,description} = req.body; 
   await feedbackFormQuery([
-    emp_id,
+    user_id,
     subject,
-    description,
-    new Date(),
+    description
   ]);
   return successResponse(res, 'Feedback send  successfully.');
 } catch (error) {
