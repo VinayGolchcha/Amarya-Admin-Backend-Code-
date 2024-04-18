@@ -1,5 +1,8 @@
 import pool from "../../../config/db.js"
 
+
+
+
 export const addAnnouncementQuery = (array)=> {
     let query = `INSERT INTO announcements (
         event_type,

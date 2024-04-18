@@ -6,7 +6,8 @@ export const crAnnVal = [
     body('from_date').notEmpty().withMessage('from_date cannot be empty.').isDate().withMessage("from_date must be a date."), 
     body('to_date').notEmpty().withMessage('to_date cannot be empty.').isDate().withMessage("to_date must be a date."),
     body('title').notEmpty().withMessage('title cannot be empty.').isString().withMessage("title must be a string."),
-    body('description').notEmpty().withMessage('description cannot be empty.').isString().withMessage("description must be a string.")
+    body('description').notEmpty().withMessage('description cannot be empty.').isString().withMessage("description must be a string."),
+    body('image_data').optional().notEmpty().withMessage('image_data cannot be empty.').isURL().withMessage('Invalid URL format'),
 ]
 
 export const upAnnVal = [
@@ -277,4 +278,7 @@ export const adStiNo = [
 
 export const delStiNo = [
     body('_id').isInt().withMessage('Invalid id input.').notEmpty().withMessage('id cannot be empty.')
+]
+export const activityDate = [
+    body('date').isString().withMessage('Invalid date input.').notEmpty().withMessage('date cannot be empty.'),
 ]
