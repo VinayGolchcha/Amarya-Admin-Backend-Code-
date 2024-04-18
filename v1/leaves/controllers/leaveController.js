@@ -88,104 +88,33 @@ export const deleteHoliday = async(req,res,next) => {
     }
 }
 
-export const addLeaveType = async (req, res, next) => {
-    try {
-        const errors = validationResult(req);
-        if (!errors.isEmpty()) {
-            return errorResponse(res, errors.array(), "")
-        }
-        const { leave_type, description } = req.body;
-
-        const [exist_leave] = await checkSameLeaveTypeNameQuery([leave_type])
-        if (exist_leave.length > 0) {
-            return errorResponse(res, '', 'Sorry, Leave Type already exists.');
-        }
-        await createLeaveType([leave_type, description]);
-        return successResponse(res, '', `Leave type added successfully.`);
-    } catch (error) {
-        next(error);
-    }
-}
-
-export const updateLeaveType = async (req, res, next) => {
-    try {
-        const errors = validationResult(req);
-
-        if (!errors.isEmpty()) {
-            return errorResponse(res, errors.array(), "")
-        }
-
-        const req_data = req.body;
-        const id = req.params.id;
-
-        let table = 'leaveTypes';
-
-        const condition = {
-            _id: id
-        };
-
-        let query_values = await createDynamicUpdateQuery(table, condition, req_data)
-        let [data] = await updateLeaveQuery(query_values.updateQuery, query_values.updateValues)
-
-        if (data.affectedRows == 0) {
-            return notFoundResponse(res, '', 'Leave not found, wrong input.');
-        }
-        return successResponse(res, data, 'Leave Updated Successfully');
-    } catch (error) {
-        next(error);
-    }
-}
-
-export const fetchListOfLeaves = async (req, res, next) => {
-    try {
-        const errors = validationResult(req);
-
-        if (!errors.isEmpty()) {
-            return errorResponse(res, errors.array(), "")
-        }
-        const [data] = await fetchLeavesTypesQuery()
-        if (data.length == 0) {
-            return notFoundResponse(res, '', 'Data not found.');
-        }
-        return successResponse(res, data, 'Leave data fetched successfully');
-    } catch (error) {
-        next(error);
-    }
-}
-
-export const deleteLeaveType = async(req,res,next) => {
-    try{
-        const errors = validationResult(req);
-        if (!errors.isEmpty()) {
-            return errorResponse(res, errors.array(), "")
-        }
-        const id = req.params.id
-
-        const [data] = await getLeavesTypesQuery([id]);
-        if (data.length == 0) {
-            return errorResponse(res, errors.array(), "Data not found");
-        }else{
-            await deleteLeaveTypeQuery([id]);
-            return successResponse(res, "", 'Leave Type Deleted Successfully');
-        }
-    }catch(error){
-        next(error);
-    }
-}
-
 export const addLeaveTypeAndCount = async (req, res, next) => {
     try {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
-            return errorResponse(res, errors.array(), "")
+            return errorResponse(res, errors.array(), "");
         }
-        const { leave_type_id, leave_type, leave_count, gender } = req.body;
+
+        const { leave_type, description, leave_count, gender } = req.body;
+
+        // Check if leave type already exists
+        const [existingLeaveTypes] = await checkSameLeaveTypeNameQuery([leave_type]);
+        console.log(existingLeaveTypes);
+        if (existingLeaveTypes.length > 0) {
+            return errorResponse(res, '', 'Sorry, Leave Type already exists.');
+        }
+
+        // Create leave type
+        const [data]= await createLeaveType([leave_type, description]);
+        const leave_type_id = data.insertId;
+        // Create leave count
         await createLeaveCount([leave_type_id, leave_type, leave_count, gender]);
-        return successResponse(res, '', `Leave count added successfully.`);
+
+        return successResponse(res, '', `Leave type and count added successfully.`);
     } catch (error) {
         next(error);
     }
-}
+};
 
 export const updateLeaveTypeAndCount = async (req, res, next) => {
     try {
@@ -197,7 +126,7 @@ export const updateLeaveTypeAndCount = async (req, res, next) => {
 
         const req_data = req.body;
         const id = req.params.id;
-        const leave_type_id = req.params.leaveTypeId;
+        const leave_type_id = req.params.leave_type_id;
         let table = 'leaveTypeCounts';
 
         const condition = {
@@ -225,9 +154,17 @@ export const deleteLeaveTypeAndCount  = async (req, res,next) => {
             return errorResponse(res, errors.array(), "")
         }
         const id = req.params.id;
-        const leave_type_id = req.params.leaveTypeId;
-        await deleteLeaveTypeAndCountQuery([id, leave_type_id])
-        return successResponse(res, 'Data deleted Successfully');
+        const leave_type_id = req.params.leave_type_id;
+        const [data] = await getLeavesTypesQuery([leave_type_id]);
+        if (data.length == 0) {
+            return notFoundResponse(res, "", "Data not found");
+        }
+        await Promise.all([
+        await deleteLeaveTypeAndCountQuery([id, leave_type_id]),
+        await deleteLeaveTypeQuery([leave_type_id])
+    ])
+        
+        return successResponse(res, "",'Data deleted Successfully');
     } catch (error) {
         next(error);
     }
@@ -257,8 +194,9 @@ export const fetchLeaveTakenOverview = async (req, res, next) => {
         if (!errors.isEmpty()) {
             return errorResponse(res, errors.array(), "")
         }
-        const {emp_id} = req.body;
-        const [data] = await fetchLeaveTakenOverviewQuery([emp_id, limit])
+        let {emp_id, status, from_date} = req.body;
+        status = status || "approved";
+        const [data] = await fetchLeaveTakenOverviewQuery([emp_id, status], from_date)
         if (data.length == 0) {
             return notFoundResponse(res, '', 'Data not found.');
         }
