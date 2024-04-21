@@ -2,7 +2,7 @@ import { validationResult } from "express-validator";
 import { fetchAnnouncementsQuery, fetchActivityQuery, getUserProfileQuery, feedbackFormQuery } from "../models/dashBoardQuery.js";
 import { successResponse, errorResponse, notFoundResponse } from "../../../utils/response.js"
 import dotenv from "dotenv";
-import cloudinary from "cloudinary";
+//import cloudinary from "cloudinary";
 // import { incrementId } from "../../helpers/functions.js"
 dotenv.config();
 
@@ -55,20 +55,19 @@ export const getUserProfile = async (req, res, next) => {
 
 } 
 /*
-export const uploadPicture=async (req, res, next) => {
+export const showImage=async (req, res, next) => {
     try {
       const errors = validationResult(req);
       if (!errors.isEmpty()) 
       {
-            cloudinary.config({
-                cloud_name: 'dnmusgx2e',
-                api_key: '264954296543697',
-                api_secret: 'G98KJECfYIHztH2IpwuZoJbDDyE'
-            });
+      const { resources } = await cloudinary.search
+      .expression('')
+      .execute();
 
-        }
-
+    const publicIds = resources.map((file) => file.public_id);
+    res.json({ images: publicIds });
     }
+  }
     catch (err) {
         next(err);
       }
