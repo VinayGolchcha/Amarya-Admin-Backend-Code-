@@ -2,7 +2,7 @@ import pool from "../../../config/db.js"
 
 export const insertTeamToUser = async (array) => {
     try {
-        let query = `SELECT INTO userTeams (
+        let query = `INSERT INTO userTeams (
             user_id,
             team_id
         ) VALUES (?,?);`
