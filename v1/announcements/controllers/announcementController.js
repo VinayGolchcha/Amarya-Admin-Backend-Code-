@@ -21,6 +21,18 @@ export const createAnnouncement = async(req, res, next) => {
             title, 
             description} = req.body;
 
+        const current_Date = new Date();
+        const checkFrom_Date = new Date(from_date);
+        const checkTo_Date = new Date(to_date);
+        if(checkFrom_Date.toISOString().split('T')[0] < current_Date.toISOString().split('T')[0] ){
+            return errorResponse(res, errors.array(), "From date should be greater than or equal to current date");
+        }
+        if(checkTo_Date < checkFrom_Date){
+            return errorResponse(res, errors.array(), "To date should be greater than or equal to the from date");
+        }
+        if(description.length >200){
+            return errorResponse(res, errors.array(), "Description must be written in less than 200 characters");
+        }
         if(event_type != "announcement"){
             return notFoundResponse(res, '', 'Event type not supported');
         }
