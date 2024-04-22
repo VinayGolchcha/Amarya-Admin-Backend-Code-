@@ -1,10 +1,13 @@
 import { validationResult } from "express-validator";
 import { fetchAnnouncementsQuery, fetchActivityQuery, getUserProfileQuery, feedbackFormQuery } from "../models/dashBoardQuery.js";
-import { successResponse, errorResponse, notFoundResponse } from "../../../utils/response.js"
+import { successResponse, errorResponse, notFoundResponse } from "../../../utils/response.js";
 import dotenv from "dotenv";
-//import cloudinary from "cloudinary";
 // import { incrementId } from "../../helpers/functions.js"
 dotenv.config();
+import cloudinaryConfig from "../../../config/cloudinary.js";
+
+
+
 
 export const fetchAnnouncements = async (req, res, next) => {
   try {
@@ -53,42 +56,41 @@ export const getUserProfile = async (req, res, next) => {
     next(error);
   }
 
-} 
-/*
-export const showImage=async (req, res, next) => {
-    try {
-      const errors = validationResult(req);
-      if (!errors.isEmpty()) 
-      {
-      const { resources } = await cloudinary.search
-      .expression('')
-      .execute();
-
-    const publicIds = resources.map((file) => file.public_id);
-    res.json({ images: publicIds });
-    }
-  }
-    catch (err) {
-        next(err);
-      }
-};
-*/
-
-export const feedbackForm= async(req,res,next)=>{
-  try{
-  const errors = validationResult(req);
-
-  if (!errors.isEmpty()) {
-      return errorResponse(res, errors.array(), "")
-  }
-  const {user_id,subject,description} = req.body; 
-  await feedbackFormQuery([
-    user_id,
-    subject,
-    description
-  ]);
-  return successResponse(res, 'Feedback send  successfully.');
-} catch (error) {
-  next(error);
 }
+
+export const showImage = async (req, res, next) => {
+  try {
+    const errors = validationResult(req);
+
+    if (!errors.isEmpty()) {
+      return errorResponse(res, errors.array(), "");
+    }
+    const image = 'https://res.cloudinary.com/dnmusgx2e/image/upload/v1713772470/PicsArt_12_14_01.11.12-q8vcVogs_km0db4.jpg';
+    console.log(cloudinaryConfig);
+      const result = await cloudinaryConfig.uploader.upload(image);
+      console.log(result);
+    return successResponse(res, 'Image uploaded successfully');
+  } catch (err) {
+    next(err);
+  }
+};
+
+
+export const feedbackForm = async (req, res, next) => {
+  try {
+    const errors = validationResult(req);
+
+    if (!errors.isEmpty()) {
+      return errorResponse(res, errors.array(), "")
+    }
+    const { user_id, subject, description } = req.body;
+    await feedbackFormQuery([
+      user_id,
+      subject,
+      description
+    ]);
+    return successResponse(res, 'Feedback send  successfully.');
+  } catch (error) {
+    next(error);
+  }
 };
