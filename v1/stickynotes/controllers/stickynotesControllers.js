@@ -1,8 +1,8 @@
 import { validationResult } from "express-validator";
 import { errorResponse, notFoundResponse, successResponse } from "../../../utils/response.js";
-import { addStickeyNotesQuery, deleteStickyNotesQuery, getAllStickeyNotesQuery } from "./stickynotesQuery.js";
+import {  addStickyNotesQuery, deleteStickyNotesQuery, getAllStickyNotesQuery } from "./stickynotesQuery.js";
 
-export const addStickeyNotes = async (req, res) => {
+export const addStickyNotes = async (req, res) => {
   try {
     // const { note } = req.body;
     
@@ -14,7 +14,7 @@ export const addStickeyNotes = async (req, res) => {
     }
     const { note, emp_id } = req.body;
     // Insert note into the database
-    const [result] = await addStickeyNotesQuery([note, emp_id])
+    const [result] = await addStickyNotesQuery([note, emp_id])
     return successResponse(res,result,"Note stored successfully");
   } catch (err) {
     console.error("Error storing note:", err);
@@ -25,7 +25,7 @@ export const addStickeyNotes = async (req, res) => {
 export const getStickyNotes = async (req, res, next) => {
   // Retrieve all notes from the database
   try {
-    let [result] = await getAllStickeyNotesQuery();
+    let [result] = await getAllStickyNotesQuery();
     return successResponse(res,result);;
   } catch (error) {
     return res.status(500).json({ error: "Error retrieving notes" });
