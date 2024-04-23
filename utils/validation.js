@@ -266,12 +266,12 @@ export const upPolicyVal = [
     body('policy_description').isString().withMessage('Invalid policy_description input.').notEmpty().withMessage('policy description cannot be empty.'),
 ]
 
-export const adStiNo = [
+export const adStiNoVal = [
     body('emp_id').isString().withMessage('Invalid emp_id input.').notEmpty().withMessage('emp_id cannot be empty.'),
     body('note').isString().withMessage('Invalid note input.').notEmpty().withMessage('note cannot be empty.'),
 ]
 
-export const delStiNo = [
+export const delStiNoVal = [
     body('_id').isInt().withMessage('Invalid id input.').notEmpty().withMessage('id cannot be empty.')
 ]
 export const activityDate = [

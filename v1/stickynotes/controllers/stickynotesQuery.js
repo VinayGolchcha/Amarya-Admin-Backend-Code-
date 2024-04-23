@@ -1,5 +1,5 @@
 import pool from "../../../config/db.js";
-export const addStickeyNotesQuery = (array) => {
+export const addStickyNotesQuery = (array) => {
     try{
         let query = `INSERT INTO temporary_notes (note , emp_id) VALUES (? , ?);`;
         return  pool.query(
@@ -7,17 +7,17 @@ export const addStickeyNotesQuery = (array) => {
             array
           );
     }catch(err){
-        console.log("Error in executing in the addStickeyNotesQuery:" , err);
+        console.log("Error in executing in the addStickyNotesQuery:" , err);
         throw err;
     }
 }
 
-export const getAllStickeyNotesQuery = () => {
+export const getAllStickyNotesQuery = () => {
     try {
         let query = `SELECT * FROM temporary_notes`
         return pool.query(query);
     }catch(err){
-        console.log("Error in executing in the getAllStickeyNotesQuery:" , err);
+        console.log("Error in executing in the getAllStickyNotesQuery:" , err);
         throw err;
     }
 }
