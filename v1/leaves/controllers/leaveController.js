@@ -227,6 +227,10 @@ export const leaveRequest = async (req, res, next) => {
         let [userLeaveTakenCount] = await leaveTakenCountQuery([emp_id, leave_type])
         let [leaveTypeCountByAdmin] = await getLeaveTypeCountByAdmin([leave_type])
         let message = ""
+        if(leaveTypeCountByAdmin.length==0){
+            message = "Please select valid leave type."
+            return notFoundResponse(res, "", message);
+        }
         if(leaveTypeCountByAdmin[0].leave_count>=(total_days+userLeaveTakenCount[0].leave_taken_count)){
             await insertUserLeaveDataQuery([
                 emp_id, 
