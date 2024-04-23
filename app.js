@@ -5,7 +5,6 @@ import express, { json } from 'express';
 import { config } from 'dotenv';
 import {errorHandler} from './middlewares/errorMiddleware.js';
 import cors from 'cors';
-import cron from "node-cron";
 import helmet from 'helmet';
 import userRoutes from './v1/users/routes/userRoutes.js';
 import assetRoutes from './v1/assets/routes/assetRoutes.js';
@@ -20,6 +19,7 @@ import projectRoutes from './v1/projects/routes/projectRoutes.js';
 import skillSetRoutes from './v1/skillsets/routes/skillsetRoutes.js';
 import stickynotesRoutes from "./v1/stickynotes/routes/stickynotesRoutes.js";
 import activityRoutes from "./v1/activity/routes/activityRoutes.js";
+import { runCronJobs } from './crons/schedulers.js';
 // import policiesRoutes from "./v1/policies/routes/policiesRoutes.js"
 
 const app = express();
@@ -27,6 +27,8 @@ config();
 app.use(helmet());
 app.use(json());
 app.use(cors());
+// Start the cron jobs
+runCronJobs();
 // Disable the X-Powered-By header
 app.disable('x-powered-by');
 // Import & Define API versions
@@ -50,25 +52,6 @@ app.use('/', (req, res) => {
 });
 app.use(errorHandler)
 
-// const updateEntries = async () => {
-//   const sql = `
-//     UPDATE announcements
-//     SET is_new = 0
-//     WHERE TIMESTAMPDIFF(MINUTE, created_at, NOW()) >= 1 AND is_new = 1
-//   `;
-//   try {
-//     await pool.query(sql);
-//     console.log("Entries updated successfully");
-//   } catch (err) {
-//     console.error("Error updating entries:", err);
-//     return;
-//   }
-// };
-
-// Schedule script execution every minute
-// cron.schedule("* * * * *", () => {
-//   updateEntries();
-// });
 // Start the server
 const port = process.env.PORT || 4000;
 app.listen(port, () => {

@@ -1,7 +1,7 @@
 import { validationResult } from "express-validator";
 import dotenv from "dotenv"
 import { successResponse, errorResponse, notFoundResponse, unAuthorizedResponse } from "../../../utils/response.js"
-import { insertUserWorksheetQuery, updateUserWorksheetQuery, deleteUserWorksheetQuery, fetchUserDataForExcelQuery, fetchUserWorksheetQuery } from "../models/query.js"
+import { insertUserWorksheetQuery, updateUserWorksheetQuery, deleteUserWorksheetQuery, fetchUserWorksheetQuery } from "../models/query.js"
 import { incrementId, createDynamicUpdateQuery } from "../../helpers/functions.js"
 import moment from "moment-timezone";
 import cron from "node-cron"
@@ -61,28 +61,6 @@ export const deleteUserWorksheet = async (req, res, next) => {
         next(error);
     }
 };
-
-export const createExcelSheetForWorksheet = async (req, res, next) => {
-    try {
-        const errors = validationResult(req);
-
-        if (!errors.isEmpty()) {
-            return errorResponse(res, errors.array(), "")
-        }
-        await fetchUserDataForExcelQuery();
-        return successResponse(res, 'testing');
-    } catch (error) {
-        next(error);
-    }
-}
-
-// cron.schedule('0 4 1 * *', async () => {
-//     try {
-//         const user_worksheet_data = await fetchUserDataForExcelQuery()
-//     } catch (error) {
-//         next(error);
-//     }
-// });
 
 export const fetchUserWorksheet = async (req, res, next) => {
     try {
