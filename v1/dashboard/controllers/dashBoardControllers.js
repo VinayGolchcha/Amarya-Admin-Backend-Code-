@@ -65,12 +65,12 @@ export const showImage = async (req, res, next) => {
     if (!errors.isEmpty()) {
       return errorResponse(res, errors.array(), "");
     }
-    const image = 'https://res.cloudinary.com/dnmusgx2e/image/upload/v1713772470/PicsArt_12_14_01.11.12-q8vcVogs_km0db4.jpg';
-    console.log(cloudinaryConfig);
+      const image ='https://res.cloudinary.com/dnmusgx2e/image/upload/w_1000,c_fill,ar_1:1,g_auto,r_max,bo_5px_solid_red,b_rgb:262c35/v1713772470/PicsArt_12_14_01.11.12-q8vcVogs_km0db4.jpg';
       const result = await cloudinaryConfig.uploader.upload(image);
-      console.log(result);
-    return successResponse(res, 'Image uploaded successfully');
-  } catch (err) {
+      console.log({ imageUrl: result.secure_url });
+      return successResponse(res, imageUrl, 'Image uploaded successfully');
+    }
+   catch (err) {
     next(err);
   }
 };
