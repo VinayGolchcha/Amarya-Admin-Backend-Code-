@@ -12,12 +12,12 @@ export const addStickyNotesQuery = (array) => {
     }
 }
 
-export const getAllStickyNotesQuery = () => {
+export const getStickyNotesByIdQuery = (array) => {
     try {
-        let query = `SELECT * FROM temporary_notes`
-        return pool.query(query);
+        let sql = `SELECT * FROM temporary_notes WHERE emp_id = ?`
+        return pool.query(sql , array);
     }catch(err){
-        console.log("Error in executing in the getAllStickyNotesQuery:" , err);
+        console.log("Error in executing in the getStickyNotesByIdQuery:" , err);
         throw err;
     }
 }

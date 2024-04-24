@@ -6,7 +6,6 @@ dotenv.config();
 export const fetchEmployeeCount = async(req, res, next) => {
     try {
         let [data] = await fetchEmployeeCountQuery();
-        console.log(data);
         const responseData = data.map(row => ({
             team: row.team,
             employeeCount: row.employee_count
