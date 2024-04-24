@@ -272,7 +272,8 @@ export const adStiNoVal = [
 ]
 
 export const delStiNoVal = [
-    body('_id').isInt().withMessage('Invalid id input.').notEmpty().withMessage('id cannot be empty.')
+    body('_id').isInt().withMessage('Invalid id input.').notEmpty().withMessage('id cannot be empty.'),
+    body('emp_id').isString().withMessage('Invalid emp_id input.').notEmpty().withMessage('emp_id cannot be empty.')
 ]
 
 export const getStiNoVal = [
