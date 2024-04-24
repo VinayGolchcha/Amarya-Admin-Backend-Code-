@@ -1,5 +1,5 @@
 import express, { Router } from 'express';
-import { fetchEmployeeCount } from '../controllers/dashboardControllers.js';
+import { fetchEmployeeCount } from '../controllers/dashboardcontrollers.js';
 const app = express()
 const router = Router();
 
