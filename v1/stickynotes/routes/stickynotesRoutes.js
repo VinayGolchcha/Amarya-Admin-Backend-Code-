@@ -4,7 +4,7 @@ import {
   deleteStickyNotes,
   getStickyNotes,
 } from "../controllers/stickynotesControllers.js";
-import {adStiNoVal,  delStiNoVal } from "../../../utils/validation.js";
+import {adStiNoVal,  delStiNoVal, getStiNoVal } from "../../../utils/validation.js";
 
 const app = express();
 const router = Router();
@@ -15,7 +15,7 @@ const router = Router();
 app.post("/add-stickynotes",adStiNoVal, addStickyNotes);
 
 // Retrieve temporary notes
-app.get("/notes", getStickyNotes);
+app.get("/get-user-notes",getStiNoVal, getStickyNotes);
 app.delete("/delete-stickynotes",  delStiNoVal, deleteStickyNotes);
 app.use("/", router);
 

@@ -274,6 +274,11 @@ export const adStiNoVal = [
 export const delStiNoVal = [
     body('_id').isInt().withMessage('Invalid id input.').notEmpty().withMessage('id cannot be empty.')
 ]
-export const activityDate = [
+
+export const getStiNoVal = [
+    body('emp_id').isString().withMessage('Invalid emp_id input.').notEmpty().withMessage('emp_id cannot be empty.')
+]
+
+export const activityDateVal = [
     body('date').isString().withMessage('Invalid date input.').notEmpty().withMessage('date cannot be empty.'),
 ]

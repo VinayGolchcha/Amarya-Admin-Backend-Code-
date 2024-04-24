@@ -1,6 +1,6 @@
 import { validationResult } from "express-validator";
 import { errorResponse, notFoundResponse, successResponse } from "../../../utils/response.js";
-import {  addStickyNotesQuery, deleteStickyNotesQuery, getAllStickyNotesQuery } from "./stickynotesQuery.js";
+import {  addStickyNotesQuery, deleteStickyNotesQuery, getStickyNotesByIdQuery } from "./stickynotesQuery.js";
 
 export const addStickyNotes = async (req, res) => {
   try {
@@ -25,7 +25,14 @@ export const addStickyNotes = async (req, res) => {
 export const getStickyNotes = async (req, res, next) => {
   // Retrieve all notes from the database
   try {
-    let [result] = await getAllStickyNotesQuery();
+    const errors = validationResult(req);
+    console.log(errors);
+
+    if (!errors.isEmpty()) {
+        return errorResponse(res, errors.array(), "")
+    }
+    const { emp_id } = req.body;
+    let [result] = await getStickyNotesByIdQuery([emp_id]);
     return successResponse(res,result);;
   } catch (error) {
     return res.status(500).json({ error: "Error retrieving notes" });
@@ -44,9 +51,7 @@ export const deleteStickyNotes = async (req, res, next) => {
         return errorResponse(res, errors.array(), "")
     }
     // Verify if _id is a valid string
-    console.log(req.body);
     const { _id } = req.body;
-    console.log(_id)
     let [result] = await deleteStickyNotesQuery([_id])
     console.log(result); // Log query result
 
