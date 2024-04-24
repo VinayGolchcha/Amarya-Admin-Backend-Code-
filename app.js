@@ -19,13 +19,10 @@ import projectRoutes from './v1/projects/routes/projectRoutes.js';
 import skillSetRoutes from './v1/skillsets/routes/skillsetRoutes.js';
 import stickynotesRoutes from "./v1/stickynotes/routes/stickynotesRoutes.js";
 import activityRoutes from "./v1/activity/routes/activityRoutes.js";
-<<<<<<< HEAD
 import dashBoardRoutes from "./v1/dashboard/routes/dashBoardRoutes.js";
 //import policiesRoutes from "./v1/policies/routes/policiesRoutes.js"
-=======
 import { runCronJobs } from './crons/schedulers.js';
 // import policiesRoutes from "./v1/policies/routes/policiesRoutes.js"
->>>>>>> 82f4681f1bbfac560e5675b023f2be18c8f05ff0
 
 const app = express();
 config();

@@ -14,5 +14,4 @@ app.get('/dashboard-image',showImage);
 //app.get('/dashbaord-project-detail',allProjectDetails)
 
 app.use("/", router);
-
 export default app;
