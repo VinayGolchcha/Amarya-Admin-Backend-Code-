@@ -1,5 +1,7 @@
 import express, { Router } from 'express';
-import { fetchEmployeeCount } from '../controllers/dashboardControllers.js';
+import { getAllActivities,getUserProfile,feedbackForm,fetchAnnouncements,showImage } from '../controllers/dashboardcontrollers.js';
+import { getDataVal } from '../../../utils/validation.js';
+
 const app = express()
 const router = Router();
 

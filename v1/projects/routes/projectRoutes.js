@@ -1,6 +1,6 @@
 import express, { Router } from 'express';
 import { createProjectVal, deleteIdVal, updateProjectVal } from '../../../utils/validation.js';
-import { createProject, deleteProject, fetchProjects, updateProject } from '../controllers/projectController.js';
+import { createProject, deleteProject, fetchProjects, updateProject} from '../controllers/projectController.js';
 const app = express()
 const router = Router();
 
