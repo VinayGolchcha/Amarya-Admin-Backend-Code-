@@ -2,7 +2,7 @@ import pool from "../../../config/db.js"
 
 export const insertCategoryQuery = async (array) => {
     try {
-        let query = `INSERT INTO categories (category) VALUES (?)`;
+        let query = `INSERT INTO categories (category, points) VALUES (?, ?)`;
         return pool.query(query, array);
     } catch (error) {
         console.error("Error executing insertCategoryQuery:", error);
@@ -21,7 +21,7 @@ export const updateCategoryWorksheetQuery = async (query,array) => {
 
 export const getAllCategoryQuery = async (array) => {
     try {
-        let query = `SELECT _id, category FROM categories`
+        let query = `SELECT _id, category, points FROM categories`
         return pool.query(query);
     } catch (error) {
         console.error("Error executing getAllCategoryQuery:", error);
