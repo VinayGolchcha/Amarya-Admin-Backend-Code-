@@ -1,4 +1,5 @@
 import pool from "../../../config/db.js";
+
 export const fetchAnnouncementsQuery = ()=> {
     let query = `
         SELECT
@@ -12,7 +13,6 @@ export const fetchAnnouncementsQuery = ()=> {
     ORDER BY
         created_at DESC;
     `
-
     return pool.query(query);
 }
 
@@ -48,4 +48,12 @@ export const userDashboardProfileQuery= async (array) =>{
         throw error;
     }
 }
+
+export const dashboardImageQuery= async () =>{
+        let query = `INSERT INTO imageurl(
+        image_url
+        )VALUE(?)`;
+        return await pool.query(query);
+    };
+    
 
