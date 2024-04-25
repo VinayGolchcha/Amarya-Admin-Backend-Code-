@@ -4,6 +4,7 @@ const router = Router();
 // import authenticateToken from '../../../middlewares/auth.js';
 import {userRegistration, userLogin, userLogout, updateUserPassword, verifyEmailForPasswordUpdate, sendOtpForPasswordUpdate, getUserProfile, updateUserProfile} from '../controllers/userController.js';
 import {userRegVal, userLogVal, logOutVal, upPassVal, sendOtpVal, verifyOtpVal} from '../../../utils/validation.js';
+import {feedbackForm} from '../controllers/userFeedbackController.js';
 // router.use(authenticateToken)
 
 
@@ -14,8 +15,9 @@ app.get('/logout/:id', logOutVal, userLogout);
 app.post('/send-otp-password-verification', sendOtpVal, sendOtpForPasswordUpdate);
 app.post('/verify-email-for-password-update', verifyOtpVal, verifyEmailForPasswordUpdate);
 app.post('/update-password', upPassVal, updateUserPassword);
-app.post('/get-user-profile' , getUserProfile);updateUserProfile
+app.post('/get-user-profile' , getUserProfile);
 app.put('/update-user-profile/:id' , updateUserProfile);
+app.post('/user-dashboard-feedback',feedbackForm);
 
 
 app.use("/", router);
