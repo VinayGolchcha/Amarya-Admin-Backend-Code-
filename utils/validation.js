@@ -283,3 +283,6 @@ export const getStiNoVal = [
 export const activityDateVal = [
     body('date').isString().withMessage('Invalid date input.').notEmpty().withMessage('date cannot be empty.'),
 ]
+export const getActIdVal = [
+    param('id').isInt().withMessage('Invalid id input.').notEmpty().withMessage('id cannot be empty.'),
+]
