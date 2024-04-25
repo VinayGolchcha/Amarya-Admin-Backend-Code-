@@ -19,8 +19,10 @@ import temporary_notesTable from "../v1/stickynotes/models/stickynotesModel.js";
 import policiesTable from "../v1/policies/models/policiesModel.js";
 import userTeamsTable from "../v1/users/models/userTeamsModel.js";
 import feedbackFormTable from "../v1/users/models/userFeedbackModel.js";
+import imageTable from "../v1/users/models/dashboardImageModel.js";
+import userProjectTable from "../v1/projects/models/userProject.js";
 
 export default [userTable, assetTable, trainingTable, usertrainingTable, assetRequestTable, approvalTable, announcementTable,
     holidayTable, leaveDatesAndReasonTable,leaveTypeTable, leaveTypeCountTable, userLeaveCountTable, categoryTable, teamTable,
-    projectTable, worksheetTable, skillSetTable , temporary_notesTable , policiesTable, userTeamsTable,feedbackFormTable
+    projectTable, worksheetTable, skillSetTable , temporary_notesTable , policiesTable, userTeamsTable,feedbackFormTable,imageTable,userProjectTable
 ];
