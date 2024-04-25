@@ -1,10 +1,10 @@
-import pool from "../../../config/db.js"
+import pool from "../../../config/db.js";
 
 export const feedbackFormQuery= async(array)=>{
     let query= `INSERT INTO feedbackform (
         user_id,
         subject,
         description
-    )VALUE (?,?,?);`
+    )VALUE (?,?,?)`;
     return pool.query(query, array);
 }
