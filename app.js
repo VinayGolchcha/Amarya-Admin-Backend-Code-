@@ -20,6 +20,8 @@ import skillSetRoutes from './v1/skillsets/routes/skillsetRoutes.js';
 import stickynotesRoutes from "./v1/stickynotes/routes/stickynotesRoutes.js";
 import activityRoutes from "./v1/activity/routes/activityRoutes.js";
 import { runCronJobs } from './crons/schedulers.js';
+import dashboardRoutes from './v1/users/routes/dashboardRoutes.js';
+import feedbackRoutes from './v1/users/routes/feedbackRoutes.js';
 // import policiesRoutes from "./v1/policies/routes/policiesRoutes.js"
 
 const app = express();
@@ -32,6 +34,7 @@ runCronJobs();
 // Disable the X-Powered-By header
 app.disable('x-powered-by');
 // Import & Define API versions
+app.use('/api/v1/dashboard',dashboardRoutes);
 app.use('/api/v1/user', userRoutes);
 app.use('/api/v1/asset', assetRoutes);
 app.use('/api/v1/training', trainingRoutes);
@@ -45,6 +48,7 @@ app.use('/api/v1/category', categoryRoutes);
 app.use('/api/v1/project', projectRoutes);
 app.use("/api/v1/stickynotes", stickynotesRoutes);
 app.use("/api/v1/activity", activityRoutes);
+app.use('api/v1/feedback',feedbackRoutes);
 // app.use("/api/v1/policy", policiesRoutes);
 // Catch-all route for undefined routes
 app.use('/', (req, res) => {
