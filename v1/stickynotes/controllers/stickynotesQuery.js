@@ -23,7 +23,7 @@ export const getStickyNotesByIdQuery = (array) => {
 }
 export const deleteStickyNotesQuery = (array) => {
     try{
-        const sql = "DELETE FROM temporary_notes WHERE _id = ?";
+        const sql = "DELETE FROM temporary_notes WHERE _id = ? AND emp_id = ?";
         return pool.query(sql, array);
     }catch(err){
         console.log("Error in executing in the deleteStickyNotesQuery:" , err);
