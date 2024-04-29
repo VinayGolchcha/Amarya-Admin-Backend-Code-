@@ -2,7 +2,8 @@ import {successResponse, errorResponse, notFoundResponse} from "../../../utils/r
 import { validationResult } from "express-validator";
 import {addAnnouncementQuery, fetchActivityQuery, updateAnnouncementQuery, deleteActivityQuery} from "../../announcements/models/announcementQuery.js";
 import dotenv from "dotenv";
-import { addActivityQuery } from "../query/activityQuery.js";
+import { addActivityQuery, getActivityByIdQuery } from "../query/activityQuery.js";
+import { crossOriginResourcePolicy } from "helmet";
 dotenv.config();
 
 export const addActivity = async (req, res, next) => {
@@ -14,9 +15,10 @@ export const addActivity = async (req, res, next) => {
     }
     const { event_type, priority, from_date, to_date, title, description , image_data } =
       req.body;
-    if(!image_data || typeof image_data !== "string"){
-      return errorResponse(res, ["image data is not empty" , "image data must be string"], "");
+    if(!image_data){
+      return errorResponse(res, ["image data is not empty" ], "");
     }
+    const Image = Buffer.from(image_data, 'base64');
     const current_date = new Date();
     const check_from_date = new Date(from_date);
     const check_to_date = new Date(to_date);
@@ -28,9 +30,6 @@ export const addActivity = async (req, res, next) => {
     }
     if(description.length >200){
         return errorResponse(res, errors.array(), "Description must be written in less than 200 characters");
-    }
-    if(description.length >200){
-      return errorResponse(res, errors.array(), "discription must be written in less than 200 characters");
     }
     if (event_type != "activity") {
       return notFoundResponse(res, "", "Event type not supported");
@@ -45,7 +44,7 @@ export const addActivity = async (req, res, next) => {
       to_date,
       title,
       description,
-      image_data 
+      Image
     ]);
     return successResponse(res, data, "Activity added successfully");
   } catch (error) {
@@ -153,3 +152,20 @@ export const deleteActivity = async(req,res,next) => {
     next(err);
   }
 };
+
+export const getActivityById = async(req ,res , next) => {
+  try{
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return errorResponse(res, errors.array(), "");
+    }
+    const { id } = req.params;
+    const [data] = await getActivityByIdQuery([id]);
+    if (data.length === 0){
+      return notFoundResponse(res, '', 'Activity not found, wrong input.');
+    }
+    return successResponse(res, data, "Activiy Fetched Successfully");
+  }catch(err){
+    next(err);
+  }
+}
