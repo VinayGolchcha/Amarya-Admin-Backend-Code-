@@ -17,14 +17,17 @@ export const addActivity = async (req, res, next) => {
     if(!image_data || typeof image_data !== "string"){
       return errorResponse(res, ["image data is not empty" , "image data must be string"], "");
     }
-    const current_Date = new Date();
-    const checkFrom_Date = new Date(from_date);
-    const checkTo_Date = new Date(to_date);
-    if(checkFrom_Date.toISOString().split('T')[0] < current_Date.toISOString().split('T')[0] ){
-      return errorResponse(res, errors.array(), "From date should be greater than or equal to current date");
+    const current_date = new Date();
+    const check_from_date = new Date(from_date);
+    const check_to_date = new Date(to_date);
+    if(check_from_date.toISOString().split('T')[0] < current_date.toISOString().split('T')[0] ){
+        return errorResponse(res, errors.array(), "From date should be greater than or equal to current date");
     }
-    if(checkTo_Date < checkFrom_Date){
-      return errorResponse(res, errors.array(), "to date should be greater than or equal to the from date");
+    if(check_to_date < check_from_date){
+        return errorResponse(res, errors.array(), "To date should be greater than or equal to the from date");
+    }
+    if(description.length >200){
+        return errorResponse(res, errors.array(), "Description must be written in less than 200 characters");
     }
     if(description.length >200){
       return errorResponse(res, errors.array(), "discription must be written in less than 200 characters");
