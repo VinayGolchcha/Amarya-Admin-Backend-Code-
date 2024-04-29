@@ -9,7 +9,7 @@ const createTables = async (connection, tables) => {
 	await Promise.all(
 		tables.map(async (tableQuery) => {
 			const res = await connection.query(tableQuery);
-            console.log(res);
+            // console.log(res);
 		})
 	);
 };

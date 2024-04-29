@@ -1,6 +1,8 @@
 import pool from "../config/db.js"
 import XlsxPopulate from "xlsx-populate"
 import fs from 'fs/promises';
+import { getWorkingDaysCountPreviousMonth } from "../v1/helpers/functions.js"
+import { getCategoryTotalPointsQuery, getUserPointsQuery, updateUserPerformanceQuery} from "../v1/worksheets/models/performanceQuery.js"
 
 export const updateEntries = async () => {
   try {
@@ -77,4 +79,30 @@ export const generateUserWorksheetExcel = async () => {
         console.error("Error executing fetchUserDataForExcelQuery:", error);
         throw error;
     }
+};
+
+export const calculatePerformanceForEachEmployee = async () => {
+  try {
+      let number_of_working_days_previous_month = getWorkingDaysCountPreviousMonth()    
+
+      let [category_points_can_be_earned_per_day] = await getCategoryTotalPointsQuery()
+      let category_points_can_be_earned_per_month = category_points_can_be_earned_per_day[0].total_points * number_of_working_days_previous_month
+
+      let [data] = await getUserPointsQuery()
+     
+      //Employee Performance Logic
+      for(let i=0; i< data.length; i++){
+          let emp_id = data[i].emp_id
+          let earned_points = parseInt(data[i].total_earned_points)
+          let monthly_performance = earned_points / category_points_can_be_earned_per_month
+          monthly_performance = Math.round(monthly_performance)
+          // Add Performance to user table
+         await updateUserPerformanceQuery([monthly_performance, emp_id])
+      }
+
+      return `Performance Updated successfully.`;
+  } catch (error) {
+    console.error("Error executing calculatePerformanceForEachEmployee:", error);
+    throw error;
+  }
 };
