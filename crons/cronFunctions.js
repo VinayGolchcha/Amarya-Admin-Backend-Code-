@@ -4,6 +4,16 @@ import fs from 'fs/promises';
 
 export const updateEntries = async () => {
   try {
+    // Check if there are any entries in the announcements table
+    const checkSql = `SELECT COUNT(*) AS count FROM announcements`;
+    const result = await pool.query(checkSql);
+    const count = result[0].count;
+
+    // If there are no entries, return early
+    if (count === 0) {
+      console.log("No entries found in announcements table.");
+      return;
+    }
     const sql = `
     UPDATE announcements
     SET is_new = 0
