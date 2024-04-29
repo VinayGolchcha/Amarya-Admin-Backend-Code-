@@ -51,8 +51,8 @@ export const deleteStickyNotes = async (req, res, next) => {
         return errorResponse(res, errors.array(), "")
     }
     // Verify if _id is a valid string
-    const { _id } = req.body;
-    let [result] = await deleteStickyNotesQuery([_id])
+    const { _id , emp_id } = req.body;
+    let [result] = await deleteStickyNotesQuery([_id , emp_id]);
     console.log(result); // Log query result
 
     // Check if any rows were affected by the delete operation

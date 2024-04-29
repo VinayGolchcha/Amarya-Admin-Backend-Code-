@@ -249,3 +249,21 @@ export const getUserLeaveDataQuery = async(array)=>{
         throw error;
     }
 }
+export const getallUserLeaveDataQuery = async(array)=>{
+    try {
+        let query = `
+        SELECT _id,
+        DATE_FORMAT(from_date, '%Y-%m-%d') AS from_date,
+        DATE_FORMAT(to_date, '%Y-%m-%d') AS to_date,
+        leave_type,
+        DATEDIFF(to_date,from_date) + 1 AS total_days,
+        status
+        FROM leaveDatesAndReasons
+        WHERE emp_id = ?
+        `
+        return await pool.query(query, array);
+    } catch (error) {
+        console.error("Error executing allGetUserLeaveDataQuery:", error);
+        throw error;
+    }
+}
