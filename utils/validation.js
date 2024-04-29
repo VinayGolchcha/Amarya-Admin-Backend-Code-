@@ -283,3 +283,23 @@ export const getStiNoVal = [
 export const activityDateVal = [
     body('date').isString().withMessage('Invalid date input.').notEmpty().withMessage('date cannot be empty.'),
 ]
+export const createUserProjectVal = [
+    body('project_id').isString().withMessage('Invalid project id input.').notEmpty().withMessage('project id cannot be empty.'),
+    body('emp_id').isString().notEmpty().withMessage('Employee id cannot be empty.').isAlphanumeric().withMessage('Invalid employee id input.'),
+    body('tech').notEmpty().withMessage('technology cannot be empty.').isString().withMessage('Invalid technology  input.'),
+    body('team_id').isString().withMessage('Invalid team id input').notEmpty().withMessage('team id cannot be empty'),
+    body('status').isString().withMessage('Invalid project status input').notEmpty().withMessage('project status cannot be empty'),
+    body('project_manager').isString().withMessage('Invalid project manager input').notEmpty().withMessage('project manager cannot be empty'),
+    body('start_month').optional().isString().withMessage('Invalid start_month input').notEmpty().withMessage('start_month cannot be empty'),
+    body('end_month').optional().isString().withMessage('Invalid end_month input').notEmpty().withMessage('end_month cannot be empty')
+]
+export const userUpdateProjectVal = [
+    body('project_id').isString().withMessage('Invalid project id input.').notEmpty().withMessage('project id cannot be empty.'),
+    body('emp_id').isString().notEmpty().withMessage('Employee id cannot be empty.').isAlphanumeric().withMessage('Invalid employee id input.'),
+    body('tech').notEmpty().withMessage('technology cannot be empty.').isString().withMessage('Invalid technology  input.'),
+    body('team_id').isString().withMessage('Invalid team id input').notEmpty().withMessage('team id cannot be empty'),
+    body('status').isString().withMessage('Invalid project status input').notEmpty().withMessage('project status cannot be empty'),
+    body('project_manager').isString().withMessage('Invalid project manager input').notEmpty().withMessage('project manager cannot be empty'),
+    body('start_month').optional().isString().withMessage('Invalid start_month input').notEmpty().withMessage('start_month cannot be empty'),
+    body('end_month').optional().isString().withMessage('Invalid end_month input').notEmpty().withMessage('end_month cannot be empty')
+]
