@@ -1,7 +1,7 @@
 import dotenv from "dotenv";
 import { validationResult } from "express-validator";
 import { successResponse } from "../../../utils/response.js";
-import { fetchEmployeeCountQuery, fetchTeamPerformanceQuery } from "../query/dashboardQuery.js";
+import { fetchEmployeeCountQuery} from "../query/dashboardQuery.js";
 dotenv.config();
 export const fetchEmployeeCount = async(req, res, next) => {
     try {
@@ -16,11 +16,11 @@ export const fetchEmployeeCount = async(req, res, next) => {
     }
 }
 
-export const fetchTeamPerformance = async(req, res, next) => {    
-    try{
-        let [data] = await fetchTeamPerformanceQuery();
-        return successResponse(res, data, 'performace based on teams data fetched succeccfully');
-    }catch(error){
-        next(error);
-    }
-}
+// export const fetchTeamPerformance = async(req, res, next) => {    
+//     try{
+//         let [data] = await fetchTeamPerformanceQuery();
+//         return successResponse(res, data, 'performace based on teams data fetched succeccfully');
+//     }catch(error){
+//         next(error);
+//     }
+// }
