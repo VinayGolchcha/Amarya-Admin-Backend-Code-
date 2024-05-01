@@ -1,7 +1,7 @@
 // Schedule script execution every minute
 import cron from "node-cron";
 import pool from "../config/db.js";
-import { generateUserWorksheetExcel, updateEntries } from "./cronFunctions.js";
+import { generateUserWorksheetExcel, updateEntries, calculatePerformanceForEachEmployee } from "./cronFunctions.js";
 
 
 export const runCronJobs = () => {
@@ -31,6 +31,14 @@ export const runCronJobs = () => {
             await pool.query(query, [deletion_date]);
         } catch (error) {
             console.error('Error executing cron deletion scheduler:', error);
+        }
+    });
+
+    cron.schedule('40 23 1 * *', async () => {
+        try {
+            await calculatePerformanceForEachEmployee()
+        } catch (error) {
+            console.error('Error executing cron calculatePerformanceForEachEmployee:', error);
         }
     });
 }

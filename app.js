@@ -19,6 +19,7 @@ import projectRoutes from './v1/projects/routes/projectRoutes.js';
 import skillSetRoutes from './v1/skillsets/routes/skillsetRoutes.js';
 import stickynotesRoutes from "./v1/stickynotes/routes/stickynotesRoutes.js";
 import activityRoutes from "./v1/activity/routes/activityRoutes.js";
+import dashboardRoutes from "./v1/dashboard/routes/dashboardRoutes.js";
 import { runCronJobs } from './crons/schedulers.js';
 import dashboardRoutes from './v1/users/routes/dashboardRoutes.js';
 import feedbackRoutes from './v1/users/routes/feedbackRoutes.js';
@@ -48,7 +49,11 @@ app.use('/api/v1/category', categoryRoutes);
 app.use('/api/v1/project', projectRoutes);
 app.use("/api/v1/stickynotes", stickynotesRoutes);
 app.use("/api/v1/activity", activityRoutes);
+<<<<<<< HEAD
 app.use('api/v1/feedback',feedbackRoutes);
+=======
+app.use("/api/v1/dashboard" , dashboardRoutes)
+>>>>>>> 2f3574de7f2f23bfbd7e0769da4a8be8aa3a7b91
 // app.use("/api/v1/policy", policiesRoutes);
 // Catch-all route for undefined routes
 app.use('/', (req, res) => {
