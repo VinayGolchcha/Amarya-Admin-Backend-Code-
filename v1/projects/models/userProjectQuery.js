@@ -32,7 +32,7 @@ export const getUserProjectQuery = async (array) => {
 }
 export const checkProjectIdQuery = async (array) => {
     try {
-        let query = `SELECT * FROM userproject WHERE project_id = ?`
+        let query = `SELECT * FROM userproject WHERE emp_id = ?`
         return pool.query(query,array);
     } catch (error) {
         console.error("Error executing checkSameTeamNameQuery:", error);
