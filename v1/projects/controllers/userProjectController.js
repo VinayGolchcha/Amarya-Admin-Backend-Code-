@@ -51,30 +51,30 @@ export const fetchUserProjects = async(req, res, next) =>{
     }
 }
 export const userUpdateProject = async(req, res, next) => {
-        try{
-            const errors = validationResult(req);
-    
-            if (!errors.isEmpty()) {
-                return errorResponse(res, errors.array(), "")
-            }
-            const id = req.params.id;
-            let table = 'users';
-            const condition = {
-                project_id: id
-            };
-            const req_data = req.body;
-    
-            let [exist_id] = await checkProjectIdQuery([id])
-    
-            if (exist_id.length > 0) {
-                let query_values = await createDynamicUpdateQuery(table, condition, req_data)
-                let [data] = await userUpdateProjectQuery(query_values.updateQuery, query_values.updateValues);
-                return successResponse(res, data, 'User project updated successfully.');
-            }else{
-                return notFoundResponse(res, '', 'User not found.');
-            }
+    try{
+        const errors = validationResult(req);
+
+        if (!errors.isEmpty()) {
+            return errorResponse(res, errors.array(), "")
         }
-        catch(err){
-            next(err);
-        }
+    const id = req.params.id;
+    let table = 'userproject';
+    const condition = {
+        emp_id: id
+    };
+    const req_data = req.body;
+
+    let [exist_id] = await checkProjectIdQuery([id])
+
+    if (exist_id.length > 0) {
+        let query_values = await createDynamicUpdateQuery(table, condition, req_data)
+        let [data] = await userUpdateProjectQuery(query_values.updateQuery, query_values.updateValues);
+        return successResponse(res, data, 'User project updated successfully.');
+    }else{
+        return notFoundResponse(res, '', 'User project not found.');
     }
+}
+catch(err){
+    next(err);
+}
+}
