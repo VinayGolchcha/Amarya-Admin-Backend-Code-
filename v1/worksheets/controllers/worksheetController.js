@@ -3,8 +3,6 @@ import dotenv from "dotenv"
 import { successResponse, errorResponse, notFoundResponse, unAuthorizedResponse } from "../../../utils/response.js"
 import { insertUserWorksheetQuery, updateUserWorksheetQuery, deleteUserWorksheetQuery, fetchUserWorksheetQuery } from "../models/query.js"
 import { incrementId, createDynamicUpdateQuery } from "../../helpers/functions.js"
-import moment from "moment-timezone";
-import cron from "node-cron"
 dotenv.config();
 
 export const createUserWorksheet = async (req, res, next) => {
@@ -15,8 +13,20 @@ export const createUserWorksheet = async (req, res, next) => {
             return errorResponse(res, errors.array(), "")
         }
         const { emp_id, team_id, category_id, skill_set_id, description, date } = req.body;  // date format should be YYYY-MM-DD
+
+        const current_date = new Date();
+        const seven_days_ago = new Date(); // Initialize a new date object
+        seven_days_ago.setDate(current_date.getDate() - 7);
+        const check_date = new Date(date);
+        if(check_date.toISOString().split('T')[0] < seven_days_ago.toISOString().split('T')[0] ){
+            return errorResponse(res, errors.array(), "Date should be greater than or equal to last seven days");
+        }
+
+        if(description.length >200){
+            return errorResponse(res, errors.array(), "Description must be written in less than 200 characters");
+        }
         await insertUserWorksheetQuery([emp_id, team_id, category_id, skill_set_id, description, date]);
-        return successResponse(res, 'worksheet filled successfully.');
+        return successResponse(res, 'Worksheet filled successfully.');
     } catch (error) {
         next(error);
     }
