@@ -283,6 +283,10 @@ export const getStiNoVal = [
 export const activityDateVal = [
     body('date').isString().withMessage('Invalid date input.').notEmpty().withMessage('date cannot be empty.'),
 ]
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> e98f6a0dfcc053a8ed0d060dd91ee1decd766ecb
 export const createUserProjectVal = [
     body('project_id').isString().withMessage('Invalid project id input.').notEmpty().withMessage('project id cannot be empty.'),
     body('emp_id').isString().notEmpty().withMessage('Employee id cannot be empty.').isAlphanumeric().withMessage('Invalid employee id input.'),
@@ -302,7 +306,14 @@ export const userUpdateProjectVal = [
     body('project_manager').isString().withMessage('Invalid project manager input').notEmpty().withMessage('project manager cannot be empty'),
     body('start_month').optional().isString().withMessage('Invalid start_month input').notEmpty().withMessage('start_month cannot be empty'),
     body('end_month').optional().isString().withMessage('Invalid end_month input').notEmpty().withMessage('end_month cannot be empty')
+<<<<<<< HEAD
 ]
 export const getActIdVal = [
     param('id').isInt().withMessage('Invalid id input.').notEmpty().withMessage('id cannot be empty.'),
+=======
+=======
+export const getActIdVal = [
+    param('id').isInt().withMessage('Invalid id input.').notEmpty().withMessage('id cannot be empty.'),
+>>>>>>> 2f3574de7f2f23bfbd7e0769da4a8be8aa3a7b91
+>>>>>>> e98f6a0dfcc053a8ed0d060dd91ee1decd766ecb
 ]
