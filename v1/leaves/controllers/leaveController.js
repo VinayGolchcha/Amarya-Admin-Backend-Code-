@@ -1,9 +1,9 @@
 import dotenv from "dotenv"
 import {
     createHoliday, updateHolidayQuery, createLeaveType, checkSameHolidayQuery,
-    createLeaveCount, updateLeaveQuery, fetchLeavesCountQuery, checkSameLeaveTypeNameQuery, deleteLeaveTypeQuery, getLeavesTypesQuery,
-    fetchLeavesTypesQuery, insertUserLeaveDataQuery, insertApprovalForLeaveQuery, getLastLeaveId, getLeaveTypeCountByAdmin,
-    getAllUsersLeaveCountQuery, getUserLeaveDataQuery, fetchLeaveTakenOverviewQuery, deleteLeaveTypeAndCountQuery, fetchHolidayListQuery, getHolidayDataQuery, deleteHolidayQuery
+    createLeaveCount, updateLeaveQuery, fetchLeavesCountQuery, checkSameLeaveTypeNameQuery, deleteLeaveTypeQuery, getLeavesTypesQuery, insertUserLeaveDataQuery, insertApprovalForLeaveQuery, getLastLeaveId, getLeaveTypeCountByAdmin,
+    getAllUsersLeaveCountQuery, getUserLeaveDataQuery, fetchLeaveTakenOverviewQuery, deleteLeaveTypeAndCountQuery, fetchHolidayListQuery, getHolidayDataQuery, deleteHolidayQuery,
+    getallUserLeaveDataQuery
 } from "../../leaves/models/leaveQuery.js"
 import { leaveTakenCountQuery } from "../../approvals/models/leaveApprovalQuery.js"
 import { successResponse, errorResponse, notFoundResponse, unAuthorizedResponse } from "../../../utils/response.js"
@@ -227,6 +227,10 @@ export const leaveRequest = async (req, res, next) => {
         let [userLeaveTakenCount] = await leaveTakenCountQuery([emp_id, leave_type])
         let [leaveTypeCountByAdmin] = await getLeaveTypeCountByAdmin([leave_type])
         let message = ""
+        if(leaveTypeCountByAdmin.length==0){
+            message = "Please select valid leave type."
+            return notFoundResponse(res, "", message);
+        }
         if(leaveTypeCountByAdmin[0].leave_count>=(total_days+userLeaveTakenCount[0].leave_taken_count)){
             await insertUserLeaveDataQuery([
                 emp_id, 
@@ -266,6 +270,18 @@ export const getUserLeaveData = async (req, res, next) => {
     try {
         const {emp_id} = req.body;
         const [data] = await getUserLeaveDataQuery([emp_id]);
+        if (data.length == 0) {
+            return notFoundResponse(res, '', 'Data not found.');
+        }
+        return successResponse(res, data, "Data fetched successfully");
+    } catch (error) {
+        next(error);
+    }
+}
+export const getUserAllLeaveData = async (req, res, next) => {
+    try {
+        const {emp_id} = req.body;
+        const [data] = await getallUserLeaveDataQuery([emp_id]);
         if (data.length == 0) {
             return notFoundResponse(res, '', 'Data not found.');
         }

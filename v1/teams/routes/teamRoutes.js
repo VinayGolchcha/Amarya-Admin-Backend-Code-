@@ -7,7 +7,7 @@ const router = Router();
 
 app.post('/admin/create-team', createTeamVal, createTeam);
 app.put('/admin/update-team/:id', updateTeamVal, updateTeam);
-app.get('/admin/fetch-all-teams', fetchTeams);
+app.get('/fetch-all-teams', fetchTeams);
 app.delete('/admin/delete-team/:id', deleteIdVal,deleteTeam);
 
 

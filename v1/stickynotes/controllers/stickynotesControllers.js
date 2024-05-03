@@ -1,8 +1,8 @@
 import { validationResult } from "express-validator";
-import pool from "../../../config/db.js";
-import { errorResponse } from "../../../utils/response.js";
+import { errorResponse, notFoundResponse, successResponse } from "../../../utils/response.js";
+import {  addStickyNotesQuery, deleteStickyNotesQuery, getStickyNotesByIdQuery } from "./stickynotesQuery.js";
 
-export const handleAddStickeyNotes = async (req, res) => {
+export const addStickyNotes = async (req, res) => {
   try {
     // const { note } = req.body;
     
@@ -14,50 +14,52 @@ export const handleAddStickeyNotes = async (req, res) => {
     }
     const { note, emp_id } = req.body;
     // Insert note into the database
-    const result = await pool.query(
-      "INSERT INTO temporary_notes (note , emp_id) VALUES (? , ?)",
-      [note, emp_id]
-    );
-    return res.status(200).json({ message: "Note stored successfully" });
+    const [result] = await addStickyNotesQuery([note, emp_id])
+    return successResponse(res,result,"Note stored successfully");
   } catch (err) {
     console.error("Error storing note:", err);
     return res.status(500).json({ error: "Error storing note" });
   }
 };
 
-export const handleGetStickyNotes = async (req, res, next) => {
+export const getStickyNotes = async (req, res, next) => {
   // Retrieve all notes from the database
   try {
-    let [result] = await pool.query("SELECT * FROM temporary_notes");
-    console.log(result);
-    return res.status(200).json(result);
+    const errors = validationResult(req);
+    console.log(errors);
+
+    if (!errors.isEmpty()) {
+        return errorResponse(res, errors.array(), "")
+    }
+    const { emp_id } = req.body;
+    let [result] = await getStickyNotesByIdQuery([emp_id]);
+    return successResponse(res,result);;
   } catch (error) {
     return res.status(500).json({ error: "Error retrieving notes" });
     next(error);
   }
 };
 
-export const handleDeleteStickyNotes = async (req, res, next) => {
-  const { _id } = req.body;
+export const deleteStickyNotes = async (req, res, next) => {
+  
   // Log request body and _id type
   try {
-    // Verify if _id is a valid string
-    if (typeof _id === "string") {
-      return res.status(400).json({ error: "Invalid _id format" });
-    }
+    const errors = validationResult(req);
+    console.log(errors);
 
-    const sql = "DELETE FROM temporary_notes WHERE _id = ?";
-    let [result] = await pool.query(sql, [_id]);
+    if (!errors.isEmpty()) {
+        return errorResponse(res, errors.array(), "")
+    }
+    // Verify if _id is a valid string
+    const { _id , emp_id } = req.body;
+    let [result] = await deleteStickyNotesQuery([_id , emp_id]);
     console.log(result); // Log query result
 
     // Check if any rows were affected by the delete operation
     if (result.affectedRows === 0) {
-      return res
-        .status(404)
-        .json({ error: "No record found with the provided _id" });
-    }
-
-    return res.status(200).json({ message: "Record deleted successfully" });
+      return notFoundResponse(res, "", "stickynotes not found, wrong input.");
+      }
+      return successResponse(res, "", "note Deleted Successfully");
   } catch (error) {
     console.error("Error deleting record:", error); // Log error
     return res.status(500).json({ error: "Internal server error" });
