@@ -49,16 +49,10 @@ app.use('/api/v1/category', categoryRoutes);
 app.use('/api/v1/project', projectRoutes);
 app.use("/api/v1/stickynotes", stickynotesRoutes);
 app.use("/api/v1/activity", activityRoutes);
-<<<<<<< HEAD
 app.use('api/v1/feedback',feedbackRoutes);
 app.use("/api/v1/dashboard" , userdashboardRoutes);
-=======
-<<<<<<< HEAD
 app.use('api/v1/feedback',feedbackRoutes);
-=======
-app.use("/api/v1/dashboard" , dashboardRoutes)
->>>>>>> 2f3574de7f2f23bfbd7e0769da4a8be8aa3a7b91
->>>>>>> e98f6a0dfcc053a8ed0d060dd91ee1decd766ecb
+app.use("/api/v1/dashboard" , dashboardRoutes);
 // app.use("/api/v1/policy", policiesRoutes);
 // Catch-all route for undefined routes
 app.use('/', (req, res) => {
