@@ -16,7 +16,7 @@ export const upAnnVal = [
     body('from_date').notEmpty().withMessage('from_date cannot be empty.').isDate().withMessage("from_date must be a date.")
 ]
 export const delAnnVal = [
-    body('id').notEmpty().withMessage('id cannot be empty.').isInt().withMessage("id must be an integer."),
+    param('id').notEmpty().withMessage('id cannot be empty.').isInt().withMessage("id must be an integer."),
 ]
 
 export const allAppVal = [
