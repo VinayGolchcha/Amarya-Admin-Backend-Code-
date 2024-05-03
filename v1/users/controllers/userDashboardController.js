@@ -63,6 +63,7 @@ export const getDashImage = async (req, res, next) => {
       return errorResponse(res, errors.array(), "")
     }
     
+    
   } catch (error) {
     next(error);
   }
