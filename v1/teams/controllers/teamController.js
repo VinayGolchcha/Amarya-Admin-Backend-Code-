@@ -18,8 +18,8 @@ export const createTeam = async (req, res, next) => {
         if (exist_team_name.length > 0){
             return errorResponse(res, '', 'Sorry, Team with this name already exists.');
         }
-        await insertTeamQuery([team]);
-        return successResponse(res, 'Team created successfully.');
+        const [data] = await insertTeamQuery([team]);
+        return successResponse(res,{team_id: data.insertId}, 'Team created successfully.');
     } catch (error) {
         next(error);
     }
