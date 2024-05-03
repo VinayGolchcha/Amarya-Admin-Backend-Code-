@@ -9,11 +9,10 @@ export const updateEntries = async () => {
     // Check if there are any entries in the announcements table
     const checkSql = `SELECT COUNT(*) AS count FROM announcements`;
     const result = await pool.query(checkSql);
-    const count = result[0].count;
-
+    const count = result[0][0].count;
+    
     // If there are no entries, return early
     if (count === 0) {
-      console.log("No entries found in announcements table.");
       return;
     }
     const sql = `
