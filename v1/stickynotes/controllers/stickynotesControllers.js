@@ -31,7 +31,7 @@ export const getStickyNotes = async (req, res, next) => {
     if (!errors.isEmpty()) {
         return errorResponse(res, errors.array(), "")
     }
-    const { emp_id } = req.body;
+    const  emp_id  = req.params.emp_id;
     let [result] = await getStickyNotesByIdQuery([emp_id]);
     return successResponse(res,result);;
   } catch (error) {
@@ -51,7 +51,9 @@ export const deleteStickyNotes = async (req, res, next) => {
         return errorResponse(res, errors.array(), "")
     }
     // Verify if _id is a valid string
-    const { _id , emp_id } = req.body;
+    const _id = req.params.id;
+    console.log("_id" , _id);
+    const emp_id = req.params.emp_id;
     let [result] = await deleteStickyNotesQuery([_id , emp_id]);
     console.log(result); // Log query result
 
