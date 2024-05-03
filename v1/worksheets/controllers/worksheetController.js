@@ -1,10 +1,8 @@
 import { validationResult } from "express-validator";
 import dotenv from "dotenv"
 import { successResponse, errorResponse, notFoundResponse, unAuthorizedResponse } from "../../../utils/response.js"
-import { insertUserWorksheetQuery, updateUserWorksheetQuery, deleteUserWorksheetQuery, fetchUserDataForExcelQuery, fetchUserWorksheetQuery } from "../models/query.js"
+import { insertUserWorksheetQuery, updateUserWorksheetQuery, deleteUserWorksheetQuery, fetchUserWorksheetQuery } from "../models/query.js"
 import { incrementId, createDynamicUpdateQuery } from "../../helpers/functions.js"
-import moment from "moment-timezone";
-import cron from "node-cron"
 dotenv.config();
 
 export const createUserWorksheet = async (req, res, next) => {
@@ -14,9 +12,21 @@ export const createUserWorksheet = async (req, res, next) => {
         if (!errors.isEmpty()) {
             return errorResponse(res, errors.array(), "")
         }
-        const { emp_id, team_id, category_id, skill_set_id, description, date } = req.body;  // date format should be YYYY-MM-DD
-        await insertUserWorksheetQuery([emp_id, team_id, category_id, skill_set_id, description, date]);
-        return successResponse(res, 'worksheet filled successfully.');
+        const { emp_id, team_id, project_id, category_id, skill_set_id, description, date } = req.body;  // date format should be YYYY-MM-DD
+
+        const current_date = new Date();
+        const seven_days_ago = new Date(); // Initialize a new date object
+        seven_days_ago.setDate(current_date.getDate() - 7);
+        const check_date = new Date(date);
+        if(check_date.toISOString().split('T')[0] < seven_days_ago.toISOString().split('T')[0] ){
+            return errorResponse(res, errors.array(), "Date should be greater than or equal to last seven days");
+        }
+
+        if(description.length >200){
+            return errorResponse(res, errors.array(), "Description must be written in less than 200 characters");
+        }
+        const [data] = await insertUserWorksheetQuery([emp_id, team_id,project_id, category_id, skill_set_id, description, date]);
+        return successResponse(res,{_id: data.insertId}, 'Worksheet filled successfully.');
     } catch (error) {
         next(error);
     }
@@ -61,28 +71,6 @@ export const deleteUserWorksheet = async (req, res, next) => {
         next(error);
     }
 };
-
-export const createExcelSheetForWorksheet = async (req, res, next) => {
-    try {
-        const errors = validationResult(req);
-
-        if (!errors.isEmpty()) {
-            return errorResponse(res, errors.array(), "")
-        }
-        await fetchUserDataForExcelQuery();
-        return successResponse(res, 'testing');
-    } catch (error) {
-        next(error);
-    }
-}
-
-// cron.schedule('0 4 1 * *', async () => {
-//     try {
-//         const user_worksheet_data = await fetchUserDataForExcelQuery()
-//     } catch (error) {
-//         next(error);
-//     }
-// });
 
 export const fetchUserWorksheet = async (req, res, next) => {
     try {

@@ -20,8 +20,8 @@ export const createSkillSet = async (req, res, next) => {
             return errorResponse(res, '', 'Sorry, Skill already exists.');
         }
 
-        await insertSkillSetQuery([skill]);
-        return successResponse(res, 'skill created successfully.');
+        const [data] = await insertSkillSetQuery([skill]);
+        return successResponse(res,{skill_id: data.insertId}, 'skill created successfully.');
     } catch (error) {
         next(error);
     }
