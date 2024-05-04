@@ -7,10 +7,10 @@ const router = Router();
 
 app.post("/admin/add-activity", crAnnVal, addActivity);
 app.get("/admin/fetch-activity", getAllActivities);
-app.get("/admin/filter-date",activityDateVal, filterActivityByDate);
+app.get("/admin/filter-activity-by-date/:date",activityDateVal, filterActivityByDate);
 app.get("/user/get-activity/:id", getActIdVal, getActivityById);
 app.put("/admin/update-activity/:id", upAnnVal, updateActivity);
-app.delete("/admin/delete-activity",delAnnVal , deleteActivity);
+app.delete("/admin/delete-activity/:id",delAnnVal , deleteActivity);
 app.get("/fetch-activity", getAllActivities);
 app.get("/filter-date", filterActivityByDate);
 app.use("/", router);
