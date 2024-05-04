@@ -3,7 +3,7 @@ const app = express()
 const router = Router();
 // import authenticateToken from '../../../middlewares/auth.js';
 import {userRegistration, userLogin, userLogout, updateUserPassword, verifyEmailForPasswordUpdate, sendOtpForPasswordUpdate, getUserProfile, updateUserProfile} from '../controllers/userController.js';
-import {userRegVal, userLogVal, logOutVal, upPassVal, sendOtpVal, verifyOtpVal} from '../../../utils/validation.js';
+import {userRegVal, userLogVal, logOutVal, upPassVal, sendOtpVal, verifyOtpVal, getUserVal} from '../../../utils/validation.js';
 // router.use(authenticateToken)
 
 
@@ -14,7 +14,7 @@ app.get('/logout/:id', logOutVal, userLogout);
 app.post('/send-otp-password-verification', sendOtpVal, sendOtpForPasswordUpdate);
 app.post('/verify-email-for-password-update', verifyOtpVal, verifyEmailForPasswordUpdate);
 app.post('/update-password', upPassVal, updateUserPassword);
-app.post('/get-user-profile' , getUserProfile);updateUserProfile
+app.get('/get-user-profile/:emp_id' , getUserVal, getUserProfile);
 app.put('/update-user-profile/:id' , updateUserProfile);
 
 

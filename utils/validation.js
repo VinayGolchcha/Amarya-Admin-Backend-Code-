@@ -16,7 +16,7 @@ export const upAnnVal = [
     body('from_date').notEmpty().withMessage('from_date cannot be empty.').isDate().withMessage("from_date must be a date.")
 ]
 export const delAnnVal = [
-    body('id').notEmpty().withMessage('id cannot be empty.').isInt().withMessage("id must be an integer."),
+    param('id').notEmpty().withMessage('id cannot be empty.').isInt().withMessage("id must be an integer."),
 ]
 
 export const allAppVal = [
@@ -281,8 +281,11 @@ export const getStiNoVal = [
 ]
 
 export const activityDateVal = [
-    body('date').isString().withMessage('Invalid date input.').notEmpty().withMessage('date cannot be empty.'),
+    param('date').isString().withMessage('Invalid date input.').notEmpty().withMessage('date cannot be empty.'),
 ]
 export const getActIdVal = [
     param('id').isInt().withMessage('Invalid id input.').notEmpty().withMessage('id cannot be empty.'),
+]
+export const getUserVal = [
+    param('emp_id').isString().withMessage('Invalid emp_id input.').notEmpty().withMessage('emp_id cannot be empty.')
 ]
