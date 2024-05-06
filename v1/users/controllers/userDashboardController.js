@@ -1,5 +1,5 @@
 import { validationResult } from "express-validator";
-import { fetchAnnouncementsQuery, fetchActivityQuery,userDashboardProfileQuery } from "../models/userDashboardQuery.js";
+import { fetchAnnouncementsQuery, fetchActivityQuery,userDashboardProfileQuery,userDashboardProjectQuery} from "../models/userDashboardQuery.js";
 import { successResponse, errorResponse, notFoundResponse } from "../../../utils/response.js";
 import dotenv from "dotenv";
 // import { incrementId } from "../../helpers/functions.js"
@@ -68,5 +68,20 @@ export const getDashImage = async (req, res, next) => {
     next(error);
   }
 }
+
+export const userProjectDashboard= async (req, res, next) => {
+  try {
+    const errors = validationResult(req);
+
+    if (!errors.isEmpty()) {
+      return errorResponse(res, errors.array(), "");
+    }
+
+    let [data] = await userDashboardProjectQuery();
+    return successResponse(res, data, "project fetched Successfully");
+  } catch (err) {
+    next(err);
+  }
+};
 
 

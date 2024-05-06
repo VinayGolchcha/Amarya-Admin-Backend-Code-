@@ -56,4 +56,10 @@ export const dashboardImageQuery= async () =>{
         return await pool.query(query);
     };
     
+    export const userDashboardProjectQuery = () => {
+        let query = `SELECT
+        * FROM userproject`
+        return pool.query(query);
+      };
+    
 
