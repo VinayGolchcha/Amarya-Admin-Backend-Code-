@@ -35,7 +35,7 @@ runCronJobs();
 // Disable the X-Powered-By header
 app.disable('x-powered-by');
 // Import & Define API versions
-app.use('/api/v1/dashboard',dashboardRoutes);
+//app.use('/api/v1/dashboard',dashboardRoutes);
 app.use('/api/v1/user', userRoutes);
 app.use('/api/v1/asset', assetRoutes);
 app.use('/api/v1/training', trainingRoutes);
