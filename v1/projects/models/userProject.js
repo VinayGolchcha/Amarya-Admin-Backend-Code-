@@ -11,7 +11,8 @@ CREATE TABLE IF NOT EXISTS userproject (
     status ENUM('in review','in progress','on hold'),
     created_at datetime DEFAULT CURRENT_TIMESTAMP,
     updated_at datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    PRIMARY KEY (_id)
+    PRIMARY KEY (_id),
+    FOREIGN KEY (project_id) REFERENCES projects(_id)
 ) AUTO_INCREMENT = 1111`;
 
 export default userProjectTable;
