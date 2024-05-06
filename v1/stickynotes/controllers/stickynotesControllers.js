@@ -1,6 +1,6 @@
 import { validationResult } from "express-validator";
 import { errorResponse, notFoundResponse, successResponse } from "../../../utils/response.js";
-import {  addStickyNotesQuery, deleteStickyNotesQuery, getStickyNotesByIdQuery } from "./stickynotesQuery.js";
+import {  addStickyNotesQuery, deleteStickyNotesQuery, getStickyNotesByIdQuery } from "../models/stickynotesQuery.js";
 
 export const addStickyNotes = async (req, res) => {
   try {

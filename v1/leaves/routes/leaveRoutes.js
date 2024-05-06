@@ -6,20 +6,24 @@ import { addHoliday, updateHoliday, addLeaveTypeAndCount,
     getUserLeaveData, fetchLeaveTakenOverview, updateLeaveTypeAndCount, deleteLeaveTypeAndCount,fetchHolidayList, deleteHoliday, 
     getUserAllLeaveData} from '../controllers/leaveController.js';
 import {addHolidayVal, updateHolidayVal, addLeaveCountVal, leaveRequestVal, updateLeaveTypeAndCountVal, deleteLeaveTypeAndCountVal, getAllLeaveCountVal, fetchLeaveOverviewVal, getTrnVal} from '../../../utils/validation.js';
+import {authenticateUserSession} from "../../../middlewares/userAuth.js"
+import {authenticateAdminSession} from "../../../middlewares/adminAuth.js"
+import {authenticateUserAdminSession} from "../../../middlewares/userAdminAuth.js"
 
-app.post('/admin/add-holiday',addHolidayVal, addHoliday);
-app.put('/admin/update-holiday/:id',updateHolidayVal, updateHoliday);
-app.post('/admin/add-leave-type-and-count',addLeaveCountVal, addLeaveTypeAndCount);
-app.put('/admin/update-leave-type-and-count/:id/:leave_type_id',updateLeaveTypeAndCountVal, updateLeaveTypeAndCount);
-app.delete('/admin/delete-leave-type-and-count/:id/:leave_type_id',deleteLeaveTypeAndCountVal, deleteLeaveTypeAndCount);
-app.get('/fetch-leave-type-and-count', fetchLeaveTypesAndTheirCount);
-app.post('/leave-request',leaveRequestVal, leaveRequest);
-app.get('/get-all-leave-count/:id',getAllLeaveCountVal, getAllUsersLeaveCountByAdmin);
+
+app.post('/admin/add-holiday', authenticateAdminSession, addHolidayVal, addHoliday);
+app.put('/admin/update-holiday/:id', authenticateAdminSession, updateHolidayVal, updateHoliday);
+app.post('/admin/add-leave-type-and-count', authenticateAdminSession, addLeaveCountVal, addLeaveTypeAndCount);
+app.put('/admin/update-leave-type-and-count/:id/:leave_type_id', authenticateAdminSession, updateLeaveTypeAndCountVal, updateLeaveTypeAndCount);
+app.delete('/admin/delete-leave-type-and-count/:id/:leave_type_id', authenticateAdminSession, deleteLeaveTypeAndCountVal, deleteLeaveTypeAndCount);
+app.get('/fetch-leave-type-and-count', authenticateUserAdminSession, fetchLeaveTypesAndTheirCount);
+app.post('/leave-request', authenticateUserSession, leaveRequestVal, leaveRequest);
+app.get('/get-all-leave-count/:id', authenticateUserSession, getAllLeaveCountVal, getAllUsersLeaveCountByAdmin);
 app.get('/user-leave-data', getUserLeaveData);
-app.get('/user-all-leave-data',getTrnVal, getUserAllLeaveData);
-app.get('/fetch-leave-overview',fetchLeaveOverviewVal, fetchLeaveTakenOverview);
-app.get('/fetch-holiday-list', fetchHolidayList);
-app.delete('/admin/delete-holiday/:id', deleteHoliday);
+app.get('/user-all-leave-data', authenticateUserSession, getTrnVal, getUserAllLeaveData);
+app.get('/fetch-leave-overview', authenticateUserSession, fetchLeaveOverviewVal, fetchLeaveTakenOverview);
+app.get('/fetch-holiday-list', authenticateUserAdminSession, fetchHolidayList);
+app.delete('/admin/delete-holiday/:id', authenticateAdminSession, deleteHoliday);
 
 app.use("/", router);
 
