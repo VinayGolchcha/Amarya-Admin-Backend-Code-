@@ -1,3 +1,6 @@
+import pool from "../../config/db.js"
+
+
 export const incrementId = async(id)=>{
 
     if (typeof id !== 'string' || !/^[A-Za-z]+(\d+)$/.test(id)) {
@@ -63,4 +66,9 @@ export const getWorkingDaysCountPreviousMonth = () => {
     }
 
     return count;
+}
+
+export const getTokenSessionById = async(emp_id)=>{
+        let query = `SELECT jwt_token FROM users WHERE emp_id = ?`
+        return pool.query(query,[emp_id])
 }
