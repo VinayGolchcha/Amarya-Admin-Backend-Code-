@@ -6,13 +6,11 @@ const router = Router();
 
 
 app.post("/admin/add-activity", crAnnVal, addActivity);
-app.get("/admin/fetch-activity", getAllActivities);
-app.get("/admin/filter-date",activityDateVal, filterActivityByDate);
+app.get("/filter-activity-by-date",activityDateVal, filterActivityByDate);
 app.get("/user/get-activity/:id", getActIdVal, getActivityById);
 app.put("/admin/update-activity/:id", upAnnVal, updateActivity);
 app.delete("/admin/delete-activity",delAnnVal , deleteActivity);
 app.get("/fetch-activity", getAllActivities);
-app.get("/filter-date", filterActivityByDate);
 app.use("/", router);
 
 export default app;

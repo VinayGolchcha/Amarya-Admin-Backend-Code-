@@ -19,8 +19,8 @@ export const createCategoryForWorksheet = async (req, res, next) => {
             return errorResponse(res, '', 'Sorry, Category already exists.');
         }
 
-        await insertCategoryQuery([category, points]);
-        return successResponse(res, 'category created successfully.');
+        const [data] = await insertCategoryQuery([category, points]);
+        return successResponse(res,{category_id: data.insertId}, 'category created successfully.');
     } catch (error) {
         next(error);
     }
