@@ -7,7 +7,7 @@ const router = Router();
 
 app.post('/admin/create-project', createProjectVal, createProject);
 app.put('/admin/update-project/:id/:category_id',updateProjectVal, updateProject);
-app.get('/admin/fetch-all-projects', fetchProjects);
+app.get('/fetch-all-projects', fetchProjects);
 app.delete('/admin/delete-project/:id/:category_id',deleteIdVal, deleteProject);
 app.post('/user-profile-project/',createUserProjectVal,createUserProject)
 app.get('/fetch-user-project', fetchUserProjects);
