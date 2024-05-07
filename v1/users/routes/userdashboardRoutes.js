@@ -7,7 +7,7 @@ import {fetchAnnouncements,getAllActivities,userProfileDashboard,getDashImage,ge
 app.get('/dashboard-fetch-announcement',fetchAnnouncements);
 app.get('/dashboard-fetch-activity', getAllActivities);
 app.get('/dashboard-user-profile',userProfileDashboard);
-app.get('/dashboard-image',getDashImage);
+app.post('/dashboard-image',getDashImage);
 app.get('/dashboard-project',getUserProject);
 
 app.use("/", router);
