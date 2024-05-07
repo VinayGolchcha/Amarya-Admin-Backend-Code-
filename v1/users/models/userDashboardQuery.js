@@ -51,8 +51,9 @@ export const userDashboardProfileQuery= async (array) =>{
 
 export const dashboardImageQuery= async () =>{
         let query = `INSERT INTO imageurl(
-        image_url
-        )VALUE(?)`;
+        image_url,
+        public_id
+        )VALUE(?,?)`;
         return await pool.query(query);
     };
     

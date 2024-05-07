@@ -1,7 +1,8 @@
 import { validationResult } from "express-validator";
-import { fetchAnnouncementsQuery, fetchActivityQuery,userDashboardProfileQuery,fetchUserProjectQuery } from "../models/userDashboardQuery.js";
+import { fetchAnnouncementsQuery, fetchActivityQuery,userDashboardProfileQuery,fetchUserProjectQuery,dashboardImageQuery } from "../models/userDashboardQuery.js";
 import { successResponse, errorResponse, notFoundResponse } from "../../../utils/response.js";
 import dotenv from "dotenv";
+import cloudinaryConfig from "../../../config/cloudinary.js";
 // import { incrementId } from "../../helpers/functions.js"
 dotenv.config();
 
@@ -62,9 +63,22 @@ export const getDashImage = async (req, res, next) => {
     if (!errors.isEmpty()) {
       return errorResponse(res, errors.array(), "")
     }
-    
-    
-  } catch (error) {
+    const {img}=req.body;
+    const result=await cloudinaryConfig.uploader.upload(img,{
+      folder:"Product",})
+   //width:300,
+  //crop:scale
+  console.log(result.url.secure);
+  const Product= await dashboardImageQuery({img:
+    {
+    public_id:result.public_id,
+    url:result.secure_url
+  }
+});
+ console.log(Product)
+return successResponse(res, Product, "img successfully saved");
+}
+ catch (error) {
     next(error);
   }
 }
