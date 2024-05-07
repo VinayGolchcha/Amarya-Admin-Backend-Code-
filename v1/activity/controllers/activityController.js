@@ -104,11 +104,9 @@ export const updateActivity = async (req, res, next) => {
 export const getAllActivities = async (req, res, next) => {
   try {
     const errors = validationResult(req);
-
     if (!errors.isEmpty()) {
       return errorResponse(res, errors.array(), "");
     }
-
     let [data] = await fetchActivityQuery();
     return successResponse(res, data, "Activiy Fetched Successfully");
   } catch (err) {
@@ -123,7 +121,7 @@ export const filterActivityByDate = async (req, res, next) => {
     if (!errors.isEmpty()) {
       return errorResponse(res, errors.array(), "");
     }
-    const date = req.body.date;
+    const date = req.params.date;
     let event_type = "activity";
     let array = await fetchActivityQuery([event_type]);
     const result = array[0].filter((item) => item.created_at.toISOString().includes(date));
