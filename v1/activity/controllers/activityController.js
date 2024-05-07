@@ -104,11 +104,9 @@ export const updateActivity = async (req, res, next) => {
 export const getAllActivities = async (req, res, next) => {
   try {
     const errors = validationResult(req);
-
     if (!errors.isEmpty()) {
       return errorResponse(res, errors.array(), "");
     }
-
     let [data] = await fetchActivityQuery();
     return successResponse(res, data, "Activiy Fetched Successfully");
   } catch (err) {
