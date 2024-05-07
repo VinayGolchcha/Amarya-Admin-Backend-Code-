@@ -57,7 +57,6 @@ export const dashboardImageQuery= async () =>{
         return await pool.query(query);
     };
     
-      
 export const fetchUserProjectQuery= async (array) =>{
     try {
         let query = `SELECT
