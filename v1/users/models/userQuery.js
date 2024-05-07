@@ -153,3 +153,12 @@ export const updateUserProfileQuery = async (query,array) => {
         throw error;
     }
 }
+export const getUserDataByUserIdQuery = () =>{
+    try {
+        let query = `SELECT * FROM user WHERE emp_id=?`
+        return pool.query(query);
+    } catch (error) {
+        console.error("Error executing getUserDataByUserIdQuery:", error);
+        throw error;
+    }
+}
