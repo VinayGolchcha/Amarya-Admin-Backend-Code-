@@ -175,7 +175,7 @@ export const userLogin = async (req, res, next) => {
             } else {
                 return notFoundResponse(res, '', 'Input fields are incorrect!');
             }
-            token = jwt.sign({ user_id: user[0].emp_id, name: user[0].first_name }, process.env.JWT_SECRET, {
+            token = jwt.sign({ user_id: user[0].emp_id, name: user[0].first_name, role:user[0].role }, process.env.JWT_SECRET, {
                 expiresIn: process.env.JWT_EXPIRATION_TIME,
             });
             await updateTokenQuery([ token, user[0].emp_id]);

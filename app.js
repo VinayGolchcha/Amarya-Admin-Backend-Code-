@@ -50,7 +50,11 @@ app.use("/api/v1/dashboard" , dashboardRoutes)
 // app.use("/api/v1/policy", policiesRoutes);
 // Catch-all route for undefined routes
 app.use('/', (req, res) => {
-  res.send("Hey, I'm online now!!")
+  res.send({
+      statusCode: 403,
+      status: 'failure',
+      message: 'Invalid API'
+  })
 });
 app.use(errorHandler)
 

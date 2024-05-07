@@ -12,7 +12,6 @@ app.get("/user/get-activity/:id", getActIdVal, getActivityById);
 app.put("/admin/update-activity/:id", upAnnVal, updateActivity);
 app.delete("/admin/delete-activity/:id",delAnnVal , deleteActivity);
 app.get("/fetch-activity", getAllActivities);
-app.get("/filter-date", filterActivityByDate);
 app.use("/", router);
 
 export default app;

@@ -13,8 +13,8 @@ export const createProject = async (req, res, next) => {
             return errorResponse(res, errors.array(), "")
         }
         const {project, category_id, client_name, project_status, project_lead,project_manager,  start_month, end_month} = req.body;
-        await insertProjectQuery([project, category_id, client_name, project_status, project_lead, project_manager,  start_month, end_month]);
-        return successResponse(res, 'success', 'Project created successfully.');
+        const [data]= await insertProjectQuery([project, category_id, client_name, project_status,project_manager, project_lead,  start_month, end_month]);
+        return successResponse(res,{project_id: data.insertId}, 'Project created successfully.');
     } catch (error) {
         next(error);
     }

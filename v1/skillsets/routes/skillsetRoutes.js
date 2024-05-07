@@ -6,7 +6,7 @@ const router = Router();
 
 app.post('/admin/create-skill', createSkillVal, createSkillSet);
 app.put("/admin/update-skill/:id", updateSkillVal,updateSkillSet);
-app.get('/admin/fetch-skills', fetchSkillSets);
+app.get('/fetch-skills', fetchSkillSets);
 app.delete('/admin/delete-skill/:id', deleteIdVal, deleteSkillSet);
 
 app.use("/", router);
