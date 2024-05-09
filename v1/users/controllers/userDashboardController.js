@@ -56,7 +56,7 @@ export const userProfileDashboard = async (req, res, next) => {
   }
 }
 
-export const getDashImage = async (req, res, next) => {
+export const uploadDashImage = async (req, res, next) => {
   try {
     const errors = validationResult(req);
 
@@ -68,7 +68,6 @@ export const getDashImage = async (req, res, next) => {
       folder:"Product",})
    //width:300,
   //crop:scale
-  console.log(result.url.secure);
   const Product= await dashboardImageQuery({img:
     {
     public_id:result.public_id,
