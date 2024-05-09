@@ -1,7 +1,8 @@
 import { validationResult } from "express-validator";
-import { fetchAnnouncementsQuery, fetchActivityQuery,userDashboardProfileQuery,userDashboardProjectQuery} from "../models/userDashboardQuery.js";
+import { fetchAnnouncementsQuery, fetchActivityQuery,userDashboardProfileQuery,fetchUserProjectQuery,dashboardImageQuery} from "../models/userDashboardQuery.js";
 import { successResponse, errorResponse, notFoundResponse } from "../../../utils/response.js";
 import dotenv from "dotenv";
+import cloudinaryConfig from "../../../config/cloudinary.js";
 // import { incrementId } from "../../helpers/functions.js"
 dotenv.config();
 
@@ -55,33 +56,49 @@ export const userProfileDashboard = async (req, res, next) => {
   }
 }
 
-export const getDashImage = async (req, res, next) => {
+export const uploadDashImage = async (req, res, next) => {
   try {
     const errors = validationResult(req);
 
     if (!errors.isEmpty()) {
       return errorResponse(res, errors.array(), "")
     }
-    
-    
-  } catch (error) {
+    const {img}=req.body;
+    const result=await cloudinaryConfig.uploader.upload(img,{
+      folder:"Product",})
+   //width:300,
+  //crop:scale
+  const Product= await dashboardImageQuery({img:
+    {
+    public_id:result.public_id,
+    url:result.secure_url
+  }
+});
+ console.log(Product)
+return successResponse(res, Product, "img successfully saved");
+}
+ catch (error) {
     next(error);
   }
 }
 
-export const userProjectDashboard= async (req, res, next) => {
+
+export const getUserProject = async (req, res, next) => {
   try {
     const errors = validationResult(req);
 
     if (!errors.isEmpty()) {
-      return errorResponse(res, errors.array(), "");
+      return errorResponse(res, errors.array(), "")
     }
-
-    let [data] = await userDashboardProjectQuery();
-    return successResponse(res, data, "project fetched Successfully");
-  } catch (err) {
-    next(err);
+    const { emp_id } = req.body;
+    const [data] = await fetchUserProjectQuery([emp_id])
+    if (data.length == 0) {
+      return notFoundResponse(res, '', 'user project not fetched successfully');
+    }
+    return successResponse(res, data, 'user project fetched successfully');
+  } catch (error) {
+    next(error);
   }
-};
+}
 
 
