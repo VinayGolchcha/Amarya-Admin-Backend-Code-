@@ -2,7 +2,7 @@ import pool from "../../../config/db.js"
 
 export const getAllProjectQuery = async () => {
     try {
-        let query = `SELECT projects._id AS project_id ,projects.project, categories.category, projects.client_name, projects.project_status, projects.project_manager, projects.project_lead, projects.start_month, projects.end_month
+        let query = `SELECT projects._id AS project_id, projects.category_id ,projects.project, categories.category, projects.client_name, projects.project_status, projects.project_manager, projects.project_lead, projects.start_month, projects.end_month
         FROM projects
         JOIN categories ON projects.category_id = categories._id;`
         return pool.query(query);
