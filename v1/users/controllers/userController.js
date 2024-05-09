@@ -223,7 +223,11 @@ export const updateUserPassword = async (req, res, next) => {
 
 export const getUserProfile = async(req,res,next) => {
     try{
-        const emp_id = req.body.emp_id;
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return errorResponse(res, errors.array(), "")
+        }
+        const emp_id = req.params.emp_id;
         const [user] = await getUserDataByUserIdQuery([emp_id]);
         if (user.length == 0 ){
             return notFoundResponse(res, '', 'User not found');
