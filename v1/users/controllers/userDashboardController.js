@@ -38,14 +38,14 @@ export const getAllActivities = async (req, res, next) => {
   }
 };
 
-export const userProfileDashboard = async (req, res, next) => {
+export const getuserProfileDashboard = async (req, res, next) => {
   try {
     const errors = validationResult(req);
 
     if (!errors.isEmpty()) {
       return errorResponse(res, errors.array(), "")
     }
-    const { emp_id } = req.body;
+    const { emp_id } = req.params.emp_id;
     const [data] = await userDashboardProfileQuery([emp_id])
     if (data.length == 0) {
       return notFoundResponse(res, '', 'Employee Data  not found.');
@@ -56,31 +56,19 @@ export const userProfileDashboard = async (req, res, next) => {
   }
 }
 
-export const uploadDashImage = async (req, res, next) => {
+/*export const uploadDashImage = async (req, res, next) => {
   try {
     const errors = validationResult(req);
 
     if (!errors.isEmpty()) {
       return errorResponse(res, errors.array(), "")
     }
-    const {img}=req.body;
-    const result=await cloudinaryConfig.uploader.upload(img,{
-      folder:"Product",})
-   //width:300,
-  //crop:scale
-  const Product= await dashboardImageQuery({img:
-    {
-    public_id:result.public_id,
-    url:result.secure_url
-  }
-});
- console.log(Product)
-return successResponse(res, Product, "img successfully saved");
+    
 }
  catch (error) {
     next(error);
   }
-}
+}*/
 
 
 export const getUserProject = async (req, res, next) => {
@@ -90,7 +78,7 @@ export const getUserProject = async (req, res, next) => {
     if (!errors.isEmpty()) {
       return errorResponse(res, errors.array(), "")
     }
-    const { emp_id } = req.body;
+    const { emp_id } = req.params.emp_id;
     const [data] = await fetchUserProjectQuery([emp_id])
     if (data.length == 0) {
       return notFoundResponse(res, '', 'user project not fetched successfully');

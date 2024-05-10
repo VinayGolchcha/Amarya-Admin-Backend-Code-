@@ -305,14 +305,8 @@ export const userUpdateProjectVal = [
     body('end_month').optional().isString().withMessage('Invalid end_month input').notEmpty().withMessage('end_month cannot be empty')
 ]
 export const getActIdVal = [
-<<<<<<< HEAD
-    param('id').isInt().withMessage('Invalid id input.').notEmpty().withMessage('id cannot be empty.')
-]
-
-=======
     param('id').isInt().withMessage('Invalid id input.').notEmpty().withMessage('id cannot be empty.'),
 ]
 export const getUserVal = [
     param('emp_id').isString().withMessage('Invalid emp_id input.').notEmpty().withMessage('emp_id cannot be empty.')
 ]
->>>>>>> f00df081aaa55674028b95914cfe42d7aefdd8e8
