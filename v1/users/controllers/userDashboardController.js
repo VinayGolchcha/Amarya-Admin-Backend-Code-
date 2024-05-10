@@ -1,5 +1,5 @@
 import { validationResult } from "express-validator";
-import { fetchAnnouncementsQuery, fetchActivityQuery,userDashboardProfileQuery,fetchUserProjectQuery,dashboardImageQuery} from "../models/userDashboardQuery.js";
+import { fetchAnnouncementsQuery, fetchActivityQuery,userDashboardProfileQuery,fetchUserProjectQuery} from "../models/userDashboardQuery.js";
 import { successResponse, errorResponse, notFoundResponse } from "../../../utils/response.js";
 import dotenv from "dotenv";
 import cloudinaryConfig from "../../../config/cloudinary.js";
