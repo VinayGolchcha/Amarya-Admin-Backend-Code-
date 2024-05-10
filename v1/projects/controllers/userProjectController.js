@@ -37,7 +37,7 @@ export const createUserProject = async (req, res, next) => {
 
 export const fetchUserProjects = async(req, res, next) =>{
     try{
-        const project_id = req.body.project_id;
+        const project_id = req.params.project_id;
         const [user] = await getUserProjectQuery([project_id]);
         if (user.length == 0 ){
             return notFoundResponse(res, '', 'User project not found');
