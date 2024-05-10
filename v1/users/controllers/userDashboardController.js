@@ -63,19 +63,7 @@ export const uploadDashImage = async (req, res, next) => {
     if (!errors.isEmpty()) {
       return errorResponse(res, errors.array(), "")
     }
-    const {img}=req.body;
-    const result=await cloudinaryConfig.uploader.upload(img,{
-      folder:"Product",})
-   //width:300,
-  //crop:scale
-  const Product= await dashboardImageQuery({img:
-    {
-    public_id:result.public_id,
-    url:result.secure_url
-  }
-});
- console.log(Product)
-return successResponse(res, Product, "img successfully saved");
+    
 }
  catch (error) {
     next(error);
