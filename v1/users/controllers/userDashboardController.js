@@ -38,14 +38,14 @@ export const getAllActivities = async (req, res, next) => {
   }
 };
 
-export const userProfileDashboard = async (req, res, next) => {
+export const getuserProfileDashboard = async (req, res, next) => {
   try {
     const errors = validationResult(req);
 
     if (!errors.isEmpty()) {
       return errorResponse(res, errors.array(), "")
     }
-    const { emp_id } = req.body;
+    const { emp_id } = req.params.emp_id;
     const [data] = await userDashboardProfileQuery([emp_id])
     if (data.length == 0) {
       return notFoundResponse(res, '', 'Employee Data  not found.');
@@ -56,7 +56,7 @@ export const userProfileDashboard = async (req, res, next) => {
   }
 }
 
-export const uploadDashImage = async (req, res, next) => {
+/*export const uploadDashImage = async (req, res, next) => {
   try {
     const errors = validationResult(req);
 
@@ -68,7 +68,7 @@ export const uploadDashImage = async (req, res, next) => {
  catch (error) {
     next(error);
   }
-}
+}*/
 
 
 export const getUserProject = async (req, res, next) => {
@@ -78,7 +78,7 @@ export const getUserProject = async (req, res, next) => {
     if (!errors.isEmpty()) {
       return errorResponse(res, errors.array(), "")
     }
-    const { emp_id } = req.body;
+    const { emp_id } = req.params.emp_id;
     const [data] = await fetchUserProjectQuery([emp_id])
     if (data.length == 0) {
       return notFoundResponse(res, '', 'user project not fetched successfully');
