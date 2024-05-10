@@ -10,7 +10,7 @@ app.put('/admin/update-project/:id/:category_id',updateProjectVal, updateProject
 app.get('/fetch-all-projects', fetchProjects);
 app.delete('/admin/delete-project/:id/:category_id',deleteIdVal, deleteProject);
 app.post('/create-user-project',createUserProjectVal,createUserProject);
-app.get('/fetch-user-project', fetchUserProjects);
+app.get('/fetch-user-project/:project_id', fetchUserProjects);
 app.put('/update-user-project/:id', userUpdateProject);
 
 
