@@ -142,7 +142,7 @@ export const deleteActivity = async(req,res,next) => {
     if (!errors.isEmpty()) {
       return errorResponse(res, errors.array(), "");
     }
-    const { id } = req.body;
+    const id  = req.params.id;
     let [data] = await deleteActivityQuery([id]);
     if (data.affectedRows == 0){
       return notFoundResponse(res, '', 'Activity not found, wrong input.');

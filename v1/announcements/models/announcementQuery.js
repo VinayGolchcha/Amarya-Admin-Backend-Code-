@@ -18,13 +18,10 @@ export const addAnnouncementQuery = (array)=> {
 export const fetchAnnouncementsQuery = ()=> {
     let query = `
         SELECT
-        title,
-        description,
-        priority,
-        DATE_FORMAT(from_date, '%Y-%m-%d') AS from_date,
-        DATE_FORMAT(to_date, '%Y-%m-%d') AS to_date
+        *
     FROM
         announcements
+    WHERE event_type = 'announcement'
     ORDER BY
         created_at DESC;
     `

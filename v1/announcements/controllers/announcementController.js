@@ -145,7 +145,7 @@ export const filterAnnouncementByDate = async (req, res, next) => {
       }
       const date = req.params.date;
       let event_type = "announcement";
-      let array = await fetchActivityQuery([event_type]);
+      let array = await fetchActivityQuery([event_type ]);
       const result = array[0].filter((item) => item.created_at.toISOString().includes(date));
       if (result.length === 0) {
         return notFoundResponse(res, result, "Announcement not found in specified date");
