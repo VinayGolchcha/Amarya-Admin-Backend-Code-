@@ -166,7 +166,7 @@ export const leaveRequestVal = [
     body('from_date').notEmpty().withMessage('from_date cannot be empty.').isDate().withMessage("from_date must be a date."), 
     body('to_date').notEmpty().withMessage('to_date cannot be empty.').isDate().withMessage("to_date must be a date."),
 ]
-export const getAllLeaveCountVal = [
+export const getUserLeaveDashboardData= [
     param('id').isAlphanumeric().withMessage('Invalid id input.').notEmpty().withMessage('id cannot be empty.'),
 ]
 
