@@ -107,7 +107,8 @@ export const getAllActivities = async (req, res, next) => {
     if (!errors.isEmpty()) {
       return errorResponse(res, errors.array(), "");
     }
-    let [data] = await fetchActivityQuery();
+    let event_type = "activity";
+    let [data] = await fetchActivityQuery([event_type]);
     return successResponse(res, data, "Activiy Fetched Successfully");
   } catch (err) {
     next(err);

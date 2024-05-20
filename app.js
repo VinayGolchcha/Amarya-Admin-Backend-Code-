@@ -21,9 +21,13 @@ import stickynotesRoutes from "./v1/stickynotes/routes/stickynotesRoutes.js";
 import activityRoutes from "./v1/activity/routes/activityRoutes.js";
 import dashboardRoutes from "./v1/dashboard/routes/dashboardRoutes.js";
 import { runCronJobs } from './crons/schedulers.js';
+<<<<<<< HEAD
 import userdashboardRoutes from './v1/users/routes/userdashboardRoutes.js';
 import feedbackRoutes from './v1/users/routes/feedbackRoutes.js';
 // import policiesRoutes from "./v1/policies/routes/policiesRoutes.js"
+=======
+import policiesRoutes from "./v1/policies/routes/policiesRoutes.js"
+>>>>>>> 7d04545e0668e16092569c26c3c3e031045d54aa
 
 const app = express();
 config();
@@ -49,11 +53,16 @@ app.use('/api/v1/category', categoryRoutes);
 app.use('/api/v1/project', projectRoutes);
 app.use("/api/v1/stickynotes", stickynotesRoutes);
 app.use("/api/v1/activity", activityRoutes);
+<<<<<<< HEAD
 app.use('api/v1/feedback',feedbackRoutes);
 app.use("/api/v1/dashboard" , userdashboardRoutes);
 app.use('api/v1/feedback',feedbackRoutes);
 app.use("/api/v1/dashboard" , dashboardRoutes);
 // app.use("/api/v1/policy", policiesRoutes);
+=======
+app.use("/api/v1/dashboard" , dashboardRoutes)
+app.use("/api/v1/policy", policiesRoutes);
+>>>>>>> 7d04545e0668e16092569c26c3c3e031045d54aa
 // Catch-all route for undefined routes
 app.use('/', (req, res) => {
   res.send({
