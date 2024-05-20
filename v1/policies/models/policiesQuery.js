@@ -4,8 +4,8 @@ export const addPolicyQuery = (array) => {
     let query = `
     insert into policies (
         policy_type,
-        policy_description
-    ) VALUES (? ,?);`;
+        image_data  
+    ) VALUES (? , ?);`;
     return pool.query(query,array);
 
 }
@@ -19,7 +19,7 @@ export const deletePolicyQuery = (array) => {
 export const fetchPolicyQuery = () => {
     let query = ` SELECT
     policy_type,
-    policy_description
+    image_data
     FROM
     policies;`;
     return pool.query(query);
