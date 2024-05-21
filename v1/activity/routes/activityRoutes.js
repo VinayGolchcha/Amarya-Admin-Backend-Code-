@@ -9,7 +9,7 @@ const router = Router();
 
 
 app.post("/admin/add-activity", upload.array('files', 10), crAnnVal, addActivity);
-app.get("/filter-activity-by-date",activityDateVal, filterActivityByDate);
+app.get("/filter-activity-by-date/:date",activityDateVal, filterActivityByDate);
 app.get("/get-activity/:id", getActIdVal, getActivityById);
 app.put("/admin/update-activity/:id", upload.array('files', 10), upAnnVal, updateActivity);
 app.delete("/admin/delete-activity/:id", delAnnVal , deleteActivity);
