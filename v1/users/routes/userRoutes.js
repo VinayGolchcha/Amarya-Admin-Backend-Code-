@@ -18,6 +18,8 @@ app.get('/get-user-profile/:emp_id' , getUserVal, getUserProfile);
 app.put('/update-user-profile/:id' , upload.single('file'), updateUserProfile);
 
 
+
+
 app.use("/", router);
 
 export default app;
