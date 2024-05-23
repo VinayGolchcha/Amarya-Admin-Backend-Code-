@@ -289,20 +289,13 @@ export const createUserProjectVal = [
     body('emp_id').isString().notEmpty().withMessage('Employee id cannot be empty.').isAlphanumeric().withMessage('Invalid employee id input.'),
     body('tech').notEmpty().withMessage('technology cannot be empty.').isString().withMessage('Invalid technology  input.'),
     body('team_id').isInt().withMessage('Invalid team id input').notEmpty().withMessage('team id cannot be empty'),
-    body('status').isString().withMessage('Invalid project status input').notEmpty().withMessage('project status cannot be empty'),
     body('project_manager').isString().withMessage('Invalid project manager input').notEmpty().withMessage('project manager cannot be empty'),
-    body('start_month').optional().isString().withMessage('Invalid start_month input').notEmpty().withMessage('start_month cannot be empty'),
-    body('end_month').optional().isString().withMessage('Invalid end_month input').notEmpty().withMessage('end_month cannot be empty')
+    body('start_month').optional().custom((value) => isValidMonthYear(value)).withMessage('Invalid value format'),
+    body('end_month').optional().custom((value) => isValidMonthYear(value)).withMessage('Invalid value format'),
 ]
 export const userUpdateProjectVal = [
-    body('project_id').isString().withMessage('Invalid project id input.').notEmpty().withMessage('project id cannot be empty.'),
-    body('emp_id').isString().notEmpty().withMessage('Employee id cannot be empty.').isAlphanumeric().withMessage('Invalid employee id input.'),
-    body('tech').notEmpty().withMessage('technology cannot be empty.').isString().withMessage('Invalid technology  input.'),
-    body('team_id').isString().withMessage('Invalid team id input').notEmpty().withMessage('team id cannot be empty'),
-    body('status').isString().withMessage('Invalid project status input').notEmpty().withMessage('project status cannot be empty'),
-    body('project_manager').isString().withMessage('Invalid project manager input').notEmpty().withMessage('project manager cannot be empty'),
-    body('start_month').optional().isString().withMessage('Invalid start_month input').notEmpty().withMessage('start_month cannot be empty'),
-    body('end_month').optional().isString().withMessage('Invalid end_month input').notEmpty().withMessage('end_month cannot be empty')
+    body('start_month').optional().custom((value) => isValidMonthYear(value)).withMessage('Invalid value format'),
+    body('end_month').optional().custom((value) => isValidMonthYear(value)).withMessage('Invalid value format'),
 ]
 export const getActIdVal = [
     param('id').isInt().withMessage('Invalid id input.').notEmpty().withMessage('id cannot be empty.'),
@@ -310,3 +303,14 @@ export const getActIdVal = [
 export const getUserVal = [
     param('emp_id').isString().withMessage('Invalid emp_id input.').notEmpty().withMessage('emp_id cannot be empty.')
 ]
+
+export const feedbackVal = [
+    body('emp_id').isString().withMessage('Invalid emp_id input.').notEmpty().withMessage('emp_id cannot be empty.'),
+    body('subject').isString().withMessage('Invalid input.').notEmpty().withMessage('subject cannot be empty.'),
+    body('description').isString().withMessage('Invalid input.').notEmpty().withMessage('description cannot be empty.')
+]
+
+const isValidMonthYear = (value) => {
+    const regex = /^(0[1-9]|1[0-2])\/\d{2}$/;
+    return regex.test(value);
+};

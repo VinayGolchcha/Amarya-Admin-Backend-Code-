@@ -1,15 +1,8 @@
-const temporary_notesTable = `
-CREATE TABLE IF NOT EXISTS temporary_notes (
+const temporaryNotesTable = `
+CREATE TABLE IF NOT EXISTS temporaryNotes (
     _id INT AUTO_INCREMENT PRIMARY KEY,
     emp_id varchar(255) NOT NULL,
-    note varchar(150)
+    note varchar(250)
   )`;
 
-// const temporary_notesTable = `
-// CREATE TABLE IF NOT EXISTS temporary_notes (
-//     _id INT AUTO_INCREMENT PRIMARY KEY,
-//     emp_id varchar(255) NOT NULL,
-//     note varchar(255)
-//   )`;
-
-export default temporary_notesTable;
+export default temporaryNotesTable;
