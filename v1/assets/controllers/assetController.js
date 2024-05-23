@@ -6,6 +6,8 @@ import { successResponse, errorResponse, notFoundResponse } from "../../../utils
 import { insertAssetQuery, getLastAssetIdQuery, insertUserAssetDataQuery, fetchUserAssetsQuery, deleteAssetQuery, getAssetDataQuery, fetchAssetsQuery, updateAssetQuery } from "../models/assetQuery.js";
 import {insertApprovalQuery} from "../../approvals/models/assetApprovalQuery.js";
 import { incrementId, createDynamicUpdateQuery } from "../../helpers/functions.js"
+import { insertAssetImageQuery, deleteImageQuery, fetchImagesForAssetQuery } from "../../images/imagesQuery.js";
+import {uploadImageToCloud, deleteImageFromCloud} from "../../helpers/cloudinary.js";
 dotenv.config();
 
 
@@ -26,8 +28,17 @@ export const createAsset = async (req, res, next) => {
             id = asset_data[0].asset_id
         }
         const asset_id = await incrementId(id)
+        let image_url;
+        const file = req.file;
+        const { asset_type, item, purchase_date, warranty_period, price, model_number, item_description } = req.body;
 
-        const { asset_type, item, purchase_date, warranty_period, price, model_number, item_description, image_url } = req.body;
+        if(file){
+            const imageBuffer = file.buffer;
+            let uploaded_data = await uploadImageToCloud(imageBuffer);
+            await insertAssetImageQuery(["asset", uploaded_data.secure_url, uploaded_data.public_id, asset_id, file.originalname])
+            image_url = uploaded_data.secure_url
+        }
+
         await insertAssetQuery([
             asset_id,
             asset_type,
@@ -41,6 +52,7 @@ export const createAsset = async (req, res, next) => {
             new Date(),
             new Date(),
         ]);
+
         return successResponse(res, 'Asset successfully added');
     } catch (error) {
         next(error);
@@ -57,6 +69,13 @@ export const updateAsset = async(req, res, next) => {
 
         const req_data = req.body;
         const id = req.params.id;
+        const file = req.file;
+
+        if((req_data.public_id).length > 0){
+            await deleteImageFromCloud(req_data.public_id);
+            await deleteImageQuery([req_data.public_id])
+        }
+        delete req_data.public_id;
 
         let table = 'assets';
 
@@ -66,6 +85,12 @@ export const updateAsset = async(req, res, next) => {
 
         let query_values = await createDynamicUpdateQuery(table, condition, req_data)
         let [data] = await updateAssetQuery(query_values.updateQuery, query_values.updateValues)
+
+        if(file){
+            const imageBuffer = file.buffer;
+            let uploaded_data = await uploadImageToCloud(imageBuffer);
+            await insertAssetImageQuery(["asset", uploaded_data.secure_url, uploaded_data.public_id, id, file.originalname])
+        }
 
         if (data.affectedRows == 0){
             return notFoundResponse(res, '', 'Asset not found, wrong input.');
@@ -149,6 +174,13 @@ export const deleteAsset = async(req, res, next) => {
         if (data.length == 0) {
             return errorResponse(res, errors.array(), "Data not found")
         }else{
+            let [array_of_ids] = await fetchImagesForAssetQuery([asset_id])
+            const public_ids = array_of_ids.map(item => item.public_id);
+            for (let public_id of public_ids){
+              await deleteImageFromCloud(public_id);
+              await deleteImageQuery([public_id])
+            }
+        
             await deleteAssetQuery([asset_id]);
             return successResponse(res, "", 'Asset Deleted Successfully');
         }

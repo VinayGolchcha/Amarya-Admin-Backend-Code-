@@ -143,7 +143,7 @@ export const filterAnnouncementByDate = async (req, res, next) => {
       if (!errors.isEmpty()) {
         return errorResponse(res, errors.array(), "");
       }
-      const date = req.body.date;
+      const date = req.params.date;
       let event_type = "announcement";
       let array = await fetchActivityQuery([event_type]);
       const result = array[0].filter((item) => item.created_at.toISOString().includes(date));

@@ -2,6 +2,7 @@ import { validationResult } from "express-validator";
 import { addPolicyQuery, deletePolicyQuery, fetchPolicyQuery, updatePolicyQuery } from "../models/policiesQuery.js";
 import { errorResponse, notFoundResponse, successResponse } from "../../../utils/response.js";
 import dotenv from "dotenv";
+
 dotenv.config();
 
 export const handleAddPolicy = async (req ,res , next) => {
@@ -10,11 +11,12 @@ export const handleAddPolicy = async (req ,res , next) => {
         if(!errors.isEmpty()){
             return errorResponse(res, error.array() ,"");
         }
-        const {policy_type , policy_description} = req.body;    
+        const {policy_type , image_data } = req.body;
         let [data] = await addPolicyQuery([
             policy_type,
-            policy_description
+            image_data
         ])
+
         return successResponse(res,data,"Policy added Successfully");
     }
     catch (err){
@@ -27,7 +29,7 @@ export const handleDeletePolicy = async(req,res,next) =>  {
         if(!errors.isEmpty()){
             return errorResponse(res, error.array() ,"");
         }
-        const { id } = req.body;
+        const { id } = req.params.id;
         let [data] = await deletePolicyQuery([id]);
 
         if (data.affectedRows == 0) {
