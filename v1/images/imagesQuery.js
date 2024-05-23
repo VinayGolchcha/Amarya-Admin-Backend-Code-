@@ -87,3 +87,13 @@ export const fetchImagesForAssetQuery = (array)=> {
         throw(err);
     }
 }
+
+export const fetchImagesForDashboardQuery = ()=> {
+    try{
+    let query = `SELECT public_id, image_url, original_filename FROM images WHERE type = 'dashboard'`
+    return pool.query(query);}
+    catch(err){
+        console.log("Error in executing in the fetchImagesForDashboardQuery:" , err);
+        throw(err);
+    }
+}

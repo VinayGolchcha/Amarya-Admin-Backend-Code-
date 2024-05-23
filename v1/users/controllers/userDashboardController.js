@@ -3,6 +3,7 @@ import { fetchActivityORAnnouncementQuery, updateUserCompletedProjectCountQuery,
 import { successResponse, errorResponse, notFoundResponse } from "../../../utils/response.js";
 import { feedbackFormQuery, fetchFeebackQuery} from '../models/userFeedbackQuery.js';
 import { getUserDataByUserIdQuery } from '../models/userQuery.js';
+import { fetchImagesForDashboardQuery } from '../../images/imagesQuery.js';
 import dotenv from "dotenv";
 dotenv.config();
 
@@ -85,6 +86,26 @@ export const fetchFeedbackData = async (req, res, next) => {
     }
 
     return successResponse(res, data, 'Feedback send successfully.');
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getDashboardImages = async (req, res, next) => {
+  try {
+    const errors = validationResult(req);
+
+    if (!errors.isEmpty()) {
+      return errorResponse(res, errors.array(), "")
+    }
+
+    const [data] = await fetchImagesForDashboardQuery();
+    
+    if(data.length == 0) {
+      return notFoundResponse(res, '', 'Data not found.');
+    }
+
+    return successResponse(res, data, 'Images fetched successfully.');
   } catch (error) {
     next(error);
   }
