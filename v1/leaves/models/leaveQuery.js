@@ -140,7 +140,10 @@ export const deleteLeaveTypeAndCountQuery = async (array) => {
 
 export const fetchLeavesCountQuery = () => {
     try {
-        let query = `SELECT _id, leave_type_id, leave_type, leave_count, gender FROM leaveTypeCounts`
+        let query = `SELECT leaveTypeCounts._id, leaveTypeCounts.leave_type_id, leaveTypeCounts.leave_type, leaveTypeCounts.leave_count, lt.description, leaveTypeCounts.gender
+        FROM leaveTypeCounts
+        JOIN leaveTypes AS lt ON lt._id = leaveTypeCounts.leave_type_id;
+        `
         return pool.query(query);
     } catch (error) {
         console.error("Error executing fetchLeavesCountQuery:", error);
