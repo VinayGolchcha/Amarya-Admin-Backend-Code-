@@ -2,13 +2,13 @@ import express, { Router } from 'express';
 const app = express()
 const router = Router();
 
-import {fetchAnnouncements,getAllActivities,getuserProfileDashboard,getUserProject} from '../controllers/userDashboardController.js';
+import { userDashboard, feedbackForm, fetchFeedbackData} from '../controllers/userDashboardController.js';
+import { feedbackVal } from '../../../utils/validation.js';
 
-app.get('/dashboard-fetch-announcement',fetchAnnouncements);
-app.get('/dashboard-fetch-activity', getAllActivities);
-app.get('/dashboard-user-profile/:emp_id',getuserProfileDashboard);
-//app.post('/dashboard-image',uploadDashImage);
-app.get('/dashboard-project/:emp_id',getUserProject);
+
+app.post('/user-dashboard-feedback', feedbackVal,feedbackForm);
+app.get('/admin/fetch-user-feedback', fetchFeedbackData);
+app.get('/user-dashboard/:emp_id', userDashboard);
 
 app.use("/", router);
 export default app;
