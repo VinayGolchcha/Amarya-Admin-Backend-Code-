@@ -8,9 +8,8 @@ export const addActivityQuery = (array)=> {
         from_date, 
         to_date, 
         title, 
-        description,
-        image_data 
-    ) VALUES (?,?,?,?,?,?,?);`
+        description
+    ) VALUES (?,?,?,?,?,?);`
     return pool.query(query, array);}
     catch(err){
         console.log("Error in executing in the addActivityQuery:" , err);
@@ -27,4 +26,9 @@ export const getActivityByIdQuery = (array) => {
         console.log("Error in executing in the getActivityByIdQuery:" , err);
         throw(err);
     }
+}
+
+export const getLastActivityIdQuery = () =>{
+    let query = `SELECT _id FROM announcements ORDER BY _id DESC LIMIT 1`
+    return pool.query(query);
 }

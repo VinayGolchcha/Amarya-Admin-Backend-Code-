@@ -2,8 +2,10 @@ import {successResponse, errorResponse, notFoundResponse} from "../../../utils/r
 import { validationResult } from "express-validator";
 import {addAnnouncementQuery, fetchActivityQuery, updateAnnouncementQuery, deleteActivityQuery} from "../../announcements/models/announcementQuery.js";
 import dotenv from "dotenv";
-import { addActivityQuery, getActivityByIdQuery } from "../query/activityQuery.js";
+import { addActivityQuery, getActivityByIdQuery, getLastActivityIdQuery } from "../query/activityQuery.js";
 import { crossOriginResourcePolicy } from "helmet";
+import {uploadImageToCloud, deleteImageFromCloud} from "../../helpers/cloudinary.js";
+import { insertActivityImageQuery, deleteImageQuery, fetchImagesForActivityQuery, fetchImagesBasedOnIdForActivityQuery } from "../../images/imagesQuery.js";
 dotenv.config();
 
 export const addActivity = async (req, res, next) => {
@@ -13,12 +15,8 @@ export const addActivity = async (req, res, next) => {
     if (!errors.isEmpty()) {
       return errorResponse(res, errors.array(), "");
     }
-    const { event_type, priority, from_date, to_date, title, description , image_data } =
-      req.body;
-    if(!image_data){
-      return errorResponse(res, ["image data is not empty" ], "");
-    }
-    const Image = Buffer.from(image_data, 'base64');
+    const files = req.files;
+    const { event_type, priority, from_date, to_date, title, description} = req.body;
     const current_date = new Date();
     const check_from_date = new Date(from_date);
     const check_to_date = new Date(to_date);
@@ -35,17 +33,23 @@ export const addActivity = async (req, res, next) => {
       return notFoundResponse(res, "", "Event type not supported");
     }
 
-    
-
     let [data] = await addActivityQuery([
       event_type,
       priority,
       from_date,
       to_date,
       title,
-      description,
-      Image
+      description
     ]);
+    
+    const [last_id] = await getLastActivityIdQuery();
+
+    for (let image of files){
+      const imageBuffer = image.buffer;
+      let uploaded_data = await uploadImageToCloud(imageBuffer);
+      await insertActivityImageQuery([event_type, uploaded_data.secure_url, uploaded_data.public_id, last_id[0]._id, image.originalname])
+    }
+
     return successResponse(res, data, "Activity added successfully");
   } catch (error) {
     next(error);
@@ -60,8 +64,19 @@ export const updateActivity = async (req, res, next) => {
       return errorResponse(res, errors.array(), "");
     }
 
+    const files = req.files;
     const req_data = req.body;
     const id = req.params.id;
+
+    if((req_data.public_ids).length > 0){
+      const public_ids = JSON.parse(req_data.public_ids);
+         //delete image
+      for (let public_id of public_ids){
+          await deleteImageFromCloud(public_id);
+          let [image_data] = await deleteImageQuery([public_id])
+        }
+    }
+    delete req_data.public_ids;
 
     let updateQuery = "UPDATE announcements SET ";
     let updateValues = [];
@@ -95,6 +110,14 @@ export const updateActivity = async (req, res, next) => {
     if (data.affectedRows == 0) {
       return notFoundResponse(res, "", "Activity not found, wrong input.");
     }
+
+    //Upload new image
+    for (let image of files){
+      const imageBuffer = image.buffer;
+      let uploaded_data = await uploadImageToCloud(imageBuffer);
+      await insertActivityImageQuery(["activity", uploaded_data.secure_url, uploaded_data.public_id, id, image.originalname])
+    }
+
     return successResponse(res, data, "Activity Updated Successfully");
   } catch (error) {
     next(error);
@@ -104,6 +127,7 @@ export const updateActivity = async (req, res, next) => {
 export const getAllActivities = async (req, res, next) => {
   try {
     const errors = validationResult(req);
+
     if (!errors.isEmpty()) {
       return errorResponse(res, errors.array(), "");
     }
@@ -122,7 +146,7 @@ export const filterActivityByDate = async (req, res, next) => {
     if (!errors.isEmpty()) {
       return errorResponse(res, errors.array(), "");
     }
-    const date = req.params.date;
+    const date = req.body.date;
     let event_type = "activity";
     let array = await fetchActivityQuery([event_type]);
     const result = array[0].filter((item) => item.created_at.toISOString().includes(date));
@@ -142,11 +166,19 @@ export const deleteActivity = async(req,res,next) => {
     if (!errors.isEmpty()) {
       return errorResponse(res, errors.array(), "");
     }
-    const { id } = req.body;
+    const id = req.params.id;
     let [data] = await deleteActivityQuery([id]);
     if (data.affectedRows == 0){
       return notFoundResponse(res, '', 'Activity not found, wrong input.');
     }
+
+    let [array_of_ids] = await fetchImagesForActivityQuery([id])
+    const public_ids = array_of_ids.map(item => item.public_id);
+    for (let public_id of public_ids){
+      await deleteImageFromCloud(public_id);
+      let [image_data] = await deleteImageQuery([public_id])
+    }
+
     return successResponse(res, '', 'Activity Deleted Successfully');
   } catch (err) {
     next(err);
@@ -164,6 +196,9 @@ export const getActivityById = async(req ,res , next) => {
     if (data.length === 0){
       return notFoundResponse(res, '', 'Activity not found, wrong input.');
     }
+
+    let [image_data] = await fetchImagesBasedOnIdForActivityQuery([id])
+    data.push(image_data);
     return successResponse(res, data, "Activiy Fetched Successfully");
   }catch(err){
     next(err);
