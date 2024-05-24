@@ -259,7 +259,8 @@ export const getallUserLeaveDataQuery = async(array)=>{
         DATE_FORMAT(to_date, '%Y-%m-%d') AS to_date,
         leave_type,
         DATEDIFF(to_date,from_date) + 1 AS total_days,
-        status
+        status,
+        'HR' AS manager
         FROM leaveDatesAndReasons
         WHERE emp_id = ?
         `
