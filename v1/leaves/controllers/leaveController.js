@@ -62,6 +62,9 @@ export const updateHoliday = async (req, res, next) => {
 export const fetchHolidayList = async (req,res,next) => {
     try {
         const [data] = await fetchHolidayListQuery();
+        if (data.length == 0) {
+            return notFoundResponse(res, "", "Data not found");
+        }
         return successResponse(res, data, 'Holiday List fetched successfully');
     }catch(error) {
         next(error);
@@ -78,7 +81,7 @@ export const deleteHoliday = async(req,res,next) => {
 
         const [data] = await getHolidayDataQuery([id]);
         if (data.length == 0) {
-            return errorResponse(res, errors.array(), "Data not found");
+            return notFoundResponse(res, "", "Data not found");
         }else{
             await deleteHolidayQuery([id]);
             return successResponse(res, "", 'Data Deleted Successfully');
@@ -253,14 +256,15 @@ export const leaveRequest = async (req, res, next) => {
     }
 }
 
-export const getAllUsersLeaveCountByAdmin =async (req, res, next) => {
+export const getUserLeaveDataForDashboard =async (req, res, next) => {
     try {
         const emp_id = req.params.id
-        const [data] = await getAllUsersLeaveCountQuery([emp_id]);
-        if (data.length == 0) {
+        const [user_data] = await getAllUsersLeaveCountQuery([emp_id]);
+        const [holiday_list_data] = await fetchHolidayListQuery();
+        if (user_data.length == 0) {
             return notFoundResponse(res, '', 'Data not found.');
         }
-        return successResponse(res, data, "Data fetched successfully");
+        return successResponse(res, {user_data, holiday_list_data}, "Data fetched successfully");
     } catch (error) {
         next(error);
     }
