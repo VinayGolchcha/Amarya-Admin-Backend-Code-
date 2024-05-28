@@ -8,7 +8,6 @@ CREATE TABLE IF NOT EXISTS announcements (
     title varchar(255),
     description varchar(255),
     is_new TINYINT(1) DEFAULT 1,
-    image_data VARCHAR(255),
     created_at datetime DEFAULT CURRENT_TIMESTAMP,
     updated_at datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY (_id)

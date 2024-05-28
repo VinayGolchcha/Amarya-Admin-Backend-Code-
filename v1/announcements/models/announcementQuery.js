@@ -41,22 +41,16 @@ export const updateAnnouncementQuery = (query, array)=> {
     return pool.query(query, array);
 }
 
-export const fetchActivityQuery = () => {
+export const fetchActivityQuery = (array) => {
     let query = `SELECT
-    title,
-    description,
-    priority,
-    is_new,
-    DATE_FORMAT(from_date, '%Y-%m-%d') AS from_date,
-    DATE_FORMAT(to_date, '%Y-%m-%d') AS to_date,
-    created_at
+    *
     FROM
-    announcements WHERE event_type = 'activity'`;
-    return pool.query(query);
-  };
+    announcements WHERE event_type = ?`;
+    return pool.query(query, array);
+};
   
-   export const deleteActivityQuery = (array) => {
+export const deleteActivityQuery = (array) => {
     let query = `DELETE FROM announcements WHERE _id = ?`;
     return pool.query(query, array);
-   }
+}
   
