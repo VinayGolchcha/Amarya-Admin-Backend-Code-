@@ -1,5 +1,6 @@
 import { validationResult } from "express-validator";
-import { fetchActivityORAnnouncementQuery, updateUserCompletedProjectCountQuery, userDashboardProfileQuery, fetchUserProjectQuery, fetchUserCurrentProjectQuery } from "../models/userDashboardQuery.js";
+import { fetchActivityORAnnouncementQuery, updateUserCompletedProjectCountQuery, userDashboardProfileQuery, fetchUserProjectQuery,
+  fetchUserCurrentProjectQuery, fetchPointsMonthWiseQuery, fetchPointsYearWiseQuery } from "../models/userDashboardQuery.js";
 import { successResponse, errorResponse, notFoundResponse } from "../../../utils/response.js";
 import { feedbackFormQuery, fetchFeebackQuery} from '../models/userFeedbackQuery.js';
 import { getUserDataByUserIdQuery } from '../models/userQuery.js';
@@ -109,4 +110,34 @@ export const getDashboardImages = async (req, res, next) => {
   } catch (error) {
     next(error);
   }
+};
+
+export const fetchUserPointsMonthlyAndYearly = async (req, res, next) => {
+    try {
+        const errors = validationResult(req);
+
+        if (!errors.isEmpty()) {
+          return errorResponse(res, errors.array(), "")
+        }
+
+        const emp_id = req.params.emp_id
+        const [month_data] = await fetchPointsMonthWiseQuery([emp_id]);
+        const [year_data] = await fetchPointsYearWiseQuery([emp_id]);
+
+        if (month_data.length == 0) {
+          return notFoundResponse(res, '', 'Month data not found.');
+        }
+        else if (year_data.length == 0){
+          return notFoundResponse(res, '', 'Year data not found.');
+        }
+
+        const graph_data = {
+          month_data: month_data,
+          year_data: year_data
+        }
+
+        return successResponse(res, graph_data , 'Points data fetched successfully.');
+    } catch (error) {
+      next(error);
+    } 
 };
