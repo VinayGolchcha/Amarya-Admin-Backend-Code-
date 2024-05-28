@@ -12,8 +12,8 @@ import {insertEmpImageQuery, deleteImageQuery} from "../../images/imagesQuery.js
 dotenv.config();
 
 import {userRegistrationQuery, getUserDataByUsernameQuery, userDetailQuery, updateTokenQuery, updateUserProfileQuery,
-        getLastEmployeeIdQuery, updateUserPasswordQuery, getAllLeaveCounts, insertUserLeaveCountQuery, checkUserNameAvailabilityQuery, insertOtpQuery, getOtpQuery,
-        getUserDataByUserIdQuery} from "../models/userQuery.js";
+        getLastEmployeeIdQuery, updateUserPasswordQuery, getAllLeaveCounts, insertUserLeaveCountQuery, checkUserNameAvailabilityQuery, insertOtpQuery, getOtpQuery,getUserDataByUserIdQuery
+        ,checkUserDataByUserIdQuery} from "../models/userQuery.js";
 
 export const userRegistration = async (req, res, next) => {
     try {
@@ -266,7 +266,7 @@ export const updateUserProfile = async(req, res, next) => {
         };
         const req_data = req.body;
 
-        let [exist_id] = await getUserDataByUserIdQuery([id])
+        let [exist_id] = await checkUserDataByUserIdQuery([id])
 
         if (exist_id.length > 0) {
             if((req_data.public_id).length > 0){
