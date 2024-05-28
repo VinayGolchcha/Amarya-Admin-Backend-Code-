@@ -18,8 +18,11 @@ import skillSetTable from "../v1/skillsets/models/skillsetModel.js";
 import temporary_notesTable from "../v1/stickynotes/models/stickynotesModel.js";
 import policiesTable from "../v1/policies/models/policiesModel.js";
 import userTeamsTable from "../v1/users/models/userTeamsModel.js";
+import userYearlyPerformanceTable from "../v1/worksheets/models/userYearlyPerformanceModel.js";
+import userPerformanceTable from "../v1/worksheets/models/userPerformanceModel.js";
 
 export default [userTable, assetTable, trainingTable, usertrainingTable, assetRequestTable, approvalTable, announcementTable,
     holidayTable, leaveDatesAndReasonTable,leaveTypeTable, leaveTypeCountTable, userLeaveCountTable, categoryTable, teamTable,
-    projectTable, worksheetTable, skillSetTable , temporary_notesTable , policiesTable, userTeamsTable
+    projectTable, worksheetTable, skillSetTable , temporary_notesTable , policiesTable, userTeamsTable,
+    userYearlyPerformanceTable, userPerformanceTable
 ];
