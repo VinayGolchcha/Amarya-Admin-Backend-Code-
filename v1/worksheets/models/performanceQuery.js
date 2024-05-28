@@ -66,11 +66,36 @@ export const fetchTeamCountQuery = () => {
 
 export const fetchTeamNameQuery = (array) => {
     try {
-        let query = `SELECT team
-        FROM teams WHERE _id = ? `
+        let query = `SELECT _id, team FROM teams WHERE _id = ?`
         return pool.query(query, array);
     } catch (error) {
         console.error("Error executing fetchTeamNameQuery:", error);
+        throw error;
+    }
+}
+
+export const updateUserPointsQuery = (month, performance, emp_id) =>{
+    try {
+        let query = `UPDATE userPerformance SET ${month} = ? WHERE emp_id = ?;`
+        return pool.query(query, [performance, emp_id]);
+    } catch (error) {
+        console.error("Error executing updateUserPointsQuery:", error);
+        throw error;
+    }
+}
+
+export const insertYearlyDataOfUsersPerformanceQuery = (year) =>{
+    try {
+        let query =`INSERT INTO userYearlyPerformance (emp_id, points, year)
+                    SELECT emp_id, 
+                        (COALESCE(jan, 0) + COALESCE(feb, 0) + COALESCE(mar, 0) + COALESCE(apr, 0) +
+                            COALESCE(may, 0) + COALESCE(jun, 0) + COALESCE(jul, 0) + COALESCE(aug, 0) +
+                            COALESCE(sep, 0) + COALESCE(oct, 0) + COALESCE(nov, 0) + COALESCE(decm, 0)) AS total,
+                        ? AS year
+                    FROM userPerformance;`
+        return pool.query(query, [year]);
+    } catch (error) {
+        console.error("Error executing getAllUsersQuery:", error);
         throw error;
     }
 }
