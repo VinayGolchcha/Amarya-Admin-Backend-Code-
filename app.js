@@ -21,7 +21,7 @@ import stickynotesRoutes from "./v1/stickynotes/routes/stickynotesRoutes.js";
 import activityRoutes from "./v1/activity/routes/activityRoutes.js";
 import dashboardRoutes from "./v1/dashboard/routes/dashboardRoutes.js";
 import { runCronJobs } from './crons/schedulers.js';
-import userDashboardRoutes from './v1/users/routes/userDashboardRoutes.js';
+import userDashboardRoutes from './v1/users/routes/userdashboardRoutes.js';
 import policiesRoutes from "./v1/policies/routes/policiesRoutes.js"
 
 const app = express();
