@@ -15,14 +15,17 @@ import teamTable from "../v1/teams/models/teamModel.js";
 import projectTable from "../v1/projects/models/projectModel.js";
 import worksheetTable from "../v1/worksheets/models/worksheetModel.js";
 import skillSetTable from "../v1/skillsets/models/skillsetModel.js";
-import temporary_notesTable from "../v1/stickynotes/models/stickynotesModel.js";
+import temporaryNotesTable from "../v1/stickynotes/models/stickynotesModel.js";
 import policiesTable from "../v1/policies/models/policiesModel.js";
 import userTeamsTable from "../v1/users/models/userTeamsModel.js";
+import imagesTable from "../v1/images/imagesModel.js";
+import feedbackFormTable from "../v1/users/models/userFeedbackModel.js";
+import userProjectTable from "../v1/projects/models/userProjectModel.js";
 import userYearlyPerformanceTable from "../v1/worksheets/models/userYearlyPerformanceModel.js";
 import userPerformanceTable from "../v1/worksheets/models/userPerformanceModel.js";
 
 export default [userTable, assetTable, trainingTable, usertrainingTable, assetRequestTable, approvalTable, announcementTable,
     holidayTable, leaveDatesAndReasonTable,leaveTypeTable, leaveTypeCountTable, userLeaveCountTable, categoryTable, teamTable,
-    projectTable, worksheetTable, skillSetTable , temporary_notesTable , policiesTable, userTeamsTable,
-    userYearlyPerformanceTable, userPerformanceTable
+    projectTable, worksheetTable, skillSetTable , temporaryNotesTable , policiesTable, userTeamsTable,
+    userYearlyPerformanceTable, userPerformanceTable, imagesTable, feedbackFormTable, userProjectTable
 ];

@@ -24,15 +24,25 @@ export const runCronJobs = () => {
 
     cron.schedule('30 17 * * *', async () => {
         try {
-            const current_date = new Date();
-            const deletion_date = new Date(current_date.setDate(current_date.getDate() - 35));
-
-            const query = `DELETE FROM worksheets WHERE date < ?`;
-            await pool.query(query, [deletion_date]);
+            const query_count = `SELECT COUNT(*) as count FROM worksheets`;
+            const [rows] = await pool.query(query_count);
+            const count = rows[0].count;
+    
+            if (count > 0) {
+                const current_date = new Date();
+                const deletion_date = new Date(current_date.setDate(current_date.getDate() - 35));
+    
+                const delete_query = `DELETE FROM worksheets WHERE date < ?`;
+                await pool.query(delete_query, [deletion_date]);
+                console.log('Deletion completed successfully.');
+            } else {
+                console.log('No entries found in worksheet. Skipping deletion.');
+            }
         } catch (error) {
             console.error('Error executing cron deletion scheduler:', error);
         }
     });
+    
 
     cron.schedule('40 22 1 * *', async () => {
         try {

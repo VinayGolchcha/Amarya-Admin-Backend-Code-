@@ -3,14 +3,14 @@ import pool from "../../../config/db.js";
 export const fetchEmployeeCountQuery = () => {
     try{
         let sql = `
-    SELECT t.team, COUNT(u._id) AS employee_count
-    FROM teams t
-    LEFT JOIN users u ON t._id = u.teams
-    GROUP BY t.team
+        SELECT team_id, team , COUNT(*) AS num_employees
+        FROM userteams join teams on userteams.team_id = teams._id
+        GROUP BY team_id;
   `;
     return pool.query(sql);
     }catch(err){
-        console.log(err);
-        
+        console.log("Error in executing the fetchEmployeeCountQuery : " , err);
+        throw(err)
     }
 }
+

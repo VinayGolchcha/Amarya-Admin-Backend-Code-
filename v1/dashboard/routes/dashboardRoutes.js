@@ -5,6 +5,7 @@ const router = Router();
 
 app.get('/admin/employee/count/all', fetchEmployeeCount);
 
+
 app.use("/", router);
 
 export default app;

@@ -134,9 +134,15 @@ export const getOtpQuery = (array) => {
     }
 }
 
-export const getUserDataByUserIdQuery = (array)=> {
+export const checkUserDataByUserIdQuery = (array)=> {
+    try{
     let query = `SELECT * FROM users WHERE emp_id = ?`
     return pool.query(query, array);
+    }
+    catch (error) {
+        console.error("Error executing checkUserDataByUserIdQuery:", error);
+        throw error;
+}
 }
 
 export const updateUserProfileQuery = async (query,array) => {
@@ -144,6 +150,15 @@ export const updateUserProfileQuery = async (query,array) => {
         return pool.query(query, array);
     } catch (error) {
         console.error("Error executing updateUserProfileQuery:", error);
+        throw error;
+    }
+}
+export const getUserDataByUserIdQuery = (array) =>{
+    try {
+        let query = `SELECT * FROM users WHERE emp_id=?`
+        return pool.query(query, array);
+    } catch (error) {
+        console.error("Error executing getUserDataByUserIdQuery:", error);
         throw error;
     }
 }

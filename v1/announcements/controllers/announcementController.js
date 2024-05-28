@@ -3,7 +3,7 @@ import { validationResult } from "express-validator";
 import bcrypt from "bcrypt"
 import dotenv from "dotenv"
 import { successResponse, errorResponse, notFoundResponse } from "../../../utils/response.js"
-import { addAnnouncementQuery, fetchAnnouncementsQuery, deleteAnnouncementQuery, updateAnnouncementQuery} from "../models/announcementQuery.js";
+import { addAnnouncementQuery, fetchAnnouncementsQuery, deleteAnnouncementQuery, updateAnnouncementQuery, fetchActivityQuery} from "../models/announcementQuery.js";
 dotenv.config();
 
 
@@ -135,3 +135,23 @@ export const updateAnnouncements = async(req, res, next) => {
         next(error);
     }
 }
+
+export const filterAnnouncementByDate = async (req, res, next) => {
+    try {
+      const errors = validationResult(req);
+  
+      if (!errors.isEmpty()) {
+        return errorResponse(res, errors.array(), "");
+      }
+      const date = req.params.date;
+      let event_type = "announcement";
+      let array = await fetchActivityQuery([event_type]);
+      const result = array[0].filter((item) => item.created_at.toISOString().includes(date));
+      if (result.length === 0) {
+        return notFoundResponse(res, result, "Announcement not found in specified date");
+      }
+      return successResponse(res, result, "Announcement Fetched Successfully");
+    } catch (err) {
+      next(err);
+    }
+  };
