@@ -2,7 +2,7 @@ import pool from "../config/db.js"
 import XlsxPopulate from "xlsx-populate"
 import fs from 'fs/promises';
 import { getWorkingDaysCountPreviousMonth } from "../v1/helpers/functions.js"
-import { getCategoryTotalPointsQuery, getUserPointsQuery, updateUserPerformanceQuery} from "../v1/worksheets/models/performanceQuery.js"
+import { getCategoryTotalPointsQuery, getUserPointsQuery, updateUserPerformanceQuery, updateUserPointsQuery, insertYearlyDataOfUsersPerformanceQuery} from "../v1/worksheets/models/performanceQuery.js"
 
 export const updateEntries = async () => {
   try {
@@ -82,6 +82,12 @@ export const generateUserWorksheetExcel = async () => {
 
 export const calculatePerformanceForEachEmployee = async () => {
   try {
+      const date = new Date();
+      const previous_month = date.getMonth() === 0 ? 11 : date.getMonth() - 1;
+      const month_names = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'decm']
+
+      // Get the name of the previous month
+      const previous_month_name = month_names[previous_month];
       let number_of_working_days_previous_month = getWorkingDaysCountPreviousMonth()    
 
       let [category_points_can_be_earned_per_day] = await getCategoryTotalPointsQuery()
@@ -97,11 +103,27 @@ export const calculatePerformanceForEachEmployee = async () => {
           monthly_performance = Math.round(monthly_performance)
           // Add Performance to user table
          await updateUserPerformanceQuery([monthly_performance, emp_id])
+         await updateUserPointsQuery(previous_month_name, earned_points, emp_id)
       }
 
       return `Performance Updated successfully.`;
   } catch (error) {
     console.error("Error executing calculatePerformanceForEachEmployee:", error);
+    throw error;
+  }
+};
+
+export const updateYearlyDataForEachEmployee = async () => {
+  try {
+
+      const date = new Date();
+      const current_year = date.getFullYear();
+      const previous_year = current_year - 1;
+
+      await insertYearlyDataOfUsersPerformanceQuery(previous_year)
+      return `Performance Updated for Yearly successfully.`;
+  } catch (error) {
+    console.error("Error executing updateYearlyDataForEachEmployee:", error);
     throw error;
   }
 };

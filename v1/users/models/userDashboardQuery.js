@@ -139,3 +139,13 @@ export const fetchUserCurrentProjectQuery= async (array) =>{
         throw error;
     }
 }
+
+export const fetchPointsMonthWiseQuery = (array) => {
+    let query = `SELECT emp_id, jan, feb, mar, apr, may, jun, jul, aug, sep, oct, nov, decm FROM  userPerformance WHERE emp_id = ?;`
+    return pool.query(query, array);
+};
+
+export const fetchPointsYearWiseQuery = (array) => {
+    let query = `SELECT emp_id, year, points FROM  userYearlyPerformance WHERE emp_id = ?;`
+    return pool.query(query, array);
+};

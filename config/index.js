@@ -21,8 +21,11 @@ import userTeamsTable from "../v1/users/models/userTeamsModel.js";
 import imagesTable from "../v1/images/imagesModel.js";
 import feedbackFormTable from "../v1/users/models/userFeedbackModel.js";
 import userProjectTable from "../v1/projects/models/userProjectModel.js";
+import userYearlyPerformanceTable from "../v1/worksheets/models/userYearlyPerformanceModel.js";
+import userPerformanceTable from "../v1/worksheets/models/userPerformanceModel.js";
 
 export default [userTable, assetTable, trainingTable, usertrainingTable, assetRequestTable, approvalTable, announcementTable,
     holidayTable, leaveDatesAndReasonTable,leaveTypeTable, leaveTypeCountTable, userLeaveCountTable, categoryTable, teamTable,
-    projectTable, worksheetTable, skillSetTable , temporaryNotesTable , policiesTable, userTeamsTable, imagesTable, feedbackFormTable, userProjectTable
+    projectTable, worksheetTable, skillSetTable , temporaryNotesTable , policiesTable, userTeamsTable,
+    userYearlyPerformanceTable, userPerformanceTable, imagesTable, feedbackFormTable, userProjectTable
 ];
