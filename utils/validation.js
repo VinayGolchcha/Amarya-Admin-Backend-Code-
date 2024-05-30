@@ -253,8 +253,7 @@ export const verifyOtpVal = [
 ]
 
 export const addPolicyVal = [
-    body('policy_type').isString().withMessage('Invalid policy_type input.').notEmpty().withMessage('policy type cannot be empty.'),
-    body('image_data').notEmpty().withMessage('policy description cannot be empty.'),
+    body('policy_heads').isString().withMessage('Invalid input.').notEmpty().withMessage('policy_heads cannot be empty.')
 ]
 
 export const delPolicyVal = [
