@@ -1,9 +1,9 @@
 import express, { Router } from 'express';
-import { fetchEmployeeCount } from '../controllers/dashboardControllers.js';
+import { adminDashboard } from '../controllers/dashboardController.js';
 const app = express()
 const router = Router();
 
-app.get('/admin/employee/count/all', fetchEmployeeCount);
+app.get('/admin/admin-dashboard', adminDashboard);
 
 
 app.use("/", router);
