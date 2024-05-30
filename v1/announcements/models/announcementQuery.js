@@ -18,7 +18,7 @@ export const addAnnouncementQuery = (array)=> {
 export const fetchAnnouncementsQuery = ()=> {
     let query = `
                 SELECT
-                    _id
+                    _id,
                     title,
                     description,
                     priority,
