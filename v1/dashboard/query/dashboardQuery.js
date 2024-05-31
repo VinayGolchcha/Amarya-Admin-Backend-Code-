@@ -140,3 +140,24 @@ export const fetchAllProjectsDataQuery = () =>{
         throw error;
     }
 }
+
+export const fetchApprovalDataQuery = () =>{
+    try {
+        let query = `SELECT
+                        _id,
+                        emp_id,
+                        foreign_id,
+                        request_type,
+                        item,
+                        status,
+                        subject,
+                        body,
+                        request_date
+                    FROM approvals ORDER BY created_at DESC;
+        `
+        return pool.query(query);
+    } catch (error) {
+        console.error("Error executing fetchApprovalDataQuery:", error);
+        throw error;
+    }
+}
