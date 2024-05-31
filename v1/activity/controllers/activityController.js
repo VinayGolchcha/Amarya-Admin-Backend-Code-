@@ -1,8 +1,8 @@
 import {successResponse, errorResponse, notFoundResponse} from "../../../utils/response.js";
 import { validationResult } from "express-validator";
-import {addAnnouncementQuery, fetchActivityQuery, updateAnnouncementQuery, deleteActivityQuery} from "../../announcements/models/announcementQuery.js";
+import {addAnnouncementQuery, updateAnnouncementQuery, deleteActivityQuery} from "../../announcements/models/announcementQuery.js";
 import dotenv from "dotenv";
-import { addActivityQuery, getActivityByIdQuery, getLastActivityIdQuery } from "../query/activityQuery.js";
+import { addActivityQuery, getActivityByIdQuery, getLastActivityIdQuery, fetchActivityQuery } from "../query/activityQuery.js";
 import { crossOriginResourcePolicy } from "helmet";
 import {uploadImageToCloud, deleteImageFromCloud} from "../../helpers/cloudinary.js";
 import { insertActivityImageQuery, deleteImageQuery, fetchImagesForActivityQuery, fetchImagesBasedOnIdForActivityQuery } from "../../images/imagesQuery.js";
@@ -77,6 +77,7 @@ export const updateActivity = async (req, res, next) => {
         }
     }
     delete req_data.public_ids;
+    delete req_data.files;
 
     let updateQuery = "UPDATE announcements SET ";
     let updateValues = [];
@@ -133,7 +134,33 @@ export const getAllActivities = async (req, res, next) => {
     }
     let event_type = "activity";
     let [data] = await fetchActivityQuery([event_type]);
-    return successResponse(res, data, "Activiy Fetched Successfully");
+
+    const activities = data.map(row => {
+      const imageUrls = row.image_urls ? row.image_urls.split(',') : [];
+      const originalFilenames = row.original_filenames ? row.original_filenames.split(',') : [];
+      const publicIds = row.public_ids ? row.public_ids.split(',') : [];
+
+      const images = imageUrls.map((image_url, index) => ({
+          image_url,
+          original_filename: originalFilenames[index],
+          public_id: publicIds[index]
+      }));
+
+      return {
+          activity_id: row._id,
+          event_type: row.event_type,
+          priority: row.priority,
+          from_date: row.from_date,
+          to_date: row.to_date,
+          title: row.title,
+          description: row.description,
+          is_new: row.is_new,
+          created_at: row.created_at,
+          updated_at: row.updated_at,
+          images
+      };
+  });
+    return successResponse(res, activities, "Activiy Fetched Successfully");
   } catch (err) {
     next(err);
   }
@@ -196,7 +223,6 @@ export const getActivityById = async(req ,res , next) => {
     if (data.length === 0){
       return notFoundResponse(res, '', 'Activity not found, wrong input.');
     }
-
     let [image_data] = await fetchImagesBasedOnIdForActivityQuery([id])
     data.push(image_data);
     return successResponse(res, data, "Activiy Fetched Successfully");

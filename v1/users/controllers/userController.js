@@ -274,6 +274,7 @@ export const updateUserProfile = async(req, res, next) => {
                 await deleteImageQuery([req_data.public_id])
             }
             delete req_data.public_id;
+            delete req_data.file;
 
             if(file){
                 const imageBuffer = file.buffer;
