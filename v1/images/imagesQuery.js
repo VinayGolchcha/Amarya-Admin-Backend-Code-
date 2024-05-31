@@ -38,7 +38,7 @@ export const fetchImagesForActivityQuery = (array)=> {
 
 export const fetchImagesBasedOnIdForActivityQuery = (array)=> {
     try{
-    let query = `SELECT public_id, image_url, original_filename FROM images WHERE activity_id = ?`
+    let query = `SELECT public_id, image_url, original_filename FROM images WHERE activity_id = ? AND type = 'activity'`
     return pool.query(query, array);}
     catch(err){
         console.log("Error in executing in the fetchImagesBasedOnId:" , err);

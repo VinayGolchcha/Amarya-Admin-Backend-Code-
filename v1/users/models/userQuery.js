@@ -156,10 +156,28 @@ export const updateUserProfileQuery = async (query,array) => {
 
 export const getUserDataByUserIdQuery = (array) =>{
     try {
-        let query = `SELECT * FROM users WHERE emp_id=?`
+        let query = `SELECT
+                    users.*,
+                    images.public_id
+                FROM
+                    users
+                LEFT JOIN
+                    images ON images.emp_id = users.emp_id
+                WHERE
+                    users.emp_id = ?;`
         return pool.query(query, array);
     } catch (error) {
         console.error("Error executing getUserDataByUserIdQuery:", error);
+        throw error;
+    }
+}
+
+export const updateUserProfilePictureQuery = async (array) => {
+    try {
+        let query = `UPDATE users SET profile_picture = ? WHERE emp_id = ?`
+        return pool.query(query, array);
+    } catch (error) {
+        console.error("Error executing updateUserProfilePictureQuery:", error);
         throw error;
     }
 }
