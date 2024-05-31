@@ -19,11 +19,11 @@ export const createUserWorksheet = async (req, res, next) => {
         seven_days_ago.setDate(current_date.getDate() - 7);
         const check_date = new Date(date);
         if(check_date.toISOString().split('T')[0] < seven_days_ago.toISOString().split('T')[0] ){
-            return errorResponse(res, errors.array(), "Date should be greater than or equal to last seven days");
+            return notFoundResponse(res, '', "Date should be greater than or equal to last seven days");
         }
 
         if(description.length >200){
-            return errorResponse(res, errors.array(), "Description must be written in less than 200 characters");
+            return notFoundResponse(res, '', "Description must be written in less than 200 characters");
         }
         const [data] = await insertUserWorksheetQuery([emp_id, team_id,project_id, category_id, skill_set_id, description, date]);
         return successResponse(res,{_id: data.insertId}, 'Worksheet filled successfully.');
