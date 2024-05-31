@@ -29,7 +29,13 @@ export const deleteUserWorksheetQuery = async (array) => {
 }
 export const fetchUserWorksheetQuery = async (empId) => {
     try {
-        let query = `SELECT * FROM worksheets WHERE emp_id = ? ORDER BY date DESC`;
+        let query = `SELECT w.*, p.project, c.category, t.team
+            FROM worksheets as w
+            LEFT JOIN projects AS p ON w.project_id = p._id
+            LEFT JOIN categories AS c ON w.category_id = c._id
+            LEFT JOIN teams AS t ON w.team_id = t._id
+            WHERE emp_id = ? 
+            ORDER BY date DESC`;
         return await pool.query(query, [empId]);
     } catch (error) {
         console.error("Error executing fetchUserWorksheetQuery:", error);
