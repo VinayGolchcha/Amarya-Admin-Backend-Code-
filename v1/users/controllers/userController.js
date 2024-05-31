@@ -13,7 +13,7 @@ dotenv.config();
 
 import {userRegistrationQuery, getUserDataByUsernameQuery, userDetailQuery, updateTokenQuery, updateUserProfileQuery,
         getLastEmployeeIdQuery, updateUserPasswordQuery, getAllLeaveCounts, insertUserLeaveCountQuery, checkUserNameAvailabilityQuery, insertOtpQuery, getOtpQuery,getUserDataByUserIdQuery
-        ,checkUserDataByUserIdQuery} from "../models/userQuery.js";
+        ,checkUserDataByUserIdQuery, updateUserProfilePictureQuery} from "../models/userQuery.js";
 
 export const userRegistration = async (req, res, next) => {
     try {
@@ -280,6 +280,7 @@ export const updateUserProfile = async(req, res, next) => {
                 const imageBuffer = file.buffer;
                 let uploaded_data = await uploadImageToCloud(imageBuffer);
                 await insertEmpImageQuery(["profile", uploaded_data.secure_url, uploaded_data.public_id, id, file.originalname])
+                await updateUserProfilePictureQuery([uploaded_data.secure_url, id])
             }
             let query_values = await createDynamicUpdateQuery(table, condition, req_data)
             let [data] = await updateUserProfileQuery(query_values.updateQuery, query_values.updateValues);
