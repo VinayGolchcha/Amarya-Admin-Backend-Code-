@@ -3,6 +3,7 @@ import dotenv from "dotenv"
 import { successResponse, errorResponse, notFoundResponse, unAuthorizedResponse } from "../../../utils/response.js"
 import { insertUserWorksheetQuery, updateUserWorksheetQuery, deleteUserWorksheetQuery, fetchUserWorksheetQuery } from "../models/query.js"
 import { incrementId, createDynamicUpdateQuery } from "../../helpers/functions.js"
+import pool from "../../../config/db.js"
 dotenv.config();
 
 export const createUserWorksheet = async (req, res, next) => {
@@ -80,11 +81,24 @@ export const fetchUserWorksheet = async (req, res, next) => {
             return errorResponse(res, errors.array(), "")
         }
         const emp_id = req.params.emp_id
-        const [data] = await fetchUserWorksheetQuery([emp_id]);
-        if (data.length == 0) {
-            return notFoundResponse(res, '', 'Data not found.');
+        const [worksheets] = await fetchUserWorksheetQuery([emp_id]);
+        for (let worksheet of worksheets) {
+            const skill_ids = worksheet.skill_set_id.split(',').map(id => id.trim());
+            if (skill_ids.length > 0) {
+                const placeholders = skill_ids.map((data) => data).join(',');
+                const [skills] = await pool.query(
+                `SELECT skill FROM skillSets WHERE _id IN (${placeholders})`,
+                skill_ids
+            );
+                worksheet.skills = skills.map(skill => skill.skill);
+            } else {
+                worksheet.skills = [];
+            }
         }
-        return successResponse(res, data, 'worksheet fetched successfully.');
+        if (worksheets.length == 0) {
+            return notFoundResponse(res, '', 'worksheets not found.');
+        }
+        return successResponse(res, worksheets, 'worksheet fetched successfully.');
     } catch (error) {
         next(error);
     }
