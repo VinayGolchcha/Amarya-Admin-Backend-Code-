@@ -1,6 +1,6 @@
 import { validationResult } from "express-validator";
 import dotenv from "dotenv"
-import { successResponse, errorResponse, notFoundResponse, unAuthorizedResponse } from "../../../utils/response.js"
+import { successResponse, errorResponse, notFoundResponse, unAuthorizedResponse, internalServerErrorResponse } from "../../../utils/response.js"
 import { incrementId, createDynamicUpdateQuery } from "../../helpers/functions.js"
 import { deleteProjectQuery, getAllProjectQuery, insertProjectQuery, updateProjectWorksheetQuery, checkProjectIdAndCategoryIdQuery } from "../models/query.js";
 dotenv.config();
@@ -16,7 +16,7 @@ export const createProject = async (req, res, next) => {
         const [data]= await insertProjectQuery([project, category_id, client_name, project_status,project_manager, project_lead,  start_month, end_month]);
         return successResponse(res,{project_id: data.insertId}, 'Project created successfully.');
     } catch (error) {
-        next(error);
+        return internalServerErrorResponse(res, error);
     }
 };
 
@@ -47,7 +47,7 @@ export const updateProject = async(req, res, next) => {
         await updateProjectWorksheetQuery(query_values.updateQuery, query_values.updateValues);
         return successResponse(res, 'Project updated successfully.');
     } catch (error) {
-        next(error);
+        return internalServerErrorResponse(res, error);
     }
 }
 
@@ -64,7 +64,7 @@ export const fetchProjects = async(req, res, next) =>{
         }
         return successResponse(res, data,'Projects fetched successfully.');
     } catch (error) {
-        next(error);
+        return internalServerErrorResponse(res, error);
     }
 }
 
@@ -80,6 +80,6 @@ export const deleteProject = async (req, res, next) => {
         await deleteProjectQuery([projecy_id, category_id]);
         return successResponse(res, 'project deleted successfully.');
     } catch (error) {
-        next(error);
+        return internalServerErrorResponse(res, error);
     }
 };
