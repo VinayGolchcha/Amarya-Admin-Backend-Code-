@@ -3,10 +3,10 @@ const app = express()
 const router = Router();
 import {allAppVal} from '../../../utils/validation.js'
 import {approvalByAdmin} from '../controllers/approvalController.js';
+import {authenticateAdminSession} from "../../../middlewares/adminAuth.js"
 
 
-
-app.put("/admin/approval",allAppVal, approvalByAdmin)
+app.put("/admin/approval",authenticateAdminSession, allAppVal, approvalByAdmin)
 app.use("/", router);
 
 export default app;

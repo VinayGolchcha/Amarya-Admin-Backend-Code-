@@ -1,6 +1,6 @@
 import { validationResult } from "express-validator";
 import dotenv from "dotenv"
-import { successResponse, errorResponse, notFoundResponse, unAuthorizedResponse } from "../../../utils/response.js"
+import { successResponse, errorResponse, notFoundResponse, unAuthorizedResponse, internalServerErrorResponse } from "../../../utils/response.js"
 import { incrementId, createDynamicUpdateQuery } from "../../helpers/functions.js"
 import { insertUserProjectQuery,getUserProjectQuery,userUpdateProjectQuery,checkProjectIdQuery, getUserProjectTimelineQuery} from "../models/userProjectQuery.js";
 dotenv.config();
@@ -30,7 +30,7 @@ export const createUserProject = async (req, res, next) => {
             project_manager]);
         return successResponse(res, 'success', 'User Project created successfully.');
     } catch (error) {
-        next(error);
+        return internalServerErrorResponse(res, error);
     }
 };
 
@@ -48,7 +48,7 @@ export const fetchUserProjects = async(req, res, next) =>{
         }
         return successResponse(res, user, 'User project data fetched successfully');
     } catch (error) {
-        next(error);
+        return internalServerErrorResponse(res, error);
     }
 }
 
@@ -79,7 +79,7 @@ export const userUpdateProject = async(req, res, next) => {
         }
     }
     catch(error){
-        next(error);
+        return internalServerErrorResponse(res, error);
     }
 }
 
@@ -97,7 +97,7 @@ export const getUserProjectTimeline = async(req, res, next)=> {
         }
         return successResponse(res, user, 'User project data fetched successfully');
     } catch (error) {
-        next(error);
+        return internalServerErrorResponse(res, error);
     }
 
 }

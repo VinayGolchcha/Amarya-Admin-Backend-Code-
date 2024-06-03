@@ -6,7 +6,7 @@ import {
     getallUserLeaveDataQuery
 } from "../../leaves/models/leaveQuery.js"
 import { leaveTakenCountQuery } from "../../approvals/models/leaveApprovalQuery.js"
-import { successResponse, errorResponse, notFoundResponse, unAuthorizedResponse } from "../../../utils/response.js"
+import { successResponse, errorResponse, notFoundResponse, unAuthorizedResponse, internalServerErrorResponse } from "../../../utils/response.js"
 import { incrementId, createDynamicUpdateQuery } from "../../helpers/functions.js"
 import { validationResult } from "express-validator";
 dotenv.config();
@@ -26,7 +26,7 @@ export const addHoliday = async (req, res, next) => {
         await createHoliday([date, holiday]);
         return successResponse(res, '', `Holiday added successfully.`);
     } catch (error) {
-        next(error);
+        return internalServerErrorResponse(res, error);
     }
 }
 
@@ -55,7 +55,7 @@ export const updateHoliday = async (req, res, next) => {
         }
         return successResponse(res, data, 'Holiday Updated Successfully');
     } catch (error) {
-        next(error);
+        return internalServerErrorResponse(res, error);
     }
 }
 
@@ -67,7 +67,7 @@ export const fetchHolidayList = async (req,res,next) => {
         }
         return successResponse(res, data, 'Holiday List fetched successfully');
     }catch(error) {
-        next(error);
+        return internalServerErrorResponse(res, error);
     }
 }
 
@@ -87,7 +87,7 @@ export const deleteHoliday = async(req,res,next) => {
             return successResponse(res, "", 'Data Deleted Successfully');
         }
     }catch(error){
-        next(error);
+        return internalServerErrorResponse(res, error);
     }
 }
 
@@ -115,7 +115,7 @@ export const addLeaveTypeAndCount = async (req, res, next) => {
 
         return successResponse(res, '', `Leave type and count added successfully.`);
     } catch (error) {
-        next(error);
+        return internalServerErrorResponse(res, error);
     }
 };
 
@@ -145,7 +145,7 @@ export const updateLeaveTypeAndCount = async (req, res, next) => {
         }
         return successResponse(res, data, 'Data Updated Successfully');
     } catch (error) {
-        next(error);
+        return internalServerErrorResponse(res, error);
     }
 }
 
@@ -169,7 +169,7 @@ export const deleteLeaveTypeAndCount  = async (req, res,next) => {
         
         return successResponse(res, "",'Data deleted Successfully');
     } catch (error) {
-        next(error);
+        return internalServerErrorResponse(res, error);
     }
 }
 
@@ -186,7 +186,7 @@ export const fetchLeaveTypesAndTheirCount = async (req, res, next) => {
         }
         return successResponse(res, data, 'Leave data fetched successfully');
     } catch (error) {
-        next(error);
+        return internalServerErrorResponse(res, error);
     }
 }
 
@@ -205,7 +205,7 @@ export const fetchLeaveTakenOverview = async (req, res, next) => {
         }
         return successResponse(res, data, 'Leave data fetched successfully');
     } catch (error) {
-        next(error);
+        return internalServerErrorResponse(res, error);
     }
 }
 
@@ -252,7 +252,7 @@ export const leaveRequest = async (req, res, next) => {
 
         return successResponse(res, "", message);
     } catch (error) {
-        next(error);
+        return internalServerErrorResponse(res, error);
     }
 }
 
@@ -266,7 +266,7 @@ export const getUserLeaveDataForDashboard =async (req, res, next) => {
         }
         return successResponse(res, {user_data, holiday_list_data}, "Data fetched successfully");
     } catch (error) {
-        next(error);
+        return internalServerErrorResponse(res, error);
     }
 }
 
@@ -279,7 +279,7 @@ export const getUserLeaveData = async (req, res, next) => {
         }
         return successResponse(res, data, "Data fetched successfully");
     } catch (error) {
-        next(error);
+        return internalServerErrorResponse(res, error);
     }
 }
 export const getUserAllLeaveData = async (req, res, next) => {
@@ -291,6 +291,6 @@ export const getUserAllLeaveData = async (req, res, next) => {
         }
         return successResponse(res, data, "Data fetched successfully");
     } catch (error) {
-        next(error);
+        return internalServerErrorResponse(res, error);
     }
 }

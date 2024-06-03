@@ -1,6 +1,6 @@
 import { validationResult } from "express-validator";
 import dotenv from "dotenv"
-import { successResponse, errorResponse, notFoundResponse, unAuthorizedResponse } from "../../../utils/response.js"
+import { successResponse, errorResponse, notFoundResponse, unAuthorizedResponse, internalServerErrorResponse } from "../../../utils/response.js"
 import { incrementId, createDynamicUpdateQuery } from "../../helpers/functions.js"
 import { deleteSkillSetQuery, getAllSkillSetQuery, insertSkillSetQuery, updateSkillSetQuery, checkSameSkillQuery, getSkillsQuery } from "../models/query.js";
 dotenv.config();
@@ -23,7 +23,7 @@ export const createSkillSet = async (req, res, next) => {
         const [data] = await insertSkillSetQuery([skill]);
         return successResponse(res,{skill_id: data.insertId}, 'skill created successfully.');
     } catch (error) {
-        next(error);
+        return internalServerErrorResponse(res, error);
     }
 };
 
@@ -50,7 +50,7 @@ export const updateSkillSet = async(req, res, next) => {
         let [data] = await updateSkillSetQuery(query_values.updateQuery, query_values.updateValues);
         return successResponse(res, data, 'Skill updated successfully.');
     } catch (error) {
-        next(error);
+        return internalServerErrorResponse(res, error);
     }
 }
 
@@ -67,7 +67,7 @@ export const fetchSkillSets = async(req, res, next) =>{
         }
         return successResponse(res, data,'Skills fetched successfully.');
     } catch (error) {
-        next(error);
+        return internalServerErrorResponse(res, error);
     }
 }
 
@@ -87,6 +87,6 @@ export const deleteSkillSet = async (req, res, next) => {
         await deleteSkillSetQuery([skill_id]);
         return successResponse(res, 'Skill deleted successfully.');
     } catch (error) {
-        next(error);
+        return internalServerErrorResponse(res, error);
     }
 };
