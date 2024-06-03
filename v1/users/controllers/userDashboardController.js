@@ -1,7 +1,7 @@
 import { validationResult } from "express-validator";
 import { fetchActivityORAnnouncementQuery, updateUserCompletedProjectCountQuery, userDashboardProfileQuery, fetchUserProjectQuery,
   fetchUserCurrentProjectQuery, fetchPointsMonthWiseQuery, fetchPointsYearWiseQuery } from "../models/userDashboardQuery.js";
-import { successResponse, errorResponse, notFoundResponse } from "../../../utils/response.js";
+import { successResponse, errorResponse, notFoundResponse, internalServerErrorResponse } from "../../../utils/response.js";
 import { feedbackFormQuery, fetchFeebackQuery} from '../models/userFeedbackQuery.js';
 import { getUserDataByUserIdQuery } from '../models/userQuery.js';
 import { fetchImagesForDashboardQuery } from '../../images/imagesQuery.js';
@@ -41,7 +41,7 @@ export const userDashboard = async (req, res, next) => {
     dashboard_data.push(data)
     return successResponse(res, dashboard_data, "Dashboard Data Fetched Successfully");
   } catch (error) {
-    next(error);
+    return internalServerErrorResponse(res, error);
   }
 };
 
@@ -68,7 +68,7 @@ export const feedbackForm = async (req, res, next) => {
 
     return successResponse(res, '', 'Feedback send successfully.');
   } catch (error) {
-    next(error);
+    return internalServerErrorResponse(res, error);
   }
 };
 
@@ -88,7 +88,7 @@ export const fetchFeedbackData = async (req, res, next) => {
 
     return successResponse(res, data, 'Feedback send successfully.');
   } catch (error) {
-    next(error);
+    return internalServerErrorResponse(res, error);
   }
 };
 
@@ -108,7 +108,7 @@ export const getDashboardImages = async (req, res, next) => {
 
     return successResponse(res, data, 'Images fetched successfully.');
   } catch (error) {
-    next(error);
+    return internalServerErrorResponse(res, error);
   }
 };
 
@@ -138,6 +138,6 @@ export const fetchUserPointsMonthlyAndYearly = async (req, res, next) => {
 
         return successResponse(res, graph_data , 'Points data fetched successfully.');
     } catch (error) {
-      next(error);
+      return internalServerErrorResponse(res, error);
     } 
 };

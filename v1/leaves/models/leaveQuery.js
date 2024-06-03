@@ -36,7 +36,7 @@ export const getHolidayDataQuery = async (array)=>{
     try{
     let query = `SELECT date, holiday FROM holidays WHERE _id = ? `
     return  await pool.query(query, array);
-    }catch(err){
+    }catch(error){
         console.error("Error executing getHolidayDataQuery:", error);
         throw error;
     } 
@@ -46,7 +46,7 @@ export const deleteHolidayQuery = async (array) => {
     try{
         let query = `DELETE FROM holidays WHERE _id = ? `
         return await pool.query(query, array); 
-    }catch(err){
+    }catch(error){
         console.error("Error executing deleteHolidayQuery:", error);
         throw error;
     }

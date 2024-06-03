@@ -1,6 +1,6 @@
 import { validationResult } from "express-validator";
 import dotenv from "dotenv"
-import { successResponse, errorResponse, notFoundResponse } from "../../../utils/response.js"
+import { successResponse, errorResponse, notFoundResponse, internalServerErrorResponse } from "../../../utils/response.js"
 import {assetApprovalQuery, fetchAssetDataQuery, assetRejectionQuery, deleteAssetQuery} from "../models/assetApprovalQuery.js"
 import {fetchTrainingDataQuery, trainingApprovalQuery, trainingRejectionQuery, deleteTrainingQuery} from "../models/trainingApprovalQuery.js"
 import {leaveApprovalQuery, deleteLeaveQuery, leaveRejectionQuery, getUserLeaveDaysQuery, leaveTakenCountQuery} from "../models/leaveApprovalQuery.js"
@@ -94,6 +94,6 @@ export const approvalByAdmin = async (req, res, next) => {
 
         return successResponse(res, "", message);
     } catch (error) {
-        next(error);
+        return internalServerErrorResponse(res, error);
     }
 };
