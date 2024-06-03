@@ -1,37 +1,46 @@
 import { validationResult } from "express-validator";
-import { addPolicyQuery, deletePolicyQuery, fetchPolicyQuery, updatePolicyQuery } from "../models/policiesQuery.js";
+import { addPolicyQuery, deletePolicyQuery, fetchPolicyQuery, fetchPolicyIfExistsQuery } from "../models/policiesQuery.js";
 import { errorResponse, notFoundResponse, successResponse } from "../../../utils/response.js";
 import dotenv from "dotenv";
+
 dotenv.config();
 
-export const handleAddPolicy = async (req ,res , next) => {
+export const addPolicy = async (req, res, next) => {
     try { 
         const errors = validationResult(req);
         if(!errors.isEmpty()){
             return errorResponse(res, error.array() ,"");
         }
-        const {policy_type , policy_description} = req.body;    
+        const file_data = req.file;
+        const {policy_heads} = req.body;
+
+        const [policy_exists] = await fetchPolicyIfExistsQuery();
+
+        if (policy_exists.length > 0) {
+            return errorResponse(res, '', "Policy File already exists, if you want to add new file, pls delete the existing one.");
+        }
+
         let [data] = await addPolicyQuery([
-            policy_type,
-            policy_description
+            policy_heads,
+            file_data.buffer
         ])
-        return successResponse(res,data,"Policy added Successfully");
-    }
-    catch (err){
-        next(err)
+        return successResponse(res, data, "Policy added Successfully");
+    }catch (error){
+        next(error)
     } 
 }
-export const handleDeletePolicy = async(req,res,next) =>  {
+
+export const deletePolicy = async(req,res,next) =>  {
     try{
         const errors = validationResult(req);
         if(!errors.isEmpty()){
             return errorResponse(res, error.array() ,"");
         }
-        const { id } = req.body;
+        const id = req.params.id;
         let [data] = await deletePolicyQuery([id]);
 
         if (data.affectedRows == 0) {
-        return notFoundResponse(res, "", "Policy not found, wrong input.");
+            return notFoundResponse(res, "", "Policy not found, wrong input.");
         }
         return successResponse(res, "", "Policy Deleted Successfully");
     }catch(err) {
@@ -48,58 +57,8 @@ export const fetchPolicy = async(req , res , next) => {
         }
         let [data] = await fetchPolicyQuery();
         return successResponse(res, data , "Policies fetched successfully");
-
-    }catch(err){
-        next(err);
+    }catch(error){
+        next(error);
     }
 
 }
-
-export const handleUpdatePolicy = async (req, res , next) => {
-    try{
-        const errors = validationResult(req);
-        if(!errors.isEmpty()){
-            return errorResponse(res,error.array(),"");
-        }
-        const req_data = req.body;
-    const id = req.params.id;
-
-    let updateQuery = "UPDATE policies SET ";
-    let updateValues = [];
-
-    const condition = {
-      _id: id,
-    };
-
-    Object.keys(req_data).forEach((key, index, array) => {
-      updateQuery += `${key} = ?`;
-      updateValues.push(req_data[key]);
-
-      if (index < array.length - 1) {
-        updateQuery += ", ";
-      }
-    });
-
-    updateQuery += " WHERE ";
-
-    Object.keys(condition).forEach((key, index, array) => {
-      updateQuery += `${key} = ?`;
-      updateValues.push(condition[key]);
-
-      if (index < array.length - 1) {
-        updateQuery += " AND ";
-      }
-    });
-
-    let [data] = await updatePolicyQuery(updateQuery, updateValues);
-
-      
-          if (data.affectedRows == 0) {
-            return notFoundResponse(res, "", "Policy not found, wrong input.");
-          }
-          return successResponse(res, data, "Policy Updated Successfully");
-
-    }catch(err){
-        next(err);
-    }
-} 

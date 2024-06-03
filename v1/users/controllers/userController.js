@@ -7,11 +7,13 @@ import { incrementId, createDynamicUpdateQuery } from "../../helpers/functions.j
 import {sendMail} from "../../../config/nodemailer.js"
 import {getTeamQuery} from "../../teams/models/query.js"
 import {insertTeamToUser} from "../models/userTeamsQuery.js"
+import {uploadImageToCloud, deleteImageFromCloud} from "../../helpers/cloudinary.js";
+import {insertEmpImageQuery, deleteImageQuery} from "../../images/imagesQuery.js";
 dotenv.config();
 
 import {userRegistrationQuery, getUserDataByUsernameQuery, userDetailQuery, updateTokenQuery, updateUserProfileQuery,
-        getLastEmployeeIdQuery, updateUserPasswordQuery, getAllLeaveCounts, insertUserLeaveCountQuery, checkUserNameAvailabilityQuery, insertOtpQuery, getOtpQuery,
-        getUserDataByUserIdQuery} from "../models/userQuery.js";
+        getLastEmployeeIdQuery, updateUserPasswordQuery, getAllLeaveCounts, insertUserLeaveCountQuery, checkUserNameAvailabilityQuery, insertOtpQuery, getOtpQuery,getUserDataByUserIdQuery
+        ,checkUserDataByUserIdQuery, updateUserProfilePictureQuery} from "../models/userQuery.js";
 
 export const userRegistration = async (req, res, next) => {
     try {
@@ -29,10 +31,11 @@ export const userRegistration = async (req, res, next) => {
             id = emp_data[0].emp_id
         }
         const emp_id = await incrementId(id)
+        let image_url
 
+        const file = req.file;
         let { username, first_name, last_name, email, password,
             gender,
-            profile_picture, 
             blood_group,
             mobile_number,
             emergency_contact_number,
@@ -61,6 +64,14 @@ export const userRegistration = async (req, res, next) => {
         if (team_exists.length == 0){
             return successResponse(res, '', 'No team with this name exists.');
         }
+
+        if(file){
+            const imageBuffer = file.buffer;
+            let uploaded_data = await uploadImageToCloud(imageBuffer);
+            await insertEmpImageQuery(["profile", uploaded_data.secure_url, uploaded_data.public_id, emp_id, file.originalname])
+            image_url = uploaded_data.secure_url
+        }
+
         const password_hash = await bcrypt.hash(password.toString(), 12);
         const [user_data] = await userRegistrationQuery([
             emp_id,
@@ -70,7 +81,7 @@ export const userRegistration = async (req, res, next) => {
             last_name,
             email,
             gender,
-            profile_picture, 
+            image_url, 
             blood_group,
             mobile_number,
             emergency_contact_number,
@@ -96,7 +107,6 @@ export const userRegistration = async (req, res, next) => {
             let leaveCount = leaveTypeAndCount[i].leave_count;
             await insertUserLeaveCountQuery([emp_id, leaveType, leaveCount])
         }
-        
         return successResponse(res, user_data, 'User successfully registered');
     } catch (error) {
         next(error);
@@ -223,7 +233,11 @@ export const updateUserPassword = async (req, res, next) => {
 
 export const getUserProfile = async(req,res,next) => {
     try{
-        const emp_id = req.body.emp_id;
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return errorResponse(res, errors.array(), "")
+        }
+        const emp_id = req.params.emp_id;
         const [user] = await getUserDataByUserIdQuery([emp_id]);
         if (user.length == 0 ){
             return notFoundResponse(res, '', 'User not found');
@@ -245,15 +259,29 @@ export const updateUserProfile = async(req, res, next) => {
             return errorResponse(res, errors.array(), "")
         }
         const id = req.params.id;
+        const file = req.file;
         let table = 'users';
         const condition = {
             emp_id: id
         };
         const req_data = req.body;
 
-        let [exist_id] = await getUserDataByUserIdQuery([id])
+        let [exist_id] = await checkUserDataByUserIdQuery([id])
 
         if (exist_id.length > 0) {
+            if((req_data.public_id).length > 0){
+                await deleteImageFromCloud(req_data.public_id);
+                await deleteImageQuery([req_data.public_id])
+            }
+            delete req_data.public_id;
+            delete req_data.file;
+
+            if(file){
+                const imageBuffer = file.buffer;
+                let uploaded_data = await uploadImageToCloud(imageBuffer);
+                await insertEmpImageQuery(["profile", uploaded_data.secure_url, uploaded_data.public_id, id, file.originalname])
+                await updateUserProfilePictureQuery([uploaded_data.secure_url, id])
+            }
             let query_values = await createDynamicUpdateQuery(table, condition, req_data)
             let [data] = await updateUserProfileQuery(query_values.updateQuery, query_values.updateValues);
             return successResponse(res, data, 'User profile updated successfully.');

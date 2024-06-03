@@ -2,7 +2,7 @@ import express, { Router } from 'express';
 const app = express()
 const router = Router();
 import {createUserWorksheet, updateUserWorksheet, deleteUserWorksheet, fetchUserWorksheet} from '../controllers/worksheetController.js';
-import {calculatePerformanceForTeam} from "../controllers/performanceController.js"
+import {calculatePerformanceForTeam } from "../controllers/performanceController.js"
 import {createWorksheetVal, updateWorksheetVal, deleteUserWorksheetVal, fetchUserWorksheetVal} from '../../../utils/validation.js';
 import {authenticateUserSession} from "../../../middlewares/userAuth.js"
 import {authenticateAdminSession} from "../../../middlewares/adminAuth.js"
@@ -19,7 +19,7 @@ app.get("/admin/calculate-team-performance", authenticateAdminSession, calculate
 app.post("/upload-worksheet",generateUserWorksheetExcel)
 
 // ##currently commented, as this is converted to a cron, but needs to be here for testing or any change. DO NOT DELETE OR REMOVE THIS API.
-// app.get("/calculate-performance", calculatePerFormanceForEachEmployee);  
+// app.get("/calculate-performance", lockYearlyEarnedPointsForEachEmployee);  
 
 app.use("/", router);
 

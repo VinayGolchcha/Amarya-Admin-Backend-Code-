@@ -22,7 +22,9 @@ export const checkSameHolidayQuery = async (array) => {
 
 export const fetchHolidayListQuery = async () => {
     try{
-        let query = `SELECT _id, date, holiday FROM holidays`
+        let query = `SELECT _id, date, holiday 
+        FROM holidays 
+        WHERE YEAR(created_at) = YEAR(CURDATE())`
         return await pool.query(query);
     } catch (error) {
         console.error("Error executing fetchHolidayListQuery:", error);
@@ -140,7 +142,10 @@ export const deleteLeaveTypeAndCountQuery = async (array) => {
 
 export const fetchLeavesCountQuery = () => {
     try {
-        let query = `SELECT _id, leave_type_id, leave_type, leave_count, gender FROM leaveTypeCounts`
+        let query = `SELECT leaveTypeCounts._id, leaveTypeCounts.leave_type_id, leaveTypeCounts.leave_type, leaveTypeCounts.leave_count, lt.description, leaveTypeCounts.gender
+        FROM leaveTypeCounts
+        JOIN leaveTypes AS lt ON lt._id = leaveTypeCounts.leave_type_id;
+        `
         return pool.query(query);
     } catch (error) {
         console.error("Error executing fetchLeavesCountQuery:", error);
@@ -257,7 +262,8 @@ export const getallUserLeaveDataQuery = async(array)=>{
         DATE_FORMAT(to_date, '%Y-%m-%d') AS to_date,
         leave_type,
         DATEDIFF(to_date,from_date) + 1 AS total_days,
-        status
+        status,
+        'HR' AS manager
         FROM leaveDatesAndReasons
         WHERE emp_id = ?
         `

@@ -9,7 +9,7 @@ CREATE TABLE IF NOT EXISTS assets (
     price int NOT NULL,
     model_number varchar(50) NOT NULL,
     item_description varchar(255) NOT NULL,
-    image_url varchar(255) NOT NULL,
+    image_url varchar(255) DEFAULT NULL,
     created_at datetime DEFAULT CURRENT_TIMESTAMP,
     updated_at datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY (_id),
