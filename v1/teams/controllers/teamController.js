@@ -1,6 +1,6 @@
 import { validationResult } from "express-validator";
 import dotenv from "dotenv"
-import { successResponse, errorResponse, notFoundResponse, unAuthorizedResponse } from "../../../utils/response.js"
+import { successResponse, errorResponse, notFoundResponse, unAuthorizedResponse, internalServerErrorResponse } from "../../../utils/response.js"
 import { incrementId, createDynamicUpdateQuery } from "../../helpers/functions.js"
 import { deleteTeamQuery, getAllTeamQuery, insertTeamQuery, updateTeamWorksheetQuery, checkSameTeamNameQuery, getTeamQuery } from "../models/query.js";
 dotenv.config();
@@ -21,7 +21,7 @@ export const createTeam = async (req, res, next) => {
         const [data] = await insertTeamQuery([team]);
         return successResponse(res,{team_id: data.insertId}, 'Team created successfully.');
     } catch (error) {
-        next(error);
+        return internalServerErrorResponse(res, error);
     }
 };
 
@@ -49,7 +49,7 @@ export const updateTeam = async(req, res, next) => {
             return notFoundResponse(res, '', 'Team not found.');
         }
     } catch (error) {
-        next(error);
+        return internalServerErrorResponse(res, error);
     }
 }
 
@@ -66,7 +66,7 @@ export const fetchTeams = async(req, res, next) =>{
         }
         return successResponse(res, data,'Teams fetched successfully.');
     } catch (error) {
-        next(error);
+        return internalServerErrorResponse(res, error);
     }
 }
 
@@ -86,6 +86,6 @@ export const deleteTeam = async (req, res, next) => {
         await deleteTeamQuery([team_id]);
         return successResponse(res, 'Team deleted successfully.');
     } catch (error) {
-        next(error);
+        return internalServerErrorResponse(res, error);
     }
 };

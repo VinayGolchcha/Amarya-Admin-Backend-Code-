@@ -6,11 +6,12 @@ const app = express();
 const router = Router();
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
+import {authenticateAdminSession} from "../../../middlewares/adminAuth.js"
+import {authenticateUserAdminSession} from "../../../middlewares/userAdminAuth.js"
 
-
-app.get("/fetch-policy" , fetchPolicy);
-app.post("/admin/add-policy", upload.single('file'), addPolicyVal, addPolicy);
-app.delete("/admin/delete-policy/:id", delPolicyVal , deletePolicy);
+app.get("/fetch-policy" ,authenticateUserAdminSession, fetchPolicy);
+app.post("/admin/add-policy",authenticateAdminSession, upload.single('file'), addPolicyVal, addPolicy);
+app.delete("/admin/delete-policy/:id",authenticateAdminSession, delPolicyVal , deletePolicy);
 
 app.use("/", router);
 export default app;

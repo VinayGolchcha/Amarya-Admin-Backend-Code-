@@ -1,6 +1,6 @@
 import { validationResult } from "express-validator";
 import dotenv from "dotenv"
-import { successResponse, errorResponse, notFoundResponse, unAuthorizedResponse } from "../../../utils/response.js"
+import { successResponse, errorResponse, notFoundResponse, unAuthorizedResponse, internalServerErrorResponse } from "../../../utils/response.js"
 import { insertUserWorksheetQuery, updateUserWorksheetQuery, deleteUserWorksheetQuery, fetchUserWorksheetQuery } from "../models/query.js"
 import { incrementId, createDynamicUpdateQuery } from "../../helpers/functions.js"
 import pool from "../../../config/db.js"
@@ -29,7 +29,7 @@ export const createUserWorksheet = async (req, res, next) => {
         const [data] = await insertUserWorksheetQuery([emp_id, team_id,project_id, category_id, skill_set_id, description, date]);
         return successResponse(res,{_id: data.insertId}, 'Worksheet filled successfully.');
     } catch (error) {
-        next(error);
+        return internalServerErrorResponse(res, error);
     }
 };
 
@@ -53,7 +53,7 @@ export const updateUserWorksheet = async (req, res, next) => {
         await updateUserWorksheetQuery(query_values.updateQuery, query_values.updateValues);
         return successResponse(res, 'worksheet updated successfully.');
     } catch (error) {
-        next(error);
+        return internalServerErrorResponse(res, error);
     }
 }
 
@@ -69,7 +69,7 @@ export const deleteUserWorksheet = async (req, res, next) => {
         await deleteUserWorksheetQuery([worksheet_id, emp_id]);
         return successResponse(res, 'worksheet deleted successfully.');
     } catch (error) {
-        next(error);
+        return internalServerErrorResponse(res, error);
     }
 };
 
@@ -100,6 +100,6 @@ export const fetchUserWorksheet = async (req, res, next) => {
         }
         return successResponse(res, worksheets, 'worksheet fetched successfully.');
     } catch (error) {
-        next(error);
+        return internalServerErrorResponse(res, error);
     }
 }

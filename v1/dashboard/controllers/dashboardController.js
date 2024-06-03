@@ -1,6 +1,6 @@
 import dotenv from "dotenv";
 import { validationResult } from "express-validator";
-import { successResponse } from "../../../utils/response.js";
+import { internalServerErrorResponse, successResponse } from "../../../utils/response.js";
 import { getMonthlyProjectCountQuery, getUserCountOnClientProjectQuery, getTotalProjectsQuery, getUserCountOnClientProjectBasedOnTeamQuery, 
     getEmployeeTeamCountQuery, fetchAllProjectsDataQuery, fetchApprovalDataQuery} from "../query/dashboardQuery.js";
 import {fetchActivityORAnnouncementQuery} from "../../users/models/userDashboardQuery.js"; 
@@ -40,7 +40,7 @@ export const adminDashboard = async(req, res, next) => {
         }
         return successResponse(res, data, 'Employee Count Fetched Successfully');
     } catch (error) {
-        next(error);
+        return internalServerErrorResponse(res, error);
     }
 }
 
@@ -56,7 +56,7 @@ export const fetchApprovalData = async (req, res, next) => {
 
         return successResponse(res, approval_data, "Approvals data fetched successfully");
     } catch (error) {
-        next(error);
+        return internalServerErrorResponse(res, error);
     }
 };
 
@@ -79,6 +79,6 @@ export const fetchActivityAndAnnouncementData = async (req, res, next) => {
 
         return successResponse(res, data, "Acitvites and Announcements fetched successfully");
     } catch (error) {
-        next(error);
+        return internalServerErrorResponse(res, error);
     }
 };

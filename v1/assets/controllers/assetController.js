@@ -2,7 +2,7 @@ import jwt from "jsonwebtoken"
 import { validationResult } from "express-validator";
 import bcrypt from "bcrypt"
 import dotenv from "dotenv"
-import { successResponse, errorResponse, notFoundResponse } from "../../../utils/response.js"
+import { successResponse, errorResponse, notFoundResponse, internalServerErrorResponse } from "../../../utils/response.js"
 import { insertAssetQuery, getLastAssetIdQuery, insertUserAssetDataQuery, fetchUserAssetsQuery, deleteAssetQuery, getAssetDataQuery, fetchAssetsQuery, updateAssetQuery } from "../models/assetQuery.js";
 import {insertApprovalQuery} from "../../approvals/models/assetApprovalQuery.js";
 import { incrementId, createDynamicUpdateQuery } from "../../helpers/functions.js"
@@ -55,7 +55,7 @@ export const createAsset = async (req, res, next) => {
 
         return successResponse(res, 'Asset successfully added');
     } catch (error) {
-        next(error);
+        return internalServerErrorResponse(res, error);
     }
 }
 
@@ -98,7 +98,7 @@ export const updateAsset = async(req, res, next) => {
         }
         return successResponse(res, data, 'Asset Updated Successfully');
     } catch (error) {
-        next(error);
+        return internalServerErrorResponse(res, error);
     }
 }
 
@@ -123,7 +123,7 @@ export const assetRequest = async (req, res, next) => {
         ]);
         return successResponse(res, data, 'Request sent successfully');
     } catch (error) {
-        next(error);
+        return internalServerErrorResponse(res, error);
     }
 }
 
@@ -141,7 +141,7 @@ export const fetchUserAssets = async(req, res, next) => {
         }
         return successResponse(res, data, 'Asset data fetched successfully');
     } catch (error) {
-        next(error);
+        return internalServerErrorResponse(res, error);
     }
 }
 
@@ -158,7 +158,7 @@ export const fetchAssets = async(req, res, next) => {
         }
         return successResponse(res, data, 'Asset data fetched successfully');
     } catch (error) {
-        next(error);
+        return internalServerErrorResponse(res, error);
     }
 }
 
@@ -186,6 +186,6 @@ export const deleteAsset = async(req, res, next) => {
             return successResponse(res, "", 'Asset Deleted Successfully');
         }
     } catch (error) {
-        next(error);
+        return internalServerErrorResponse(res, error);
     }
 }
