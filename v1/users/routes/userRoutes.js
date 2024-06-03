@@ -7,11 +7,10 @@ const upload = multer({ storage: storage });
 import {userRegistration, userLogin, userLogout, updateUserPassword, verifyEmailForPasswordUpdate, sendOtpForPasswordUpdate, getUserProfile, updateUserProfile} from '../controllers/userController.js';
 import {userRegVal, userLogVal, logOutVal, upPassVal, sendOtpVal, verifyOtpVal, getUserVal} from '../../../utils/validation.js';
 import {authenticateUserSession} from "../../../middlewares/userAuth.js"
-import {authenticateAdminSession} from "../../../middlewares/adminAuth.js"
 import {authenticateUserAdminSession} from "../../../middlewares/userAdminAuth.js"
 
 
-app.post('/admin/register', authenticateAdminSession, upload.single('file'), userRegVal, userRegistration);
+app.post('/admin/register', upload.single('file'), userRegVal, userRegistration);
 app.post('/login', userLogVal,  userLogin);
 app.get('/logout/:id', authenticateUserAdminSession, logOutVal, userLogout);
 app.post('/send-otp-password-verification', sendOtpVal, sendOtpForPasswordUpdate);
