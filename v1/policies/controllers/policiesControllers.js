@@ -1,6 +1,6 @@
 import { validationResult } from "express-validator";
 import { addPolicyQuery, deletePolicyQuery, fetchPolicyQuery, fetchPolicyIfExistsQuery } from "../models/policiesQuery.js";
-import { errorResponse, notFoundResponse, successResponse } from "../../../utils/response.js";
+import { errorResponse, internalServerErrorResponse, notFoundResponse, successResponse } from "../../../utils/response.js";
 import dotenv from "dotenv";
 
 dotenv.config();
@@ -26,7 +26,7 @@ export const addPolicy = async (req, res, next) => {
         ])
         return successResponse(res, data, "Policy added Successfully");
     }catch (error){
-        next(error)
+        return internalServerErrorResponse(res, error);
     } 
 }
 
@@ -43,8 +43,8 @@ export const deletePolicy = async(req,res,next) =>  {
             return notFoundResponse(res, "", "Policy not found, wrong input.");
         }
         return successResponse(res, "", "Policy Deleted Successfully");
-    }catch(err) {
-        next(err)
+    }catch(error) {
+        return internalServerErrorResponse(res, error);
     }
 
 } 
@@ -58,7 +58,7 @@ export const fetchPolicy = async(req , res , next) => {
         let [data] = await fetchPolicyQuery();
         return successResponse(res, data , "Policies fetched successfully");
     }catch(error){
-        next(error);
+        return internalServerErrorResponse(res, error);
     }
 
 }

@@ -1,4 +1,4 @@
-import {successResponse, errorResponse, notFoundResponse} from "../../../utils/response.js";
+import {successResponse, errorResponse, notFoundResponse, internalServerErrorResponse} from "../../../utils/response.js";
 import { validationResult } from "express-validator";
 import {addAnnouncementQuery, updateAnnouncementQuery, deleteActivityQuery} from "../../announcements/models/announcementQuery.js";
 import dotenv from "dotenv";
@@ -52,7 +52,7 @@ export const addActivity = async (req, res, next) => {
 
     return successResponse(res, data, "Activity added successfully");
   } catch (error) {
-    next(error);
+    return internalServerErrorResponse(res, error);
   }
 };
 
@@ -121,7 +121,7 @@ export const updateActivity = async (req, res, next) => {
 
     return successResponse(res, data, "Activity Updated Successfully");
   } catch (error) {
-    next(error);
+    return internalServerErrorResponse(res, error);
   }
 };
 
@@ -161,8 +161,8 @@ export const getAllActivities = async (req, res, next) => {
       };
   });
     return successResponse(res, activities, "Activiy Fetched Successfully");
-  } catch (err) {
-    next(err);
+  } catch (error) {
+    return internalServerErrorResponse(res, error);;
   }
 };
 
@@ -181,8 +181,8 @@ export const filterActivityByDate = async (req, res, next) => {
       return notFoundResponse(res, result, "Activity not found in specified date");
     }
     return successResponse(res, result, "Activiy Fetched Successfully");
-  } catch (err) {
-    next(err);
+  } catch (error) {
+    return internalServerErrorResponse(res, error);;
   }
 };
 
@@ -207,8 +207,8 @@ export const deleteActivity = async(req,res,next) => {
     }
 
     return successResponse(res, '', 'Activity Deleted Successfully');
-  } catch (err) {
-    next(err);
+  } catch (error) {
+    return internalServerErrorResponse(res, error);;
   }
 };
 
@@ -226,7 +226,7 @@ export const getActivityById = async(req ,res , next) => {
     let [image_data] = await fetchImagesBasedOnIdForActivityQuery([id])
     data.push(image_data);
     return successResponse(res, data, "Activiy Fetched Successfully");
-  }catch(err){
-    next(err);
+  }catch(error){
+    return internalServerErrorResponse(res, error);;
   }
 }

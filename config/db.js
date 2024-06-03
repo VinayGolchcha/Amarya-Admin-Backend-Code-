@@ -47,8 +47,8 @@ export const setupDatabase = async() => {
         await createTables(rootConnection, tables.default);
         console.log('all tables created');
     }
-    catch(err){
-        console.error('Error connecting to the database:', err);
+    catch(error){
+        console.error('Error connecting to the database:', error);
         throw new Error('Failed to connect to the database');
     }
 }

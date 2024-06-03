@@ -1,6 +1,6 @@
 import { validationResult } from "express-validator";
 import dotenv from "dotenv"
-import { successResponse, errorResponse, notFoundResponse, unAuthorizedResponse } from "../../../utils/response.js"
+import { successResponse, errorResponse, notFoundResponse, unAuthorizedResponse, internalServerErrorResponse } from "../../../utils/response.js"
 import { getCategoryTotalPointsQuery, getTeamPointsQuery, fetchTeamCountQuery, 
     fetchTeamNameQuery,} from "../models/performanceQuery.js"
 import { getWorkingDaysCountPreviousMonth } from "../../helpers/functions.js"
@@ -50,6 +50,6 @@ export const calculatePerformanceForTeam = async (req, res, next) => {
 
         return successResponse(res, filtered_team_performance, 'Team Performance calculated successfully.');
     } catch (error) {
-        next(error);
+        return internalServerErrorResponse(res, error);
     }
 };

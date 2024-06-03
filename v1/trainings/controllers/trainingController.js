@@ -2,7 +2,7 @@ import jwt from "jsonwebtoken"
 import { validationResult } from "express-validator";
 import bcrypt from "bcrypt"
 import dotenv from "dotenv"
-import { successResponse, errorResponse, notFoundResponse, unAuthorizedResponse } from "../../../utils/response.js"
+import { successResponse, errorResponse, notFoundResponse, unAuthorizedResponse, internalServerErrorResponse } from "../../../utils/response.js"
 import { insertTrainingDataQuery, getLastTrainingIdQuery, addUserTrainingInfoQuery, getTrainingDataQuery, displayDataForTrainingCardsQuery, displayTrainingsForUserQuery, deleteUserTrainingDataQuery, 
     getUserDataForTrainingQuery, deleteTrainingDataQuery, updateTrainingQuery, checkSameTrainingQuery, checkExisitingUserTrainingDataQuery, displayAllUsersTrainingDataQuery } from "../models/trainingQuery.js";
 import {incrementId, createDynamicUpdateQuery} from "../../helpers/functions.js"
@@ -42,7 +42,7 @@ export const addNewTraining = async (req, res, next) => {
         ]);
         return successResponse(res, '', 'Training successfully added');
     } catch (error) {
-        next(error);
+        return internalServerErrorResponse(res, error);
     }
 };
 
@@ -83,7 +83,7 @@ export const requestUserTraining = async (req, res, next) => {
         }
         
     } catch (error) {
-        next(error);
+        return internalServerErrorResponse(res, error);
     }
 };
 
@@ -103,7 +103,7 @@ export const trainingCardsData = async (req, res, next) => {
             return successResponse(res, data, 'Data Fetched Successfully');
         }
     }catch(error) {
-        next(error);
+        return internalServerErrorResponse(res, error);
     }
 };
 
@@ -124,7 +124,7 @@ export const getUserTrainingData = async (req, res, next) => {
             return successResponse(res, data, 'Data Fetched Successfully');
         }
     }catch(error) {
-        next(error);
+        return internalServerErrorResponse(res, error);
     }
 };
 
@@ -153,7 +153,7 @@ export const updateTrainingData = async(req, res, next) => {
         }
         return successResponse(res, data, 'Training Updated Successfully');
     } catch (error) {
-        next(error);
+        return internalServerErrorResponse(res, error);
     }
 }
 
@@ -175,7 +175,7 @@ export const deleteTrainingData = async (req, res, next) =>{
         }
 
     }catch(error) {
-        next(error);
+        return internalServerErrorResponse(res, error);
     }
 };
 
@@ -195,6 +195,6 @@ export const getEveryUserTrainingData = async (req, res, next) => {
             return successResponse(res, data, 'Data Fetched Successfully');
         }
     }catch(error) {
-        next(error);
+        return internalServerErrorResponse(res, error);
     }
 };

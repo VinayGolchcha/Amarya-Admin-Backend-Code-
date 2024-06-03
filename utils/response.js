@@ -11,3 +11,6 @@ export const unAuthorizedResponse = (res, data, message = 'Not Found', statusCod
 export const errorResponse = (res, errors, message = 'Not Found', statusCode = 400) => {
     return res.status(statusCode).json({ success: false, message, errors });
 };
+export const internalServerErrorResponse = (res, errors, message = 'Something went wrong, Please try again', statusCode = 500) => {
+    return res.status(statusCode).json({ success: false, message, errors });
+};

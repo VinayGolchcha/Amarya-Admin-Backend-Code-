@@ -2,7 +2,7 @@ import jwt from "jsonwebtoken"
 import { validationResult } from "express-validator";
 import bcrypt from "bcrypt"
 import dotenv from "dotenv"
-import { successResponse, errorResponse, notFoundResponse, unAuthorizedResponse } from "../../../utils/response.js"
+import { successResponse, errorResponse, notFoundResponse, unAuthorizedResponse, internalServerErrorResponse } from "../../../utils/response.js"
 import { incrementId, createDynamicUpdateQuery } from "../../helpers/functions.js"
 import {sendMail} from "../../../config/nodemailer.js"
 import {getTeamQuery} from "../../teams/models/query.js"
@@ -109,7 +109,7 @@ export const userRegistration = async (req, res, next) => {
         }
         return successResponse(res, user_data, 'User successfully registered');
     } catch (error) {
-        next(error);
+        return internalServerErrorResponse(res, error);
     }
 };
 
@@ -130,7 +130,7 @@ export const sendOtpForPasswordUpdate = async (req, res, next) => {
             return successResponse(res, data, 'OTP for password update has been sent successfully.');
         }
     } catch (error) {
-        next(error);
+        return internalServerErrorResponse(res, error);
     }
 }
 
@@ -157,7 +157,7 @@ export const verifyEmailForPasswordUpdate = async (req, res, next)=> {
         }
         
     } catch (error) {
-        next(error);
+        return internalServerErrorResponse(res, error);
     }
 }
 
@@ -193,7 +193,7 @@ export const userLogin = async (req, res, next) => {
         }
     }
     catch(error){
-        next(error);
+        return internalServerErrorResponse(res, error);
     }
 }
 
@@ -204,7 +204,7 @@ export const userLogout = async (req, res, next) => {
         await updateTokenQuery(["", user_id]);
         return successResponse(res, '', `You have successfully logged out!`);
     } catch (error) {
-        next(error);
+        return internalServerErrorResponse(res, error);
     }
 }
 
@@ -227,7 +227,7 @@ export const updateUserPassword = async (req, res, next) => {
             return notFoundResponse(res, '', 'Password and confirm password must be same, please try again.');
         }
     } catch (error) {
-        next(error);
+        return internalServerErrorResponse(res, error);
     }
 }
 
@@ -246,8 +246,8 @@ export const getUserProfile = async(req,res,next) => {
             return successResponse(res, [user]);
         }
     }
-    catch(err){
-        next(err);
+    catch(error){
+        return internalServerErrorResponse(res, error);;
     }
 }
 
@@ -289,7 +289,7 @@ export const updateUserProfile = async(req, res, next) => {
             return notFoundResponse(res, '', 'User not found.');
         }
     }
-    catch(err){
-        next(err);
+    catch(error){
+        return internalServerErrorResponse(res, error);;
     }
 }
