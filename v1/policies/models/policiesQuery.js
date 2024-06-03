@@ -1,29 +1,30 @@
 import pool from "../../../config/db.js";
 
 export const addPolicyQuery = (array) => {
-    let query = `
-    insert into policies (
-        policy_type,
-        policy_description
-    ) VALUES (? ,?);`;
-    return pool.query(query,array);
-
+    try {
+        let query = `INSERT into policies (
+            policy_heads,
+            file_data
+        ) VALUES (?,?);`
+        return pool.query(query, array);
+    } catch (error) {
+        console.error("Error executing updateUserPointsQuery:", error);
+        throw error;
+    }
 }
 
 export const deletePolicyQuery = (array) => {
-    let query = `
-    delete from policies where _id = ?;
+    let query = `DELETE from policies WHERE _id = ?;
     `;
     return pool.query(query,array);
 }
+
 export const fetchPolicyQuery = () => {
-    let query = ` SELECT
-    policy_type,
-    policy_description
-    FROM
-    policies;`;
+    let query = ` SELECT _id, policy_heads, file_data FROM policies;`;
     return pool.query(query);
 }
-export const updatePolicyQuery = (query, array) => {
-    return pool.query(query, array);
-  };
+
+export const fetchPolicyIfExistsQuery = () => {
+    let query = ` SELECT * FROM policies;`;
+    return pool.query(query);
+}

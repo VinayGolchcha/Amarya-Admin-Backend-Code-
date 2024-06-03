@@ -14,8 +14,8 @@ const router = Router();
 app.post("/add-stickynotes", authenticateUserSession, adStiNoVal, addStickyNotes);
 
 // Retrieve temporary notes
-app.get("/get-user-notes", authenticateUserSession, getStiNoVal, getStickyNotes);
-app.delete("/delete-stickynotes", authenticateUserSession, delStiNoVal, deleteStickyNotes);
+app.get("/get-user-notes/:emp_id", authenticateUserSession, getStiNoVal, getStickyNotes);
+app.delete(`/delete-stickynotes/:id/:emp_id`, authenticateUserSession, delStiNoVal, deleteStickyNotes);
 app.use("/", router);
 
 export default app;
