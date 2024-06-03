@@ -5,18 +5,17 @@ import {
   getStickyNotes,
 } from "../controllers/stickynotesControllers.js";
 import {adStiNoVal,  delStiNoVal, getStiNoVal } from "../../../utils/validation.js";
+import {authenticateUserSession} from "../../../middlewares/userAuth.js"
 
 const app = express();
 const router = Router();
 
-// app.js (continued)
-
 // Store temporary note
-app.post("/add-stickynotes",adStiNoVal, addStickyNotes);
+app.post("/add-stickynotes", authenticateUserSession, adStiNoVal, addStickyNotes);
 
 // Retrieve temporary notes
-app.get("/get-user-notes/:emp_id",getStiNoVal, getStickyNotes);
-app.delete(`/delete-stickynotes/:id/:emp_id`,  delStiNoVal, deleteStickyNotes);
+app.get("/get-user-notes/:emp_id", authenticateUserSession, getStiNoVal, getStickyNotes);
+app.delete(`/delete-stickynotes/:id/:emp_id`, authenticateUserSession, delStiNoVal, deleteStickyNotes);
 app.use("/", router);
 
 export default app;

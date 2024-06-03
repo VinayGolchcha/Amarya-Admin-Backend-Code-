@@ -2,7 +2,7 @@ import jwt from "jsonwebtoken"
 import { validationResult } from "express-validator";
 import bcrypt from "bcrypt"
 import dotenv from "dotenv"
-import { successResponse, errorResponse, notFoundResponse } from "../../../utils/response.js"
+import { successResponse, errorResponse, notFoundResponse, internalServerErrorResponse } from "../../../utils/response.js"
 import { addAnnouncementQuery, fetchAnnouncementsQuery, deleteAnnouncementQuery, updateAnnouncementQuery, fetchActivityQuery} from "../models/announcementQuery.js";
 dotenv.config();
 
@@ -47,7 +47,7 @@ export const createAnnouncement = async(req, res, next) => {
         ])
         return successResponse(res, data, 'Announcement added successfully');
     } catch (error) {
-        next(error);
+        return internalServerErrorResponse(res, error);
     }
 }
 
@@ -62,7 +62,7 @@ export const fetchAnnouncements = async(req, res, next) => {
         let [data] = await fetchAnnouncementsQuery()
         return successResponse(res, data, 'Announcements Fetched Successfully');
     } catch (error) {
-        next(error);
+        return internalServerErrorResponse(res, error);
     }
 }
 
@@ -83,7 +83,7 @@ export const deleteAnnouncements = async(req, res, next) => {
         }
         return successResponse(res, '', 'Announcements Deleted Successfully');
     } catch (error) {
-        next(error);
+        return internalServerErrorResponse(res, error);
     }
 }
 
@@ -132,7 +132,7 @@ export const updateAnnouncements = async(req, res, next) => {
         }
         return successResponse(res, data, 'Announcement Updated Successfully');
     } catch (error) {
-        next(error);
+        return internalServerErrorResponse(res, error);
     }
 }
 
@@ -151,7 +151,7 @@ export const filterAnnouncementByDate = async (req, res, next) => {
         return notFoundResponse(res, result, "Announcement not found in specified date");
       }
       return successResponse(res, result, "Announcement Fetched Successfully");
-    } catch (err) {
-      next(err);
+    } catch (error) {
+      return internalServerErrorResponse(res, error);;
     }
   };

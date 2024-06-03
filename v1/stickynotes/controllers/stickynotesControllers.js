@@ -1,6 +1,6 @@
 import { validationResult } from "express-validator";
-import { errorResponse, notFoundResponse, successResponse } from "../../../utils/response.js";
-import {  addStickyNotesQuery, deleteStickyNotesQuery, getStickyNotesByIdQuery } from "./stickynotesQuery.js";
+import { errorResponse, internalServerErrorResponse, notFoundResponse, successResponse } from "../../../utils/response.js";
+import {  addStickyNotesQuery, deleteStickyNotesQuery, getStickyNotesByIdQuery } from "../models/stickynotesQuery.js";
 
 export const addStickyNotes = async (req, res) => {
   try {
@@ -16,9 +16,8 @@ export const addStickyNotes = async (req, res) => {
     // Insert note into the database
     const [result] = await addStickyNotesQuery([note, emp_id])
     return successResponse(res,result,"Note stored successfully");
-  } catch (err) {
-    console.error("Error storing note:", err);
-    return res.status(500).json({ error: "Error storing note" });
+  } catch (error) {
+    return internalServerErrorResponse(res, error);
   }
 };
 
@@ -35,8 +34,7 @@ export const getStickyNotes = async (req, res, next) => {
     let [result] = await getStickyNotesByIdQuery([emp_id]);
     return successResponse(res,result);;
   } catch (error) {
-    return res.status(500).json({ error: "Error retrieving notes" });
-    next(error);
+    return internalServerErrorResponse(res, error);
   }
 };
 
@@ -62,7 +60,6 @@ export const deleteStickyNotes = async (req, res, next) => {
       }
       return successResponse(res, "", "note Deleted Successfully");
   } catch (error) {
-    console.error("Error deleting record:", error); // Log error
-    return res.status(500).json({ error: "Internal server error" });
+    return internalServerErrorResponse(res, error);
   }
 };

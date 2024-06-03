@@ -1,4 +1,4 @@
-import { successResponse, errorResponse, notFoundResponse, unAuthorizedResponse } from "../../../utils/response.js"
+import { successResponse, errorResponse, notFoundResponse, unAuthorizedResponse, internalServerErrorResponse } from "../../../utils/response.js"
 import { createDynamicUpdateQuery } from "../../helpers/functions.js";
 import { deleteCategoryQuery, getAllCategoryQuery, insertCategoryQuery, updateCategoryWorksheetQuery, checkSameCategoryQuery, getCategoryQuery } from "../models/query.js";
 import { validationResult } from "express-validator";
@@ -22,7 +22,7 @@ export const createCategoryForWorksheet = async (req, res, next) => {
         const [data] = await insertCategoryQuery([category, points]);
         return successResponse(res,{category_id: data.insertId}, 'category created successfully.');
     } catch (error) {
-        next(error);
+        return internalServerErrorResponse(res, error);
     }
 };
 
@@ -50,7 +50,7 @@ export const updateCategoryForWorksheet = async(req, res, next) => {
         let [data] = await updateCategoryWorksheetQuery(query_values.updateQuery, query_values.updateValues);
         return successResponse(res, data, 'Category updated successfully.');
     } catch (error) {
-        next(error);
+        return internalServerErrorResponse(res, error);
     }
 }
 
@@ -67,7 +67,7 @@ export const fetchCategoryForWorkSheet = async(req, res, next) =>{
         }
         return successResponse(res, data,'Categories fetched successfully.');
     } catch (error) {
-        next(error);
+        return internalServerErrorResponse(res, error);
     }
 }
 
@@ -87,6 +87,6 @@ export const deleteCategoryForWorksheet = async (req, res, next) => {
         await deleteCategoryQuery([category_id]);
         return successResponse(res, 'category deleted successfully.');
     } catch (error) {
-        next(error);
+        return internalServerErrorResponse(res, error);
     }
 };
