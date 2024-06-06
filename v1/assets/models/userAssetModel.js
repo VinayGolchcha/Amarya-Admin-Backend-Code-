@@ -15,8 +15,8 @@ const assetRequestTable = `CREATE TABLE IF NOT EXISTS userAssets (
     created_at datetime DEFAULT CURRENT_TIMESTAMP,
     updated_at datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY (_id),
-    FOREIGN KEY (asset_id) REFERENCES assets(asset_id),
-    FOREIGN KEY (emp_id) REFERENCES users(emp_id),
+    FOREIGN KEY (asset_id) REFERENCES assets(asset_id) ON DELETE CASCADE,
+    FOREIGN KEY (emp_id) REFERENCES users(emp_id) ON DELETE CASCADE,
     UNIQUE KEY asset_id (asset_id)
 ) AUTO_INCREMENT = 1111`;
 
