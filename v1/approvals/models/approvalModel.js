@@ -15,7 +15,7 @@ CREATE TABLE IF NOT EXISTS approvals (
     created_at datetime DEFAULT CURRENT_TIMESTAMP,
     updated_at datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY (_id),
-    FOREIGN KEY (emp_id) REFERENCES users(emp_id)
+    FOREIGN KEY (emp_id) REFERENCES users(emp_id) ON DELETE CASCADE
 ) AUTO_INCREMENT = 1111;
 `
 
