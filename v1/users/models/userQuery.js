@@ -181,3 +181,13 @@ export const updateUserProfilePictureQuery = async (array) => {
         throw error;
     }
 }
+
+export const fetchAllEmployeeIdsQuery = async () => {
+    try {
+        let query = `SELECT emp_id, CONCAT(first_name, ' ', last_name) AS name FROM users`
+        return pool.query(query);
+    } catch (error) {
+        console.error("Error executing fetchAllEmployeeIdsQuery:", error);
+        throw error;
+    }
+}
