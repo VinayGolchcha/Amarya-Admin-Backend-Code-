@@ -13,7 +13,7 @@ dotenv.config();
 
 import {userRegistrationQuery, getUserDataByUsernameQuery, userDetailQuery, updateTokenQuery, updateUserProfileQuery,
         getLastEmployeeIdQuery, updateUserPasswordQuery, getAllLeaveCounts, insertUserLeaveCountQuery, checkUserNameAvailabilityQuery, insertOtpQuery, getOtpQuery,getUserDataByUserIdQuery
-        ,checkUserDataByUserIdQuery, updateUserProfilePictureQuery} from "../models/userQuery.js";
+        ,checkUserDataByUserIdQuery, updateUserProfilePictureQuery, fetchAllEmployeeIdsQuery} from "../models/userQuery.js";
 
 export const userRegistration = async (req, res, next) => {
     try {
@@ -288,6 +288,22 @@ export const updateUserProfile = async(req, res, next) => {
         }else{
             return notFoundResponse(res, '', 'User not found.');
         }
+    }
+    catch(error){
+        return internalServerErrorResponse(res, error);;
+    }
+}
+
+export const fetchAllEmployeeIds = async(req, res, next) => {
+    try{
+        const errors = validationResult(req);
+
+        if (!errors.isEmpty()) {
+            return errorResponse(res, errors.array(), "")
+        }
+       
+        let [emp_ids] = await fetchAllEmployeeIdsQuery()
+        return successResponse(res, emp_ids, 'Emp ids fetched successfully.');
     }
     catch(error){
         return internalServerErrorResponse(res, error);;

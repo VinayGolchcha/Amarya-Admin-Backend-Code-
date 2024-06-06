@@ -4,7 +4,7 @@ const app = express()
 const router = Router();
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
-import {userRegistration, userLogin, userLogout, updateUserPassword, verifyEmailForPasswordUpdate, sendOtpForPasswordUpdate, getUserProfile, updateUserProfile} from '../controllers/userController.js';
+import {userRegistration, userLogin, userLogout, updateUserPassword, verifyEmailForPasswordUpdate, sendOtpForPasswordUpdate, getUserProfile, updateUserProfile, fetchAllEmployeeIds} from '../controllers/userController.js';
 import {userRegVal, userLogVal, logOutVal, upPassVal, sendOtpVal, verifyOtpVal, getUserVal} from '../../../utils/validation.js';
 import {authenticateUserSession} from "../../../middlewares/userAuth.js"
 import {authenticateUserAdminSession} from "../../../middlewares/userAdminAuth.js"
@@ -18,6 +18,7 @@ app.post('/verify-email-for-password-update', verifyOtpVal, verifyEmailForPasswo
 app.post('/update-password', upPassVal, updateUserPassword);
 app.post('/get-user-profile/:emp_id', authenticateUserSession, getUserVal, getUserProfile);
 app.put('/update-user-profile/:id' , authenticateUserSession, upload.single('file'), updateUserProfile);
+app.get('/fetch-all-employee-ids', fetchAllEmployeeIds);
 
 
 app.use("/", router);
