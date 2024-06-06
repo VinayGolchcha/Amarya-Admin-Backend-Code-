@@ -77,6 +77,13 @@ export const deleteProject = async (req, res, next) => {
         }
         const projecy_id = req.params.id;
         const category_id = req.params.category_id;
+
+        const [check_ids] = await checkProjectIdAndCategoryIdQuery([projecy_id, category_id])
+
+        if (check_ids.length == 0) {
+            return errorResponse(res, "" ,"No project found. Pls recheck the ids.")
+        }
+        
         await deleteProjectQuery([projecy_id, category_id]);
         return successResponse(res, 'project deleted successfully.');
     } catch (error) {
