@@ -55,7 +55,7 @@ export const fetchAssetsQuery = (array) => {
     CONCAT(u.first_name, ' ', u.last_name) AS assignee, 
     a.asset_id, 
     a.purchase_date, 
-    a.image_url, 
+    images.image_url, 
     a.item, 
     a.item_description, 
     ua.issued_from, 
