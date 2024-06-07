@@ -60,11 +60,15 @@ export const fetchAssetsQuery = (array) => {
     a.item_description, 
     ua.issued_from, 
     ua.issued_till, 
-    a.warranty_period
+    a.warranty_period,
+    images.public_id,
+    images.original_filename    
 FROM 
     assets AS a
 LEFT JOIN 
     userAssets AS ua ON a.asset_id = ua.asset_id
+LEFT JOIN
+    images ON a.asset_id = images.asset_id 
 LEFT JOIN 
     users AS u ON u.emp_id = ua.emp_id`
     return pool.query(query, array);
