@@ -212,7 +212,8 @@ export const createProjectVal = [
     body('client_name').isString().withMessage('Invalid client name input').notEmpty().withMessage('client name cannot be empty'),
     body('project_status').isString().withMessage('Invalid project status input').notEmpty().withMessage('project status cannot be empty'),
     body('project_lead').isString().withMessage('Invalid project lead input').notEmpty().withMessage('project lead cannot be empty'),
-    body('start_month').optional().isString().withMessage('Invalid start_month input').notEmpty().withMessage('start_month cannot be empty')
+    body('start_month').optional().custom((value) => isValidMonthYearFormat(value)).withMessage('Invalid value format'),
+    body('end_month').optional().custom((value) => isValidMonthYearFormat(value)).withMessage('Invalid value format')
 ]
 export const updateProjectVal = [
     param('id').isInt().withMessage('Invalid id input.').notEmpty().withMessage('id cannot be empty.'),
@@ -221,8 +222,8 @@ export const updateProjectVal = [
     body('client_name').optional().isString().withMessage('Invalid client name input').notEmpty().withMessage('client name cannot be empty'),
     body('project_status').optional().isString().withMessage('Invalid project status input').notEmpty().withMessage('project status cannot be empty'),
     body('project_lead').optional().isString().withMessage('Invalid project lead input').notEmpty().withMessage('project lead cannot be empty'),
-    body('start_month').optional().isString().withMessage('Invalid start_month input').notEmpty().withMessage('start_month cannot be empty'),
-    body('end_month').optional().isString().withMessage('Invalid end_month input').notEmpty().withMessage('end_month cannot be empty')
+    body('start_month').optional().custom((value) => isValidMonthYearFormat(value)).withMessage('Invalid value format'),
+    body('end_month').optional().custom((value) => isValidMonthYearFormat(value)).withMessage('Invalid value format')
 ]
 
 export const createCategoryVal = [
@@ -313,3 +314,8 @@ const isValidMonthYear = (value) => {
     const regex = /^(0[1-9]|1[0-2])\/\d{2}$/;
     return regex.test(value);
 };
+
+function isValidMonthYearFormat(dateString) {
+    const regex = /^(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) \d{2}$/;
+    return regex.test(dateString);
+}
