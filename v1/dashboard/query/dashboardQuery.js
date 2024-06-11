@@ -43,24 +43,21 @@ export const getMonthlyProjectCountQuery = () =>{
     }
 }
 
-export const getUserCountOnClientProjectBasedOnTeamQuery = () =>{
+export const getProjectCountBasedOnTeamQuery = () =>{
     try {
         let query = `SELECT
                     t._id,
                     t.team,
-                    COUNT(DISTINCT up.emp_id) AS employee_count
+                    COUNT(DISTINCT p._id) AS project_count
                 FROM
-                    userProjects up
-                JOIN
-                    projects p ON up.project_id = p._id
-                JOIN
-                    categories c ON p.category_id = c._id
+                    projects p
+                JOIN 
+                   userProjects up ON up.project_id = p._id
                 JOIN
                     teams t ON up.team_id = t._id
                 WHERE
-                    c.category = 'Client projects'
-                    AND CONCAT(SUBSTRING(IFNULL(up.start_month, ''), 4, 2), SUBSTRING(IFNULL(up.start_month, ''), 1, 2)) <= DATE_FORMAT(CURDATE(), '%y%m')
-                    AND (CONCAT(SUBSTRING(IFNULL(up.end_month, ''), 4, 2), SUBSTRING(IFNULL(up.end_month, ''), 1, 2)) >= DATE_FORMAT(CURDATE(), '%y%m') OR up.end_month IS NULL)
+                    STR_TO_DATE(CONCAT('01 ', IFNULL(p.start_month, '')), '%d %b %y') <= CURDATE()
+                    AND (STR_TO_DATE(CONCAT('01 ', IFNULL(p.end_month, '')), '%d %b %y') >= CURDATE() OR p.end_month IS NULL)
                 GROUP BY
                     t._id, t.team;
         `
@@ -144,16 +141,23 @@ export const fetchAllProjectsDataQuery = () =>{
 export const fetchApprovalDataQuery = () =>{
     try {
         let query = `SELECT
-                        _id,
-                        emp_id,
-                        foreign_id,
-                        request_type,
-                        item,
-                        status,
-                        subject,
-                        body,
-                        request_date
-                    FROM approvals ORDER BY created_at DESC;
+                        approvals._id,
+                        approvals.emp_id,
+                        CONCAT(users.first_name, ' ', users.last_name) AS full_name,
+                        approvals.foreign_id,
+                        approvals.request_type,
+                        approvals.item,
+                        approvals.status,
+                        approvals.subject,
+                        approvals.body,
+                        approvals.request_date
+                    FROM
+                        approvals
+                    JOIN
+                        users ON users.emp_id = approvals.emp_id
+                    ORDER BY
+                        approvals.created_at DESC;
+
         `
         return pool.query(query);
     } catch (error) {

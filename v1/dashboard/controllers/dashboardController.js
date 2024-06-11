@@ -1,7 +1,7 @@
 import dotenv from "dotenv";
 import { validationResult } from "express-validator";
 import { internalServerErrorResponse, successResponse } from "../../../utils/response.js";
-import { getMonthlyProjectCountQuery, getUserCountOnClientProjectQuery, getTotalProjectsQuery, getUserCountOnClientProjectBasedOnTeamQuery, 
+import { getMonthlyProjectCountQuery, getUserCountOnClientProjectQuery, getTotalProjectsQuery, getProjectCountBasedOnTeamQuery, 
     getEmployeeTeamCountQuery, fetchAllProjectsDataQuery, fetchApprovalDataQuery} from "../query/dashboardQuery.js";
 import {fetchActivityORAnnouncementQuery} from "../../users/models/userDashboardQuery.js"; 
 dotenv.config();
@@ -22,7 +22,7 @@ export const adminDashboard = async(req, res, next) => {
             [project_details]
         ] = await Promise.all([
             getMonthlyProjectCountQuery(),
-            getUserCountOnClientProjectBasedOnTeamQuery(),
+            getProjectCountBasedOnTeamQuery(),
             getTotalProjectsQuery(),
             getUserCountOnClientProjectQuery(),
             getEmployeeTeamCountQuery(),
