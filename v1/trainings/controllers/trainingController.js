@@ -4,7 +4,7 @@ import bcrypt from "bcrypt"
 import dotenv from "dotenv"
 import { successResponse, errorResponse, notFoundResponse, unAuthorizedResponse, internalServerErrorResponse } from "../../../utils/response.js"
 import { insertTrainingDataQuery, getLastTrainingIdQuery, addUserTrainingInfoQuery, getTrainingDataQuery, displayDataForTrainingCardsQuery, displayTrainingsForUserQuery, deleteUserTrainingDataQuery, 
-    getUserDataForTrainingQuery, deleteTrainingDataQuery, updateTrainingQuery, checkSameTrainingQuery, checkExisitingUserTrainingDataQuery, displayAllUsersTrainingDataQuery } from "../models/trainingQuery.js";
+    getUserDataForTrainingQuery, deleteTrainingDataQuery, updateTrainingQuery, checkSameTrainingQuery, checkExistingUserTrainingDataQuery, displayAllUsersTrainingDataQuery } from "../models/trainingQuery.js";
 import {incrementId, createDynamicUpdateQuery} from "../../helpers/functions.js"
 import {insertApprovalForTrainingQuery} from "../../approvals/models/trainingApprovalQuery.js"
 dotenv.config();
@@ -56,7 +56,7 @@ export const requestUserTraining = async (req, res, next) => {
 
         let { emp_id, training_id, progress_status, request_type} = req.body;
         let [training_data] = await getTrainingDataQuery([training_id])
-        let [existing_training_data] = await checkExisitingUserTrainingDataQuery([emp_id, training_id])
+        let [existing_training_data] = await checkExistingUserTrainingDataQuery([emp_id, training_id])
         const current_date = new Date().toISOString().split('T')[0];
 
         if(training_data.length == 0 ) {
