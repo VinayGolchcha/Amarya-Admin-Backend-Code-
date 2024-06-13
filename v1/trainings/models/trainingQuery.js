@@ -74,12 +74,12 @@ export const checkSameTrainingQuery = async (array) => {
     }
 }
 
-export const checkExisitingUserTrainingDataQuery = async (array) => {
+export const checkExistingUserTrainingDataQuery = async (array) => {
     try {
         let query = `SELECT * FROM userTrainings WHERE emp_id = ? AND training_id = ?`
         return pool.query(query, array);
     } catch (error) {
-        console.error("Error executing checkExisitingUserTrainingDataQuery:", error);
+        console.error("Error executing checkExistingUserTrainingDataQuery:", error);
         throw error;
     }
 }
@@ -87,7 +87,28 @@ export const checkExisitingUserTrainingDataQuery = async (array) => {
 
 export const displayAllUsersTrainingDataQuery = async () => {
     try {
-        let query = `SELECT  training_id, course_name, course_description,emp_id, progress_status, created_at FROM userTrainings`
+        let query = `SELECT 
+                        ut.training_id, 
+                        ut.course_name, 
+                        ut.course_description, 
+                        ut.emp_id, 
+                        ut.progress_status, 
+                        ut.created_at,
+                        DATE_FORMAT(a.latest_approval_date, '%y-%m-%d') AS approval_date
+                    FROM 
+                        userTrainings ut
+                    LEFT JOIN 
+                        (SELECT 
+                            foreign_id, 
+                            emp_id, 
+                            MAX(approval_date) AS latest_approval_date
+                        FROM 
+                            approvals
+                        GROUP BY 
+                            foreign_id, emp_id) a 
+                    ON
+                        ut.training_id = a.foreign_id 
+                        AND ut.emp_id = a.emp_id;`
         return pool.query(query);
     } catch (error) {
         console.error("Error executing displayAllUsersTrainingDataQuery:", error);
