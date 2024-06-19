@@ -17,7 +17,6 @@ export const uploadFileToDrive = async (fileBuffer, fileName) => {
             q: `name = '${fileName}' and mimeType = 'application/vnd.google-apps.spreadsheet'`,
             fields: 'files(id)'
         });
-        console.log("fileList:   ",fileList.data.files);
         let fileId;
         if (fileList.data.files.length > 0) {
             fileId = fileList.data.files[0].id;
@@ -45,8 +44,6 @@ export const uploadFileToDrive = async (fileBuffer, fileName) => {
             fields: 'id'
         });
 
-
-        console.log('File uploaded and sheets appended successfully.', data);
     } catch (error) {
         console.error('Error uploading and appending sheets:', error);
         throw error;

@@ -200,7 +200,6 @@ export const userLogin = async (req, res, next) => {
 export const userLogout = async (req, res, next) => {
     try {
         const user_id = req.params.id;
-        console.log(user_id)
         await updateTokenQuery(["", user_id]);
         return successResponse(res, '', `You have successfully logged out!`);
     } catch (error) {

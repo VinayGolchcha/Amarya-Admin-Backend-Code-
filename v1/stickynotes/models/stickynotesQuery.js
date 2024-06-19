@@ -6,9 +6,9 @@ export const addStickyNotesQuery = (array) => {
             query,
             array
           );
-    }catch(err){
-        console.log("Error in executing in the addStickyNotesQuery:" , err);
-        throw err;
+    }catch(error){
+        console.error("Error in executing in the addStickyNotesQuery:" , error);
+        throw error;
     }
 }
 
@@ -16,18 +16,18 @@ export const getStickyNotesByIdQuery = (array) => {
     try {
         let sql = `SELECT * FROM temporaryNotes WHERE emp_id = ?`
         return pool.query(sql , array);
-    }catch(err){
-        console.log("Error in executing in the getStickyNotesByIdQuery:" , err);
-        throw err;
+    }catch(error){
+        console.error("Error in executing in the getStickyNotesByIdQuery:" , error);
+        throw error;
     }
 }
 export const deleteStickyNotesQuery = (array) => {
     try{
         const sql = "DELETE FROM temporaryNotes WHERE _id = ? AND emp_id = ?";
         return pool.query(sql, array);
-    }catch(err){
-        console.log("Error in executing in the deleteStickyNotesQuery:" , err);
-        throw err;
+    }catch(error){
+        console.error("Error in executing in the deleteStickyNotesQuery:" , error);
+        throw error;
     }
     
 }

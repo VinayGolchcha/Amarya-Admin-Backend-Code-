@@ -7,7 +7,6 @@ export const addStickyNotes = async (req, res) => {
     // const { note } = req.body;
     
     const errors = validationResult(req);
-    console.log(errors);
 
     if (!errors.isEmpty()) {
         return errorResponse(res, errors.array(), "")
@@ -25,7 +24,6 @@ export const getStickyNotes = async (req, res, next) => {
   // Retrieve all notes from the database
   try {
     const errors = validationResult(req);
-    console.log(errors);
 
     if (!errors.isEmpty()) {
         return errorResponse(res, errors.array(), "")
@@ -43,7 +41,6 @@ export const deleteStickyNotes = async (req, res, next) => {
   // Log request body and _id type
   try {
     const errors = validationResult(req);
-    console.log(errors);
 
     if (!errors.isEmpty()) {
         return errorResponse(res, errors.array(), "")
