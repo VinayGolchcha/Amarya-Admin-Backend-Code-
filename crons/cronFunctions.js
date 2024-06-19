@@ -13,7 +13,7 @@ export const updateEntries = async () => {
     
     // If there are no entries, return early
     if (count === 0) {
-      return;
+       return `No announcement fetched`;
     }
     const sql = `
     UPDATE announcements
@@ -21,9 +21,9 @@ export const updateEntries = async () => {
     WHERE TIMESTAMPDIFF(MINUTE, created_at, NOW()) >= 1 AND is_new = 1
   `;
     return await pool.query(sql);
-  } catch (err) {
-    console.error("Error updating entries:", err);
-    return;
+  } catch (error) {
+    console.error("Error updating entries:", error);
+    throw error
   }
 };
 

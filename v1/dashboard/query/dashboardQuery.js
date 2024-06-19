@@ -8,9 +8,9 @@ export const fetchEmployeeCountQuery = () => {
         GROUP BY team_id;
   `;
     return pool.query(sql);
-    }catch(err){
-        console.log("Error in executing the fetchEmployeeCountQuery : " , err);
-        throw(err)
+    }catch(error){
+        console.error("Error in executing the fetchEmployeeCountQuery : " , error);
+        throw(error)
     }
 }
 

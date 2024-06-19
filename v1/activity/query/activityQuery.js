@@ -12,7 +12,6 @@ export const addActivityQuery = (array)=> {
     ) VALUES (?,?,?,?,?,?);`
     return pool.query(query, array);}
     catch(err){
-        console.log("Error in executing in the addActivityQuery:" , err);
         throw(err);
     }
 }
@@ -23,7 +22,6 @@ export const getActivityByIdQuery = (array) => {
         WHERE event_type = 'activity' AND _id = ?;`;
         return pool.query(query, array);
     }catch(err){
-        console.log("Error in executing in the getActivityByIdQuery:" , err);
         throw(err);
     }
 }

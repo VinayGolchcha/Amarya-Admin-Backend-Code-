@@ -8,7 +8,7 @@ import {authenticateUserSession} from "../../../middlewares/userAuth.js"
 import {authenticateAdminSession} from "../../../middlewares/adminAuth.js"
 import {authenticateUserAdminSession} from "../../../middlewares/userAdminAuth.js"
 
-app.post('/admin/create-team', authenticateAdminSession, createTeamVal, createTeam);
+app.post('/admin/create-team', createTeamVal, createTeam);
 app.put('/admin/update-team/:id', authenticateAdminSession, updateTeamVal, updateTeam);
 app.get('/fetch-all-teams', authenticateUserAdminSession, fetchTeams);
 app.delete('/admin/delete-team/:id', authenticateAdminSession, deleteIdVal,deleteTeam);

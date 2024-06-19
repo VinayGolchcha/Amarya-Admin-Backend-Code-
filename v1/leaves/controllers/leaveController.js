@@ -102,7 +102,6 @@ export const addLeaveTypeAndCount = async (req, res, next) => {
 
         // Check if leave type already exists
         const [existingLeaveTypes] = await checkSameLeaveTypeNameQuery([leave_type]);
-        console.log(existingLeaveTypes);
         if (existingLeaveTypes.length > 0) {
             return errorResponse(res, '', 'Sorry, Leave Type already exists.');
         }
