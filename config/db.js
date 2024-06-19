@@ -9,7 +9,6 @@ const createTables = async (connection, tables) => {
 	await Promise.all(
 		tables.map(async (tableQuery) => {
 			const res = await connection.query(tableQuery);
-            // console.log(res);
 		})
 	);
 };
@@ -24,7 +23,6 @@ export let rootConnection = mysql
 })
 .promise();
 
-// console.log(rootConnection);
 let pool;
 pool = mysql.createPool({
     host: process.env.MYSQL_HOST,
@@ -37,12 +35,9 @@ export const setupDatabase = async() => {
     try{
         await rootConnection.connect();
         
-        console.log('Connected to mysql!');
-    
         const dbCreateQuery = `CREATE DATABASE IF NOT EXISTS ${process.env.DATABASE}`;
     
         await rootConnection.query(dbCreateQuery);
-        console.log(`Db created ${process.env.DATABASE}`);
     
         await rootConnection.query(`USE ${process.env.DATABASE}`);
     
