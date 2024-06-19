@@ -44,7 +44,6 @@ export const getUserLeaveDaysQuery = async (array) => {
     `;
 
         const result = await pool.query(query, array);
-        console.log("Result from getUserLeaveDaysQuery:", result);
 
         return result;
 
@@ -60,7 +59,6 @@ export const leaveTakenCountQuery = async (array) =>{
     let query = `SELECT leave_taken_count FROM userLeaveCounts WHERE emp_id = ? AND leave_type = ?;`
     try {
         const result = await pool.query(query, array);
-        console.log("Result from leaveTakenCountQuery:", result);
         return result
     } catch (error) {
         console.error("Error executing leaveTakenCountQuery:", error);
