@@ -20,7 +20,7 @@ app.get('/fetch-leave-type-and-count', authenticateUserAdminSession, fetchLeaveT
 app.post('/leave-request', authenticateUserSession, leaveRequestVal, leaveRequest);
 app.get('/get-user-leave-dashboard-data/:id', authenticateUserSession, getUserLeaveDashboardData, getUserLeaveDataForDashboard);
 app.get('/user-leave-data', getUserLeaveData);
-app.get('/user-all-leave-data', authenticateUserSession, getTrnVal, getUserAllLeaveData);
+app.post('/user-all-leave-data', authenticateUserSession, getTrnVal, getUserAllLeaveData);
 app.post('/fetch-leave-overview', authenticateUserSession, fetchLeaveOverviewVal, fetchLeaveTakenOverview);
 app.get('/fetch-holiday-list', authenticateUserAdminSession, fetchHolidayList);
 app.delete('/admin/delete-holiday/:id', authenticateAdminSession, deleteHoliday);
