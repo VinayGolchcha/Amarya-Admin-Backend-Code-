@@ -48,7 +48,6 @@ export const userRegistration = async (req, res, next) => {
             experience,
             completed_projects,
             performance,
-            teams,
             team_id,
             client_report, role = 'user' } = req.body;
         email = email.toLowerCase();
@@ -94,7 +93,7 @@ export const userRegistration = async (req, res, next) => {
             experience,
             completed_projects,
             performance,
-            teams,
+            team_id,
             client_report,
             role
         ]);
