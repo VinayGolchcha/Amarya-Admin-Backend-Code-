@@ -216,10 +216,15 @@ export const leaveRequest = async (req, res, next) => {
             return errorResponse(res, errors.array(), "")
         }
         let { leave_type, emp_id, subject, body, from_date, to_date } = req.body;
+        leave_type = leave_type.toLowerCase();
         const current_date = new Date().toISOString().split('T')[0];
         let from = new Date(from_date);
         let to = new Date(to_date);
 
+        // Check if from_date is in the past
+        if (from < new Date() && to < new Date()) {
+            return notFoundResponse(res, "", "The date entered cannot be in the past.");
+        }
         // Calculate the difference in milliseconds
         let diffInMs = Math.abs(to - from);
 
