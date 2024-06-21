@@ -27,6 +27,7 @@ export const fetchAnnouncementsQuery = ()=> {
                     created_at
                 FROM
                     announcements
+                WHERE event_type = 'announcement'
                 ORDER BY
                     created_at DESC;;
     `

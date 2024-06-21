@@ -110,6 +110,8 @@ export const assetRequest = async (req, res, next) => {
             return errorResponse(res, errors.array(), "")
         }
         let { asset_type, emp_id, item, primary_purpose, requirement_type, request_type, details } = req.body;
+        asset_type = asset_type.toLowerCase();
+        primary_purpose = primary_purpose.toLowerCase();
         const current_date = new Date().toISOString().split('T')[0];
 
         await insertApprovalQuery([emp_id, request_type, item, current_date, primary_purpose, details ])
