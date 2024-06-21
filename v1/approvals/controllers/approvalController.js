@@ -15,7 +15,9 @@ export const approvalByAdmin = async (req, res, next) => {
             return errorResponse(res, errors.array(), "");
         }
 
-        const { emp_id, status, foreign_id, item, request_type } = req.body;
+        let { emp_id, status, foreign_id, item, request_type } = req.body;
+        request_type = request_type.toLowerCase();
+        status = status.toLowerCase();
         const current_date = new Date().toISOString().split('T')[0];
         let message = "";
 
