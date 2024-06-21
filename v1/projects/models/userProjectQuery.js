@@ -19,6 +19,16 @@ export const insertUserProjectQuery = async (array) => {
     }
 }
 
+export const checkUserProjectExists = async(array)=>{
+    try {
+        let query = ` SELECT * FROM userProjects WHERE project_id = ? AND emp_id = ?`;
+        return pool.query(query, array);
+    } catch (error) {
+        console.error("Error executing checkUserProjectExists:", error);
+        throw error;
+    }
+}
+
 export const getUserProjectQuery = async (array) => {
     try {
         let query = 
