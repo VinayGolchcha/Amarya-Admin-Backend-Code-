@@ -175,8 +175,8 @@ export const filterActivityByDate = async (req, res, next) => {
     }
     const date = req.body.date;
     let event_type = "activity";
-    let array = await fetchActivityQuery([event_type]);
-    const result = array[0].filter((item) => item.created_at.toISOString().includes(date));
+    let [array] = await fetchActivityQuery([event_type]);
+    const result = array.filter((item) => item.from_date.includes(date));
     if (result.length === 0) {
       return notFoundResponse(res, result, "Activity not found in specified date");
     }

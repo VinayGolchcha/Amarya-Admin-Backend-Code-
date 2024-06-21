@@ -34,7 +34,7 @@ export const userRegistrationQuery = (array)=> {
             experience,
             completed_projects,
             performance,
-            teams,
+            team_id,
             client_report,
             role
         ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`

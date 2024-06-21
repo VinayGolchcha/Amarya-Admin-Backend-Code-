@@ -21,7 +21,7 @@ CREATE TABLE IF NOT EXISTS users (
     experience float,
     completed_projects int ,
     performance float ,
-    teams int,
+    team_id int,
     otp int DEFAULT NULL,
     client_report int ,
     jwt_token varchar(255) ,
