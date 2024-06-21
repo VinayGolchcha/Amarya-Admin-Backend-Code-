@@ -21,13 +21,16 @@ export const insertUserProjectQuery = async (array) => {
 
 export const getUserProjectQuery = async (array) => {
     try {
-        let query = `SELECT * 
-                    FROM userProjects 
-                    WHERE emp_id = ?
-                    AND CONCAT(SUBSTRING(start_month, 4, 2), SUBSTRING(start_month, 1, 2)) <= DATE_FORMAT(CURDATE(), '%y%m')
-                    AND CONCAT(SUBSTRING(end_month, 4, 2), SUBSTRING(end_month, 1, 2)) > DATE_FORMAT(CURDATE(), '%y%m')
-                  ORDER BY CONCAT(SUBSTRING(start_month, 4, 2), SUBSTRING(start_month, 1, 2)) DESC
-                    LIMIT 1`
+        let query = 
+        `
+        SELECT up.*, p.project AS project_name
+        FROM userProjects up
+        LEFT JOIN projects p ON up.project_id = p._id
+        WHERE up.emp_id = ?
+        AND CONCAT(SUBSTRING(up.start_month, 4, 2), SUBSTRING(up.start_month, 1, 2)) <= DATE_FORMAT(CURDATE(), '%y%m')
+        AND CONCAT(SUBSTRING(up.end_month, 4, 2), SUBSTRING(up.end_month, 1, 2)) > DATE_FORMAT(CURDATE(), '%y%m')
+        ORDER BY CONCAT(SUBSTRING(up.start_month, 4, 2), SUBSTRING(up.start_month, 1, 2)) DESC;
+        `
         return pool.query(query,array);
     } catch (error) {
         console.error("Error executing getUserProjectQuery:", error);
