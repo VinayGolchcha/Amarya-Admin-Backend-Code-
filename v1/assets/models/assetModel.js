@@ -8,6 +8,7 @@ CREATE TABLE IF NOT EXISTS assets (
     warranty_period int NOT NULL,
     price int NOT NULL,
     model_number varchar(50) NOT NULL,
+    status ENUM ('assigned', 'unassigned') DEFAULT 'unassigned' NOT NULL,
     item_description varchar(255) NOT NULL,
     image_url varchar(255) DEFAULT NULL,
     created_at datetime DEFAULT CURRENT_TIMESTAMP,

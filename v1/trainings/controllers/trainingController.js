@@ -30,7 +30,7 @@ export const addNewTraining = async (req, res, next) => {
 
         const [exist_training] = await checkSameTrainingQuery([course_name])
         if (exist_training.length > 0){
-            return errorResponse(res, '', 'Sorry, Training with this name already exists.');
+            return notFoundResponse(res, '', 'Sorry, Training with this name already exists.');
         }
      
         await insertTrainingDataQuery([
@@ -60,9 +60,9 @@ export const requestUserTraining = async (req, res, next) => {
         const current_date = new Date().toISOString().split('T')[0];
 
         if(training_data.length == 0 ) {
-           return errorResponse(res, '', "Training Id provided is not correct")
+           return notFoundResponse(res, '', "Training Id provided is not correct")
         }else if (existing_training_data.length > 0){
-            return errorResponse(res, '', `Current training is already registered with the given employee's id.`);
+            return notFoundResponse(res, '', `Current training is already registered with the given employee's id.`);
         }else{
             const course_name = training_data[0].course_name;
             const course_description = training_data[0].course_description;
@@ -98,7 +98,7 @@ export const trainingCardsData = async (req, res, next) => {
         const [data] = await displayDataForTrainingCardsQuery([])
 
         if(data.length == 0) {
-            return errorResponse(res, errors.array(), "No Trainings in Database.")
+            return notFoundResponse(res, "", "No Trainings exists.")
         }else{ 
             return successResponse(res, data, 'Data Fetched Successfully');
         }
@@ -119,7 +119,7 @@ export const getUserTrainingData = async (req, res, next) => {
         let [data] = await displayTrainingsForUserQuery([emp_id])
 
         if(data.length == 0) {
-            return errorResponse(res, errors.array(), "User has not registered in any trainings or the given employee id is wrong.")
+            return notFoundResponse(res, "", "User has not registered in any trainings or the given employee id is wrong.")
         }else{ 
             return successResponse(res, data, 'Data Fetched Successfully');
         }
@@ -168,7 +168,7 @@ export const deleteTrainingData = async (req, res, next) =>{
         let [data] = await getTrainingDataQuery([id]);
 
         if (data.length == 0) {
-            return errorResponse(res, errors.array(), "Data not found")
+            return notFoundResponse(res, "", "Data not found")
         }else{
             await deleteTrainingDataQuery([id]);
             return successResponse(res, "", 'Data Deleted Successfully');
@@ -190,7 +190,7 @@ export const getEveryUserTrainingData = async (req, res, next) => {
         let [data] = await displayAllUsersTrainingDataQuery()
 
         if(data.length == 0) {
-            return errorResponse(res, "" ,"No trainings alloted till now.")
+            return notFoundResponse(res, "" ,"No trainings alloted till now.")
         }else{ 
             return successResponse(res, data, 'Data Fetched Successfully');
         }
