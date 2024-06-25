@@ -1,7 +1,7 @@
 import { validationResult } from "express-validator";
 import dotenv from "dotenv"
 import { successResponse, errorResponse, notFoundResponse, internalServerErrorResponse } from "../../../utils/response.js"
-import {assetApprovalQuery, fetchAssetDataQuery, assetRejectionQuery, deleteAssetQuery} from "../models/assetApprovalQuery.js"
+import {assetApprovalQuery, fetchAssetDataQuery, assetRejectionQuery, deleteAssetQuery, checkIfAlreadyAssigned} from "../models/assetApprovalQuery.js"
 import {fetchTrainingDataQuery, trainingApprovalQuery, trainingRejectionQuery, deleteTrainingQuery} from "../models/trainingApprovalQuery.js"
 import {leaveApprovalQuery, deleteLeaveQuery, leaveRejectionQuery, getUserLeaveDaysQuery, leaveTakenCountQuery} from "../models/leaveApprovalQuery.js"
 dotenv.config();
@@ -18,24 +18,51 @@ export const approvalByAdmin = async (req, res, next) => {
         let { emp_id, status, foreign_id, item, request_type } = req.body;
         request_type = request_type.toLowerCase();
         status = status.toLowerCase();
+        item = item.toLowerCase();
         const current_date = new Date().toISOString().split('T')[0];
         let message = "";
+        let statusCode;
 
         const handleInventoryRequest = async () => {
-            const [requestData] = await fetchAssetDataQuery([emp_id, item]);
+            const [requestData] = await fetchAssetDataQuery([foreign_id]);
 
             if (requestData.length === 0) {
-                return notFoundResponse(res, '', 'Asset not found');
+                message = 'Asset not found';
+                statusCode = 404
+                return {message, statusCode}
+            }else if(requestData[0].item != item || requestData[0].status == "assigned"){
+                message = 'Inventory id given is not of the requested asset';
+                statusCode = 404
+                return {message, statusCode}
             }
 
             if (status === "approved") {
-                await assetApprovalQuery([foreign_id, current_date, status, emp_id, item], [status, current_date, current_date, foreign_id, emp_id, item]);
-                message = 'Asset approved successfully';
+                const [assetData] = await checkIfAlreadyAssigned([emp_id, foreign_id, status])
+                if (assetData.length > 0) {
+                    message = 'Asset already assigned to this user';
+                    statusCode = 404
+                    return {message, statusCode}
+                }
+                try {
+                    await assetApprovalQuery([foreign_id, current_date, status, emp_id, item], [status, current_date, current_date, foreign_id, emp_id, item], [item , foreign_id]);
+                    message = 'Asset approved successfully';
+                    statusCode = 200
+                    return {message, statusCode}
+                } catch (error) {
+                    message = 'Request item item do not match';
+                    statusCode = 404
+                    return {message, statusCode}
+                }
             } else if (status === "rejected") {
                 await assetRejectionQuery([status, emp_id, item], [status, emp_id, item]);
                 message = 'Asset rejected successfully';
+                statusCode = 200
+                return {message, statusCode}
             } else {
                 await deleteAssetQuery([foreign_id, emp_id]);
+                message = 'Asset request deleted successfully';
+                statusCode = 200
+                return {message, statusCode}
             }
         };
 
@@ -48,12 +75,19 @@ export const approvalByAdmin = async (req, res, next) => {
 
             if (status === "approved") {
                 await trainingApprovalQuery([status, emp_id, foreign_id], [status, current_date, emp_id, foreign_id]);
-                message = 'Training approved successfully';
+                message = 'Training request approved successfully';
+                statusCode = 200
+                return {message, statusCode}
             } else if (status === "rejected") {
                 await trainingRejectionQuery([status, emp_id, foreign_id], [status, emp_id, foreign_id]);
-                message = 'Training rejected successfully';
+                message = 'Training request rejected successfully';
+                statusCode = 200
+                return {message, statusCode}
             } else {
                 await deleteTrainingQuery([foreign_id, emp_id]);
+                message = 'Request deleted successfully';
+                statusCode = 200
+                return {message, statusCode}
             }
         };
 
@@ -71,31 +105,46 @@ export const approvalByAdmin = async (req, res, next) => {
                 if(leave_type_count_by_admin >= (userLeaveTakenCount[0].leave_taken_count + leave_taken_count)){
                     await leaveApprovalQuery([leave_taken_count, emp_id, leave_type], [status, current_date, emp_id, foreign_id], [status, foreign_id, leave_type]);
                     message = 'Leave approved successfully.';
+                    statusCode = 200
+                    return {message, statusCode}
                 }else{
                     message = `User exceeded the leave count by ${(userLeaveTakenCount[0].leave_taken_count + leave_taken_count) - leave_type_count_by_admin}.`;
+                    statusCode = 200
+                    return {message, statusCode}
                 }
             } else if (status === "rejected") {
                 await leaveRejectionQuery([status, emp_id, foreign_id], [status, foreign_id, leave_type]);
                 message = 'Leave rejected successfully.';
+                statusCode = 200
+                return {message, statusCode}
             } else if(status === "deleted"){
                 await deleteLeaveQuery([emp_id, foreign_id], [foreign_id, leave_type]);
                 message = 'Leave deleted successfully';
+                statusCode = 200
+                return {message, statusCode}
             }else{
                 message = "Leave data not found."
+                statusCode = 404
+                return {message, statusCode}
             }
             }
         };
-
+        let data;
         if (request_type === "inventory") {
-            await handleInventoryRequest();
+             data=await handleInventoryRequest();
         } else if (request_type === "training") {
-            await handleTrainingRequest();
+             data=await handleTrainingRequest();
         }else if(request_type === "leave"){
-            await handleLeaveRequest();
+             data=await handleLeaveRequest();
         }
 
-        return successResponse(res, "", message);
+        if(data.statusCode==200){
+            return successResponse(res, "", data.message);
+        }else{
+            return notFoundResponse(res, "", data.message);
+        }
     } catch (error) {
+        console.log(error);
         return internalServerErrorResponse(res, error);
     }
 };

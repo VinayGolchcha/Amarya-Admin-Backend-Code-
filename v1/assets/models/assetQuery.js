@@ -17,6 +17,11 @@ export const insertAssetQuery = (array)=> {
     return pool.query(query, array);
 }
 
+export const checkIfAlreadyExistsQuery=(array)=>{
+    const query = `SELECT * FROM userAssets WHERE emp_id = ? AND asset_type = ? AND item = ? AND status = 'pending'`
+    return pool.query(query, array)
+}
+
 export const getLastAssetIdQuery = () =>{
     let query = `SELECT * FROM assets ORDER BY asset_id DESC LIMIT 1`
     return pool.query(query);

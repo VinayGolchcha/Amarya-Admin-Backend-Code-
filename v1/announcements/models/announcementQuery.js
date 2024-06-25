@@ -22,6 +22,7 @@ export const fetchAnnouncementsQuery = ()=> {
                     title,
                     description,
                     priority,
+                    is_new,
                     DATE_FORMAT(from_date, '%Y-%m-%d') AS from_date,
                     DATE_FORMAT(to_date, '%Y-%m-%d') AS to_date,
                     created_at
@@ -29,7 +30,7 @@ export const fetchAnnouncementsQuery = ()=> {
                     announcements
                 WHERE event_type = 'announcement'
                 ORDER BY
-                    created_at DESC;;
+                    created_at DESC;
     `
 
     return pool.query(query);

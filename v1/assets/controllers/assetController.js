@@ -3,7 +3,7 @@ import { validationResult } from "express-validator";
 import bcrypt from "bcrypt"
 import dotenv from "dotenv"
 import { successResponse, errorResponse, notFoundResponse, internalServerErrorResponse } from "../../../utils/response.js"
-import { insertAssetQuery, getLastAssetIdQuery, insertUserAssetDataQuery, fetchUserAssetsQuery, deleteAssetQuery, getAssetDataQuery, fetchAssetsQuery, updateAssetQuery } from "../models/assetQuery.js";
+import { checkIfAlreadyExistsQuery,insertAssetQuery, getLastAssetIdQuery, insertUserAssetDataQuery, fetchUserAssetsQuery, deleteAssetQuery, getAssetDataQuery, fetchAssetsQuery, updateAssetQuery } from "../models/assetQuery.js";
 import {insertApprovalQuery} from "../../approvals/models/assetApprovalQuery.js";
 import { incrementId, createDynamicUpdateQuery } from "../../helpers/functions.js"
 import { insertAssetImageQuery, deleteImageQuery, fetchImagesForAssetQuery } from "../../images/imagesQuery.js";
@@ -30,7 +30,9 @@ export const createAsset = async (req, res, next) => {
         const asset_id = await incrementId(id)
         let image_url;
         const file = req.file;
-        const { asset_type, item, purchase_date, warranty_period, price, model_number, item_description } = req.body;
+        let { asset_type, item, purchase_date, warranty_period, price, model_number, item_description } = req.body;
+        asset_type = asset_type.toLowerCase()
+        item = item.toLowerCase();
 
         if(file){
             const imageBuffer = file.buffer;
@@ -112,8 +114,14 @@ export const assetRequest = async (req, res, next) => {
         let { asset_type, emp_id, item, primary_purpose, requirement_type, request_type, details } = req.body;
         asset_type = asset_type.toLowerCase();
         primary_purpose = primary_purpose.toLowerCase();
+        requirement_type = requirement_type.toLowerCase();
+        item = item.toLowerCase();
+        request_type = request_type.toLowerCase();
         const current_date = new Date().toISOString().split('T')[0];
-
+        const [existingData] = await checkIfAlreadyExistsQuery([emp_id, asset_type, item])
+        if(existingData.length > 0){
+            return notFoundResponse(res, '', 'Request with the same item already exists under your name, please wait till that request is either approved or declined, to send a new request');
+        }
         await insertApprovalQuery([emp_id, request_type, item, current_date, primary_purpose, details ])
         const [data] = await insertUserAssetDataQuery([
             emp_id,
