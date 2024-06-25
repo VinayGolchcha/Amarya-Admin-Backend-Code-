@@ -157,8 +157,8 @@ export const fetchLeaveTakenOverviewQuery = (array, date) => {
     try {
         let query = `SELECT leave_type, from_date, to_date, subject FROM leaveDatesAndReasons WHERE emp_id = ? AND status = ?`
         if (date) {
-            const [month, year] = date.split('/');
-            query += ` AND MONTH(from_date) = ? AND YEAR(from_date) = ?`;
+            const [month, year] = date.split('-');
+            query += ` AND YEAR(from_date) = ? AND MONTH(from_date) = ? `;
             array.push(month, year);
         }
         query += ` ORDER BY created_at DESC`
@@ -267,6 +267,8 @@ export const getallUserLeaveDataQuery = async(array)=>{
         'HR' AS manager
         FROM leaveDatesAndReasons
         WHERE emp_id = ?
+        ORDER BY
+        created_at DESC
         `
         return await pool.query(query, array);
     } catch (error) {
