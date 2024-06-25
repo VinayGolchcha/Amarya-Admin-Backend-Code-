@@ -1,3 +1,4 @@
+import { param } from "express-validator";
 import pool from "../../../config/db.js"
 
 export const leaveApprovalQuery = async (array1, array2, array3) => {
@@ -62,6 +63,29 @@ export const leaveTakenCountQuery = async (array) =>{
         return result
     } catch (error) {
         console.error("Error executing leaveTakenCountQuery:", error);
+        throw error;
+    }
+}
+
+export const checkIfAlreadyRequestedQuery = async (emp_id, from_date, to_date) => {
+    const  params = [emp_id, from_date, to_date, from_date, to_date, from_date, to_date]
+    let query = `
+        SELECT * 
+        FROM leaveDatesAndReasons 
+        WHERE emp_id = ?
+          AND (
+                ? BETWEEN from_date AND to_date 
+                OR ? BETWEEN from_date AND to_date 
+                OR from_date BETWEEN ? AND ?
+                OR to_date BETWEEN ? AND ?
+              )
+          AND status != 'rejected';
+    `
+    try {
+        const result = await pool.query(query, params);
+        return result;
+    } catch (error) {
+        console.error("Error executing checkIfAlreadyRequestedQuery:", error);
         throw error;
     }
 }
