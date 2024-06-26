@@ -12,7 +12,7 @@ CREATE TABLE IF NOT EXISTS userTrainings (
     created_at datetime DEFAULT CURRENT_TIMESTAMP,
     updated_at datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY (_id),
-    FOREIGN KEY (training_id) REFERENCES trainings(training_id) ON DELETE CASCADE,
+    FOREIGN KEY (training_id) REFERENCES trainings(training_id),
     FOREIGN KEY (emp_id) REFERENCES users(emp_id) ON DELETE CASCADE
 ) AUTO_INCREMENT = 1111`;
 
