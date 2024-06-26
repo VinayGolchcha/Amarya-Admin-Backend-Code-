@@ -7,7 +7,7 @@ CREATE TABLE IF NOT EXISTS userTeams (
     updated_at datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY (_id),
     FOREIGN KEY (user_id) REFERENCES users(emp_id) ON DELETE CASCADE,
-    FOREIGN KEY (team_id) REFERENCES teams(_id) ON DELETE CASCADE
+    FOREIGN KEY (team_id) REFERENCES teams(_id)
 ) AUTO_INCREMENT = 1111;
 `
 export default userTeams

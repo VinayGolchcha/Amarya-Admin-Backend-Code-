@@ -290,6 +290,7 @@ export const getUserLeaveData = async (req, res, next) => {
         return internalServerErrorResponse(res, error);
     }
 }
+
 export const getUserAllLeaveData = async (req, res, next) => {
     try {
         const {emp_id} = req.body;
