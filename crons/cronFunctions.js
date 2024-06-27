@@ -28,57 +28,63 @@ export const updateEntries = async () => {
 };
 
 export const generateUserWorksheetExcel = async () => {
-    try {
-        const query = `
-            SELECT *
-            FROM worksheets
-            WHERE date BETWEEN DATE_FORMAT(CURRENT_DATE() - INTERVAL 1 MONTH, '%Y-%m-01') AND LAST_DAY(CURRENT_DATE() - INTERVAL 1 MONTH);
-        `;
-        
-        // Query MySQL to get data
-        const [results, fields] = await pool.query(query);
-        
-        // Get the current month and year
-        const current_date = new Date();
-        const previous_month_date = new Date(current_date);
-        previous_month_date.setMonth(previous_month_date.getMonth() - 1);
-        const month = previous_month_date.toLocaleString('default', { month: 'long' });
-        const year = previous_month_date.getFullYear();
-        const folderPath = './excelFiles/';
-        await fs.mkdir(folderPath, { recursive: true });
-        // Create a new workbook
-        const workbook = await XlsxPopulate.fromBlankAsync();
+  try {
+      const query = `
+          SELECT *
+          FROM worksheets
+          WHERE date BETWEEN DATE_FORMAT(CURRENT_DATE() - INTERVAL 1 MONTH, '%Y-%m-01') AND LAST_DAY(CURRENT_DATE() - INTERVAL 1 MONTH);
+      `;
+      
+      // Query MySQL to get data
+      const [results, fields] = await pool.query(query);
 
-        // Get or create the sheet for the current month
-        let sheet = workbook.sheet(`${month}_${year}`);
-        if (!sheet) {
-            sheet = workbook.addSheet(`${month}_${year}`);
+      // Get the current month and year
+      const current_date = new Date();
+      const previous_month_date = new Date(current_date);
+      previous_month_date.setMonth(previous_month_date.getMonth() - 1);
+      const month = previous_month_date.toLocaleString('default', { month: 'long' });
+      const year = previous_month_date.getFullYear();
+      const folderPath = './downloads/';
+      await fs.mkdir(folderPath, { recursive: true });
+      
+      const filePath = `${folderPath}worksheet_${year}.xlsx`;
+      let workbook;
+      
+      // Check if file exists
+      try {
+          // Load the existing workbook
+          workbook = await XlsxPopulate.fromFileAsync(filePath);
+      } catch (err) {
+          // If file does not exist, create a new workbook
+          workbook = await XlsxPopulate.fromBlankAsync();
+      }
 
-            // Add column headers
-            fields.forEach((field, index) => {
-                sheet.cell(1, index + 1).value(field.name);
-            });
-        }
+      // Check if sheet for the current month exists
+      let sheet = workbook.sheet(`${month}_${year}`);
+      if (!sheet) {
+          // If not, create the sheet and add column headers
+          sheet = workbook.addSheet(`${month}_${year}`);
+          fields.forEach((field, index) => {
+              sheet.cell(1, index + 1).value(field.name);
+          });
+      }
 
-        // Add rows from MySQL results
-        results.forEach((row, rowIndex) => {
-            fields.forEach((field, columnIndex) => {
-                sheet.cell(rowIndex + 2, columnIndex + 1).value(row[field.name]);
-            });
-        });
-        // Save Excel file
-        await workbook.toFileAsync(`${folderPath}worksheet_${year}.xlsx`);
-        // Save Excel file to Google Drive
-        // const buffer = await workbook.outputAsync();
-        // await uploadFileToDrive(buffer, `worksheet_${year}.xlsx`);
-        // console.log(`Excel file saved to Google Drive`);
+      // Add rows from MySQL results
+      results.forEach((row, rowIndex) => {
+          fields.forEach((field, columnIndex) => {
+              sheet.cell(rowIndex + 2, columnIndex + 1).value(row[field.name]);
+          });
+      });
 
-        return `${folderPath}worksheet_${year}.xlsx`;
-    } catch (error) {
-        console.error("Error executing fetchUserDataForExcelQuery:", error);
-        throw error;
-    }
-};
+      // Save the workbook
+      await workbook.toFileAsync(filePath);
+
+      return filePath;
+  } catch (error) {
+      console.error("Error executing fetchUserDataForExcelQuery:", error);
+      throw error;
+  }
+}
 
 export const calculatePerformanceForEachEmployee = async () => {
   try {
