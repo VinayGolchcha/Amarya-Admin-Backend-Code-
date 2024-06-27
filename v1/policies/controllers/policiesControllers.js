@@ -2,7 +2,7 @@ import { validationResult } from "express-validator";
 import { addPolicyQuery, deletePolicyQuery, fetchPolicyQuery, fetchPolicyIfExistsQuery, fetchPolicyByIdQuery } from "../models/policiesQuery.js";
 import { errorResponse, internalServerErrorResponse, notFoundResponse, successResponse } from "../../../utils/response.js";
 import dotenv from "dotenv";
-import fs from 'fs';
+import fs from 'fs/promises';
 import path from 'path';
 import { fileURLToPath } from 'url';
 dotenv.config();
@@ -21,11 +21,11 @@ export const addPolicy = async (req, res, next) => {
         if (policy_exists.length > 0) {
             return notFoundResponse(res, '', "Policy File already exists, if you want to add new file, pls delete the existing one.");
         }
+        await fs.mkdir('./downloads/', { recursive: true });
         const __filename = fileURLToPath(import.meta.url);
         const __dirname = path.dirname(__filename);
-        console.log("__dirname:", __dirname);
         const target_directory = path.join(`${__dirname}`, '..','..','..','downloads', file_data.originalname);
-        fs.writeFileSync(target_directory, file_data.buffer);
+        fs.writeFile(target_directory, file_data.buffer);
         let [data] = await addPolicyQuery([
             policy_heads,
             file_data.originalname
@@ -53,16 +53,19 @@ export const deletePolicy = async (req, res, next) => {
         const __filename = fileURLToPath(import.meta.url);
         const __dirname = path.dirname(__filename);
         const file_path = path.join(__dirname, '..', '..', '..', 'downloads', file_name);
-
-        await deletePolicyQuery([id]);
-
-        if (fs.existsSync(file_path)) {
-            fs.unlinkSync(file_path);
+        try {
+            await deletePolicyQuery([id])
+            await fs.access(file_path);
+            await fs.unlink(file_path);
+        } catch (err) {
+            if (err.code !== 'ENOENT') { 
+                throw err;
+            }
         }
 
         return successResponse(res, "", "Policy Deleted Successfully");
-    } catch (error) {
-        return internalServerErrorResponse(res, error);
+    } catch (error) {return internalServerErrorResponse(res, error);
+        
     }
 };
 

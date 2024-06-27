@@ -96,7 +96,7 @@ export const updateUserPasswordQuery = (array) =>{
 
 export const getAllLeaveCounts = () =>{
     try {
-        let query = `SELECT leave_type, leave_count FROM leaveTypeCounts`
+        let query = `SELECT _id, leave_type, leave_count FROM leaveTypeCounts`
         return pool.query(query);
     } catch (error) {
         console.error("Error executing getAllLeaveCounts:", error);
@@ -106,7 +106,7 @@ export const getAllLeaveCounts = () =>{
 
 export const insertUserLeaveCountQuery = (array)=>{
     try {
-        let query = `INSERT INTO userLeaveCounts (emp_id, leave_type, leave_count) VALUES(?,?,?)`
+        let query = `INSERT INTO userLeaveCounts (emp_id, leave_type, leave_count, leave_type_id) VALUES(?,?,?,?)`
         return pool.query(query, array);
     } catch (error) {
         console.error("Error executing insertUserLeaveCountQuery:", error);
