@@ -104,7 +104,8 @@ export const userRegistration = async (req, res, next) => {
         for(let i = 0; i < leaveTypeAndCount.length; i++) {
             let leaveType = leaveTypeAndCount[i].leave_type;
             let leaveCount = leaveTypeAndCount[i].leave_count;
-            await insertUserLeaveCountQuery([emp_id, leaveType, leaveCount])
+            let leaveTypeId = leaveTypeAndCount[i]._id
+            await insertUserLeaveCountQuery([emp_id, leaveType, leaveCount, leaveTypeId])
         }
         return successResponse(res, user_data, 'User successfully registered');
     } catch (error) {
