@@ -23,6 +23,7 @@ export const addPolicy = async (req, res, next) => {
         }
         const __filename = fileURLToPath(import.meta.url);
         const __dirname = path.dirname(__filename);
+        console.log("__dirname:", __dirname);
         const target_directory = path.join(`${__dirname}`, '..','..','..','downloads', file_data.originalname);
         fs.writeFileSync(target_directory, file_data.buffer);
         let [data] = await addPolicyQuery([
