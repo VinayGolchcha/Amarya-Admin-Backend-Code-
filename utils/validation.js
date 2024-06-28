@@ -214,7 +214,7 @@ export const createProjectVal = [
     body('project_status').isString().withMessage('Invalid project status input').notEmpty().withMessage('project status cannot be empty'),
     body('project_lead').isString().withMessage('Invalid project lead input').notEmpty().withMessage('project lead cannot be empty'),
     body('start_month').optional().custom((value) => isValidMonthYearFormat(value)).withMessage('Invalid value format'),
-    body('end_month').optional().custom((value) => isValidMonthYearFormat(value)).withMessage('Invalid value format')
+    body('end_month').optional().if(body('end_month').notEmpty()).custom((value) => isValidMonthYearFormat(value)).withMessage('Invalid value format')
 ]
 export const updateProjectVal = [
     param('id').isInt().withMessage('Invalid id input.').notEmpty().withMessage('id cannot be empty.'),
@@ -224,7 +224,7 @@ export const updateProjectVal = [
     body('project_status').optional().isString().withMessage('Invalid project status input').notEmpty().withMessage('project status cannot be empty'),
     body('project_lead').optional().isString().withMessage('Invalid project lead input').notEmpty().withMessage('project lead cannot be empty'),
     body('start_month').optional().custom((value) => isValidMonthYearFormat(value)).withMessage('Invalid value format'),
-    body('end_month').optional().custom((value) => isValidMonthYearFormat(value)).withMessage('Invalid value format')
+    body('end_month').optional().if(body('end_month').notEmpty()).custom((value) => isValidMonthYearFormat(value)).withMessage('Invalid value format')
 ]
 
 export const createCategoryVal = [
