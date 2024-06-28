@@ -147,6 +147,7 @@ export const fetchApprovalDataQuery = () =>{
                         approvals.foreign_id,
                         approvals.request_type,
                         approvals.item,
+                        approvals.asset_type,
                         approvals.status,
                         approvals.subject,
                         approvals.body,

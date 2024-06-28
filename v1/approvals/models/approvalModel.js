@@ -5,6 +5,7 @@ CREATE TABLE IF NOT EXISTS approvals (
     foreign_id varchar(255),
     request_type varchar(255) NOT NULL,
     item varchar(255) NOT NULL,
+    asset_type varchar(255) DEFAULT NULL,
     status ENUM('rejected', 'approved', 'pending') DEFAULT 'pending' NOT NULL,
     subject varchar(255) NOT NULL,
     body varchar(255) NOT NULL,
