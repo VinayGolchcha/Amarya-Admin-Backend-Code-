@@ -19,12 +19,12 @@ export const approvalByAdmin = async (req, res, next) => {
         request_type = request_type.toLowerCase();
         status = status.toLowerCase();
         item = item.toLowerCase();
-        asset_type = asset_type.toLowerCase();
         const current_date = new Date().toISOString().split('T')[0];
         let message = "";
         let statusCode;
-
+        
         const handleInventoryRequest = async () => {
+            asset_type = asset_type.toLowerCase();
             const [requestData] = await fetchAssetDataQuery([foreign_id]);
 
             if (requestData.length === 0) {
