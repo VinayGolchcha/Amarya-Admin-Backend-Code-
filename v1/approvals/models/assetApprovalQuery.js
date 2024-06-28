@@ -5,13 +5,13 @@ export const assetApprovalQuery = async (array1, array2, array3) => {
     const query1 = `
         UPDATE userAssets 
         SET asset_id = ?, issued_from = ?, status = ? 
-        WHERE emp_id = ? AND item = ?;
+        WHERE emp_id = ? AND item = ? AND asset_type = ? AND status = 'pending';
     `;
     
     const query2 = `
         UPDATE approvals
         SET status = ?, approval_date = ?, issued_from = ?, foreign_id = ?
-        WHERE emp_id = ? AND item = ?;
+        WHERE emp_id = ? AND item = ? AND asset_type = ?;
     `;
     
     const query3 = `
@@ -59,8 +59,9 @@ export const insertApprovalQuery=(array)=>{
         item,
         request_date,
         subject,
-        body
-    ) VALUES (?,?,?,?,?,?);`
+        body,
+        asset_type
+    ) VALUES (?,?,?,?,?,?,?);`
     return pool.query(query, array)
 }
 
