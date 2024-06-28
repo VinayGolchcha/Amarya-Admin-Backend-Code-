@@ -115,14 +115,19 @@ export const assetRequest = async (req, res, next) => {
         asset_type = asset_type.toLowerCase();
         primary_purpose = primary_purpose.toLowerCase();
         requirement_type = requirement_type.toLowerCase();
-        item = item.toLowerCase();
         request_type = request_type.toLowerCase();
         const current_date = new Date().toISOString().split('T')[0];
-        const [existingData] = await checkIfAlreadyExistsQuery([emp_id, asset_type, item])
-        if(existingData.length > 0){
-            return notFoundResponse(res, '', 'Request with the same item already exists under your name, please wait till that request is either approved or declined, to send a new request');
+
+        if (asset_type == 'hardware' && (item == "" || item == null)){
+            return notFoundResponse(res, '', 'Request is wrong');
+        }else{
+            item = item.toLowerCase();
+            const [existingData] = await checkIfAlreadyExistsQuery([emp_id, asset_type, item])
+            if(existingData.length > 0){
+                return notFoundResponse(res, '', 'Request with the same item already exists under your name, please wait till that request is either approved or declined, to send a new request');
+            }
         }
-        await insertApprovalQuery([emp_id, request_type, item, current_date, primary_purpose, details ])
+        await insertApprovalQuery([emp_id, request_type, item, current_date, primary_purpose, details, asset_type ])
         const [data] = await insertUserAssetDataQuery([
             emp_id,
             asset_type,
