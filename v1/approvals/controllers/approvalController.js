@@ -15,10 +15,11 @@ export const approvalByAdmin = async (req, res, next) => {
             return errorResponse(res, errors.array(), "");
         }
 
-        let { emp_id, status, foreign_id, item, request_type } = req.body;
+        let { emp_id, status, foreign_id, item, request_type, asset_type } = req.body;
         request_type = request_type.toLowerCase();
         status = status.toLowerCase();
         item = item.toLowerCase();
+        asset_type = asset_type.toLowerCase();
         const current_date = new Date().toISOString().split('T')[0];
         let message = "";
         let statusCode;
@@ -44,7 +45,7 @@ export const approvalByAdmin = async (req, res, next) => {
                     return {message, statusCode}
                 }
                 try {
-                    await assetApprovalQuery([foreign_id, current_date, status, emp_id, item], [status, current_date, current_date, foreign_id, emp_id, item], [item , foreign_id]);
+                    await assetApprovalQuery([foreign_id, current_date, status, emp_id, item, asset_type], [status, current_date, current_date, foreign_id, emp_id, item, asset_type], [item,foreign_id]);
                     message = 'Asset approved successfully';
                     statusCode = 200
                     return {message, statusCode}

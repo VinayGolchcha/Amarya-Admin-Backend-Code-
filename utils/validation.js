@@ -23,24 +23,25 @@ export const allAppVal = [
     body('emp_id').notEmpty().withMessage('emp_id cannot be empty.').isAlphanumeric().withMessage('emp_id must be alphanumeric.'),
     body('foreign_id').notEmpty().withMessage('foreign_id cannot be empty.').isAlphanumeric().withMessage('foreign_id must be alphanumeric.'),
     body('status').notEmpty().withMessage('status cannot be empty.').isString().withMessage("status must be a string."),
-    body('item').notEmpty().withMessage('item cannot be empty.').isString().withMessage("item must be a string."),
+    body('item').optional().isString().withMessage("item must be a string."),
     body('request_type').notEmpty().withMessage('request_type cannot be empty.').isString().withMessage("request_type must be a string."),
 ]
 
 export const crAssVal = [
     body('asset_type').notEmpty().withMessage('asset_type cannot be empty.').isString().withMessage("asset_type must be a string."),
-    body('item').notEmpty().withMessage('item cannot be empty.').isString().withMessage("item must be a string."),
+    body('item').optional().isString().withMessage("item must be a string."),
     body('purchase_date').notEmpty().withMessage('purchase_date cannot be empty.').isDate().withMessage("purchase_date must be a date."),
     body('warranty_period').notEmpty().withMessage('warranty_period cannot be empty.').isInt().withMessage("warranty_period must be an integer."),
     body('price').notEmpty().withMessage('price cannot be empty.').isInt().withMessage("price must be an integer."),
-    body('model_number').notEmpty().withMessage('model_number cannot be empty.').isAlphanumeric().withMessage('model_number must be alphanumeric.'),
+    body('model_number').optional().isString().withMessage("item must be a string."),
     body('item_description').optional().notEmpty().withMessage('item_description cannot be empty.').isString().withMessage("item_description must be a string."),
     body('image_url').optional().notEmpty().withMessage('image_url cannot be empty.').isString().withMessage("image_url must be a string."),
 ]
+
 export const assReqVal = [
     body('asset_type').notEmpty().withMessage('asset_type cannot be empty.').isString().withMessage("asset_type must be a string."),
     body('emp_id').notEmpty().withMessage('emp_id cannot be empty.').isAlphanumeric().withMessage('emp_id must be alphanumeric.'),
-    body('item').notEmpty().withMessage('item cannot be empty.').isString().withMessage("item must be a string."),
+    body('item').optional().isString().withMessage("item must be a string."),
     body('primary_purpose').notEmpty().withMessage('primary_purpose cannot be empty.').isString().withMessage("primary_purpose must be a string."),
     body('requirement_type').notEmpty().withMessage('requirement_type cannot be empty.').isString().withMessage("requirement_type must be a string."),
     body('request_type').notEmpty().withMessage('request_type cannot be empty.').isString().withMessage("request_type must be a string."),
