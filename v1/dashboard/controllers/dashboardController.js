@@ -2,8 +2,7 @@ import dotenv from "dotenv";
 import { validationResult } from "express-validator";
 import { internalServerErrorResponse, successResponse } from "../../../utils/response.js";
 import { getMonthlyProjectCountQuery, getUserCountOnClientProjectQuery, getTotalProjectsQuery, getProjectCountBasedOnTeamQuery, 
-    getEmployeeTeamCountQuery, fetchAllProjectsDataQuery, fetchApprovalDataQuery,
-    getProjectCountPerTeamQuery} from "../query/dashboardQuery.js";
+    getEmployeeTeamCountQuery, fetchAllProjectsDataQuery, fetchApprovalDataQuery} from "../query/dashboardQuery.js";
 import {fetchActivityORAnnouncementQuery} from "../../users/models/userDashboardQuery.js"; 
 dotenv.config();
 
