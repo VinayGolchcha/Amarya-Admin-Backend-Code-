@@ -2,7 +2,8 @@ import dotenv from "dotenv";
 import { validationResult } from "express-validator";
 import { internalServerErrorResponse, successResponse } from "../../../utils/response.js";
 import { getMonthlyProjectCountQuery, getUserCountOnClientProjectQuery, getTotalProjectsQuery, getProjectCountBasedOnTeamQuery, 
-    getEmployeeTeamCountQuery, fetchAllProjectsDataQuery, fetchApprovalDataQuery} from "../query/dashboardQuery.js";
+    getEmployeeTeamCountQuery, fetchAllProjectsDataQuery, fetchApprovalDataQuery,
+    getProjectCountPerTeamQuery} from "../query/dashboardQuery.js";
 import {fetchActivityORAnnouncementQuery} from "../../users/models/userDashboardQuery.js"; 
 dotenv.config();
 
@@ -13,9 +14,10 @@ export const adminDashboard = async(req, res, next) => {
             return errorResponse(res, errors.array(), "")
         }
 
+        let employee_count_with_team = []
         const [
             [live_projects_data],
-            [employee_count_with_team],
+            [employee_count_per_team_for_project],
             [total_projects],
             [employee_count_with_client],
             [get_employee_team_count],
@@ -28,7 +30,7 @@ export const adminDashboard = async(req, res, next) => {
             getEmployeeTeamCountQuery(),
             fetchAllProjectsDataQuery()
         ]);
-
+        employee_count_with_team.push(employee_count_per_team_for_project)
         employee_count_with_team.push(total_projects[0])
         employee_count_with_team.push(employee_count_with_client[0])
 
