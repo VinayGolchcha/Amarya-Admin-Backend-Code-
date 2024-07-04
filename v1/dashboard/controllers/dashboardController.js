@@ -13,9 +13,10 @@ export const adminDashboard = async(req, res, next) => {
             return errorResponse(res, errors.array(), "")
         }
 
+        let employee_count_with_team = []
         const [
             [live_projects_data],
-            [employee_count_with_team],
+            [employee_count_per_team_for_project],
             [total_projects],
             [employee_count_with_client],
             [get_employee_team_count],
@@ -28,7 +29,7 @@ export const adminDashboard = async(req, res, next) => {
             getEmployeeTeamCountQuery(),
             fetchAllProjectsDataQuery()
         ]);
-
+        employee_count_with_team.push(employee_count_per_team_for_project)
         employee_count_with_team.push(total_projects[0])
         employee_count_with_team.push(employee_count_with_client[0])
 
