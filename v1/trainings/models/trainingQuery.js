@@ -40,8 +40,31 @@ export const displayDataForTrainingCardsQuery = ()=> {
     return pool.query(query);
 };
 
-export const displayTrainingsForUserQuery = (array)=> {
-    let query = `SELECT  training_id, course_name, course_description, status, progress_status FROM userTrainings WHERE emp_id = ?`
+export const displayTrainingsForUserQuery = (array) => {
+    let query = `
+        SELECT 
+            ut.training_id, 
+            ut.course_name, 
+            ut.course_description, 
+            ut.status, 
+            ut.progress_status,
+            DATE_FORMAT(a.latest_approval_date, '%y-%m-%d') AS approval_date
+        FROM 
+            userTrainings ut
+        LEFT JOIN 
+            (SELECT 
+                foreign_id, 
+                emp_id, 
+                MAX(approval_date) AS latest_approval_date
+            FROM 
+                approvals
+            GROUP BY 
+                foreign_id, emp_id) a 
+        ON 
+            ut.training_id = a.foreign_id 
+            AND ut.emp_id = a.emp_id
+        WHERE 
+            ut.emp_id = ?`;
     return pool.query(query, array);
 };
 
