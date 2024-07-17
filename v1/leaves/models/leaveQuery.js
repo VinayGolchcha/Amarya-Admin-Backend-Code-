@@ -71,6 +71,26 @@ export const checkSameLeaveTypeNameQuery = (array) => {
     }
 }
 
+export const fetchAllEmployeesQuery = () => {
+    try {
+        let query = `SELECT emp_id FROM users WHERE role = 'user'`
+        return pool.query(query);
+    } catch (error) {
+        console.error("Error executing fetchAllEmployeesQuery:", error);
+        throw error; 
+    }
+}
+
+export const insertUserLeaveCountQuery = (array) => {
+    try {
+        let query = `INSERT INTO userLeaveCounts (emp_id, leave_type_id, leave_type, leave_count) VALUES (?, ?, ?, ?)`
+        return pool.query(query, array);
+    } catch (error) {
+        console.error("Error executing insertUserLeaveCountQuery:", error);
+        throw error; 
+    }
+}
+
 export const createLeaveType = (array) => {
     try {
         let query = `INSERT INTO leaveTypes SET leave_type = ?, description = ?`
