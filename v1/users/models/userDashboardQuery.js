@@ -2,6 +2,7 @@ import pool from "../../../config/db.js";
 
 export const fetchActivityORAnnouncementQuery = (array) => {
     let query = ` SELECT
+                _id,
                 title,
                 description,
                 priority,
