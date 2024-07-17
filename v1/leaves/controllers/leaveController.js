@@ -3,7 +3,9 @@ import {
     createHoliday, updateHolidayQuery, createLeaveType, checkSameHolidayQuery,
     createLeaveCount, updateLeaveQuery, fetchLeavesCountQuery, checkSameLeaveTypeNameQuery, deleteLeaveTypeQuery, getLeavesTypesQuery, insertUserLeaveDataQuery, insertApprovalForLeaveQuery, getLastLeaveId, getLeaveTypeCountByAdmin,
     getAllUsersLeaveCountQuery, getUserLeaveDataQuery, fetchLeaveTakenOverviewQuery, deleteLeaveTypeAndCountQuery, fetchHolidayListQuery, getHolidayDataQuery, deleteHolidayQuery,
-    getallUserLeaveDataQuery
+    getallUserLeaveDataQuery,
+    fetchAllEmployeesQuery,
+    insertUserLeaveCountQuery
 } from "../../leaves/models/leaveQuery.js"
 import { checkIfAlreadyRequestedQuery, leaveTakenCountQuery } from "../../approvals/models/leaveApprovalQuery.js"
 import { successResponse, errorResponse, notFoundResponse, unAuthorizedResponse, internalServerErrorResponse } from "../../../utils/response.js"
@@ -112,6 +114,13 @@ export const addLeaveTypeAndCount = async (req, res, next) => {
         // Create leave count
         await createLeaveCount([leave_type_id, leave_type, leave_count, gender]);
 
+        const [employees] = await fetchAllEmployeesQuery();
+        if(employees.length!=0){
+            for (const employee of employees) {
+                const { emp_id } = employee;
+                await insertUserLeaveCountQuery([emp_id, leave_type_id, leave_type, leave_count]);
+            }
+        }
         return successResponse(res, '', `Leave type and count added successfully.`);
     } catch (error) {
         return internalServerErrorResponse(res, error);
