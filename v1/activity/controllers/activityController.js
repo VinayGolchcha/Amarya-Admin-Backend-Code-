@@ -17,6 +17,9 @@ export const addActivity = async (req, res, next) => {
     }
     const files = req.files;
     const { event_type, priority, from_date, to_date, title, description} = req.body;
+    if(files.length == 0) {
+      return errorResponse(res, "", "Please add images to proceed.");
+    }
     const current_date = new Date();
     const check_from_date = new Date(from_date);
     const check_to_date = new Date(to_date);
