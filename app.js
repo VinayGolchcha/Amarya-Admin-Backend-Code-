@@ -5,6 +5,7 @@ import express, { json } from 'express';
 import cookieParser from 'cookie-parser';
 import { config } from 'dotenv';
 import {errorHandler} from './middlewares/errorMiddleware.js';
+import { connectToDatabase } from './config/db_mongo.js';
 import cors from 'cors';
 import helmet from 'helmet';
 import userRoutes from './v1/users/routes/userRoutes.js';
@@ -61,6 +62,13 @@ app.use('/', (req, res) => {
   })
 });
 app.use(errorHandler)
+
+try {
+  await connectToDatabase();
+  console.log("Mongo Database connected successfully");
+} catch (error) {
+  console.error("Mongo Database connection failed:", error);
+}
 
 // Start the server
 const port = process.env.PORT || 4000;

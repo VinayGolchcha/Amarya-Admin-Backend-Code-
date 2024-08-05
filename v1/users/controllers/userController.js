@@ -9,6 +9,7 @@ import {getTeamQuery} from "../../teams/models/query.js"
 import {insertTeamToUser} from "../models/userTeamsQuery.js"
 import {uploadImageToCloud, deleteImageFromCloud} from "../../helpers/cloudinary.js";
 import {insertEmpImageQuery, deleteImageQuery} from "../../images/imagesQuery.js";
+import { create } from "../models/userMongoQuery.js";
 dotenv.config();
 
 import {userRegistrationQuery, getUserDataByUsernameQuery, userDetailQuery, updateTokenQuery, updateUserProfileQuery,
@@ -98,7 +99,13 @@ export const userRegistration = async (req, res, next) => {
             role
         ]);
 
-        const [data]= await insertTeamToUser([emp_id, team_id]);
+        const user_message_data = {
+                username,
+                email,
+                password: password_hash
+        }
+        await create(user_message_data)
+        await insertTeamToUser([emp_id, team_id]);
     
         let [leaveTypeAndCount] = await getAllLeaveCounts();
         for(let i = 0; i < leaveTypeAndCount.length; i++) {
