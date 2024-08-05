@@ -6,7 +6,9 @@ dotenv.config();
 export const authenticateAdminSession = async (req, res, next) => {
 
     const token = req.body.token || req.params.token || req.headers['x-access-token'] || req.headers['authorization'] || req.headers['Authorization'];
-    const cookie_id = req.cookies.user_id;
+    let cookies = req.cookies.app1_auth_token;
+    cookies = JSON.parse(cookies);cookies.user_id
+
     if (token) {
         try {
             let decoded, accessDetails, validAccess = false, jwtErrorMessage = '';
@@ -23,7 +25,7 @@ export const authenticateAdminSession = async (req, res, next) => {
             if (validAccess) {
                 //ACCESS DETAILS
                 if (decoded.hasOwnProperty('user_id') && decoded.role === "admin") {
-                    if(cookie_id != decoded.user_id){
+                    if(cookies.user_id != decoded.user_id){
                         return res.send({
                             statusCode: 440,
                             status: 'failure',
