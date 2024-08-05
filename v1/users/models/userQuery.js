@@ -157,14 +157,35 @@ export const updateUserProfileQuery = async (query,array) => {
 export const getUserDataByUserIdQuery = (array) =>{
     try {
         let query = `SELECT
-                    users.*,
-                    images.public_id
+                    u._id,
+                    u.emp_id,
+                    u.username,
+                    u.first_name,
+                    u.last_name,
+                    u.email,
+                    u.gender,
+                    u.profile_picture,
+                    u.blood_group,
+                    u.mobile_number,
+                    u.emergency_contact_number,
+                    u.emergency_contact_person_info,
+                    u.address,
+                    u.dob,
+                    u.designation,
+                    u.designation_type,
+                    u.joining_date,
+                    u.experience,
+                    u.completed_projects,
+                    u.performance,
+                    u.team_id,
+                    u.client_report,
+                    i.public_id
                 FROM
-                    users
+                    users u
                 LEFT JOIN
-                    images ON images.emp_id = users.emp_id
+                    images i ON i.emp_id = u.emp_id
                 WHERE
-                    users.emp_id = ?;`
+                    u.emp_id = ?;`
         return pool.query(query, array);
     } catch (error) {
         console.error("Error executing getUserDataByUserIdQuery:", error);
