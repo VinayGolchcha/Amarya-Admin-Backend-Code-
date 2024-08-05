@@ -7,7 +7,7 @@ export const authenticateAdminSession = async (req, res, next) => {
 
     const token = req.body.token || req.params.token || req.headers['x-access-token'] || req.headers['authorization'] || req.headers['Authorization'];
     let cookies = req.cookies.app1_auth_token;
-    cookies = JSON.parse(cookies);cookies.user_id
+    cookies = JSON.parse(cookies);
 
     if (token) {
         try {
