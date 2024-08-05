@@ -29,8 +29,16 @@ const app = express();
 config();
 app.use(helmet());
 app.use(json());
-app.use(cors());
+// CORS setup
 app.use(cookieParser());
+const corsOptions = {
+  origin: 'http://localhost:3000', // replace with your client URL
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true,
+};
+
+app.use(cors(corsOptions));
 // Start the cron jobs
 runCronJobs();
 // Disable the X-Powered-By header
