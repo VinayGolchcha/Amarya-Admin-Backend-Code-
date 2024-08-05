@@ -32,7 +32,7 @@ app.use(json());
 // CORS setup
 app.use(cookieParser());
 const corsOptions = {
-  origin: 'http://localhost:3000', // replace with your client URL
+  origin: 'https://amarya-admin-backend-code.onrender.com', // replace with your client URL
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true,
