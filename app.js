@@ -2,6 +2,7 @@
 import pool, { setupDatabase } from './config/db.js';
 await setupDatabase();
 import express, { json } from 'express';
+import cookieParser from 'cookie-parser';
 import { config } from 'dotenv';
 import {errorHandler} from './middlewares/errorMiddleware.js';
 import cors from 'cors';
@@ -29,6 +30,7 @@ config();
 app.use(helmet());
 app.use(json());
 app.use(cors());
+app.use(cookieParser());
 // Start the cron jobs
 runCronJobs();
 // Disable the X-Powered-By header

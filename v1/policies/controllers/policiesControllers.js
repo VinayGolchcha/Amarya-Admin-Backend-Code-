@@ -80,7 +80,7 @@ export const fetchPolicy = async (req, res, next) => {
             return notFoundResponse(res, "", "No policies found.");
         }
         const policy = data[0];
-        const file_name = policy.file_data;
+        const file_name = encodeURIComponent(policy.file_data);
         const baseUrl = `${req.protocol}://${req.get('host')}`;
         const file_url = `${baseUrl}/api/v1/policy/download/${file_name}`;
         return successResponse(res,{file_url, policy_id: policy._id, policy_heads: policy.policy_heads}, "Policy data fetched successfully");
