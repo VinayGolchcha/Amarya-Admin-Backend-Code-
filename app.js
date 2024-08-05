@@ -31,12 +31,12 @@ app.use(helmet());
 app.use(json());
 // CORS setup
 app.use(cookieParser());
-const corsOptions = {
-  origin: 'https://amarya-admin-backend-code.onrender.com', // replace with your client URL
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
-  credentials: true,
-};
+// const corsOptions = {
+//   origin: 'https://amarya-admin-backend-code.onrender.com', // replace with your client URL
+//   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+//   allowedHeaders: ['Content-Type', 'Authorization'],
+//   credentials: true,
+// };
 
 app.use(cors(corsOptions));
 // Start the cron jobs
