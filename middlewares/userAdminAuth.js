@@ -6,6 +6,7 @@ dotenv.config();
 export const authenticateUserAdminSession = async (req, res, next) => {
 
     const token = req.body.token || req.params.token || req.headers['x-access-token'] || req.headers['authorization'] || req.headers['Authorization'];
+    const cookie_id = req.cookies.unique_id;
     if (token) {
         try {
             let decoded, accessDetails, validAccess = false, jwtErrorMessage = '';
@@ -22,6 +23,13 @@ export const authenticateUserAdminSession = async (req, res, next) => {
             if (validAccess) {
                 //ACCESS DETAILS
                 if (decoded.hasOwnProperty('user_id') && (decoded.role === "user" || decoded.role === "admin")) {
+                    if(cookie_id != decoded.user_id){
+                        return res.send({
+                            statusCode: 440,
+                            status: 'failure',
+                            message: 'Invalid request.'
+                        });
+                    }
                     [accessDetails] = await getTokenSessionById(decoded.user_id);
                     console.log(`----------AUTH: ${decoded.role.toUpperCase()} ACCESS----------`);
                 } 
