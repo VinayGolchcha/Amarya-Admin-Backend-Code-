@@ -188,7 +188,6 @@ export const userLogin = async (req, res, next) => {
             token = jwt.sign({ user_id: user[0].emp_id, name: user[0].first_name, role:user[0].role }, process.env.JWT_SECRET, {
                 expiresIn: process.env.JWT_EXPIRATION_TIME,
             });
-            res.cookie('unique_id', user[0].emp_id);
             await updateTokenQuery([ token, user[0].emp_id]);
             return successResponse(res, [{ user_id: user[0].emp_id, token: token, profile_picture:user[0].profile_picture, user_name: user[0].username, role:user[0].role }], message);
         }

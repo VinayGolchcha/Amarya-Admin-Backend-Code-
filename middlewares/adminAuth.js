@@ -6,7 +6,7 @@ dotenv.config();
 export const authenticateAdminSession = async (req, res, next) => {
 
     const token = req.body.token || req.params.token || req.headers['x-access-token'] || req.headers['authorization'] || req.headers['Authorization'];
-    const cookie_id = req.cookies.unique_id;
+    const cookie_id = req.cookies.user_id;
     if (token) {
         try {
             let decoded, accessDetails, validAccess = false, jwtErrorMessage = '';
