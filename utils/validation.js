@@ -86,6 +86,11 @@ const passwordValidation = (value) => {
 
 const isValidBloodGroup = (value) => /^(A|B|AB|O)[+-]$/.test(value);
 
+export const loginVal = [
+    body('email').isEmail().withMessage('Invalid email input.').notEmpty().withMessage('Email cannot be empty.'),
+    body('password').notEmpty().withMessage('Password cannot be empty.').custom(passwordValidation)
+]
+
 export const userRegVal = [
     body('username').notEmpty().withMessage('username cannot be empty.').isString().withMessage("username must be a string."),
     body('first_name').notEmpty().withMessage('first_name cannot be empty.').isString().withMessage("first_name must be a string."),
