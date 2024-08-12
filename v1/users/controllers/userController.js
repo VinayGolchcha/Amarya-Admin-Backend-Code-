@@ -9,7 +9,7 @@ import {getTeamQuery} from "../../teams/models/query.js"
 import {insertTeamToUser} from "../models/userTeamsQuery.js"
 import {uploadImageToCloud, deleteImageFromCloud} from "../../helpers/cloudinary.js";
 import {insertEmpImageQuery, deleteImageQuery} from "../../images/imagesQuery.js";
-import { create, updateQuery } from "../models/userMongoQuery.js";
+import { create, insertTokenQuery, updateQuery, updateUserDataInMessengerQuery, userDataQuery } from "../models/userMongoQuery.js";
 dotenv.config();
 
 import {userRegistrationQuery, getUserDataByUsernameQuery, userDetailQuery, updateTokenQuery, updateUserProfileQuery,
@@ -100,7 +100,7 @@ export const userRegistration = async (req, res, next) => {
         ]);
 
         const user_message_data = {
-                username,
+                username : first_name + " "+ last_name,
                 email,
                 password: password_hash
         }
@@ -268,6 +268,7 @@ export const updateUserProfile = async(req, res, next) => {
         }
         const id = req.params.id;
         const file = req.file;
+        let usersname
         let table = 'users';
         const condition = {
             emp_id: id
@@ -277,7 +278,7 @@ export const updateUserProfile = async(req, res, next) => {
         let [exist_id] = await checkUserDataByUserIdQuery([id])
 
         if (exist_id.length > 0) {
-            if((req_data.public_id).length > 0){
+            if(req_data.public_id){
                 await deleteImageFromCloud(req_data.public_id);
                 await deleteImageQuery([req_data.public_id])
             }
@@ -292,6 +293,16 @@ export const updateUserProfile = async(req, res, next) => {
             }
             let query_values = await createDynamicUpdateQuery(table, condition, req_data)
             let [data] = await updateUserProfileQuery(query_values.updateQuery, query_values.updateValues);
+            if(req_data.first_name){
+                if(req_data.last_name){
+                        usersname = req_data.first_name + " " + req_data.last_name
+                }
+                usersname = req_data.first_name + " " + exist_id[0].last_name
+            }else if(req_data.last_name){
+                usersname = exist_id[0].first_name + " " + req_data.last_name
+            }
+                await updateUserDataInMessengerQuery(exist_id[0].email, usersname)
+            
             return successResponse(res, data, 'User profile updated successfully.');
         }else{
             return notFoundResponse(res, '', 'User not found.');
@@ -317,3 +328,48 @@ export const fetchAllEmployeeIds = async(req, res, next) => {
         return internalServerErrorResponse(res, error);;
     }
 }
+
+export const userGhostLogin = async (req, res) => {
+    try {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return errorResponse(res, errors.array(), "")
+        }
+        let is_email_verified = true;
+        const { email, password } = req.body;
+        const user = await userDataQuery(email);
+        if (!user) {
+            return errorResponse(res, '', 'User not found');
+        }
+        const currentUser = user;
+        if (currentUser.is_email_verified===false) {
+            is_email_verified = false;
+            return errorResponse(res, {is_email_verified:is_email_verified}, 'Please verify your email first before proceeding.');
+        }
+        let message = '';
+        let token = '';
+        if (email && password) {
+            const isPasswordValid = await bcrypt.compare(password, currentUser.password);
+            if (isPasswordValid) {
+                message = 'You are successfully logged in';
+            } else {
+                return unAuthorizedResponse(res, '', 'Password is not correct. Please try again.');
+            }
+        } else {
+            return errorResponse(res, '', 'Input fields are incorrect!');
+        }
+        token = jwt.sign({ id: currentUser._id, name: currentUser.user_name }, process.env.JWT_SECRET, {
+            expiresIn: process.env.JWT_EXPIRATION_TIME,
+        });
+        await insertTokenQuery(token, currentUser._id);
+        res.cookie('token', token, {
+            httpOnly: false, // Cookie is accessible only through HTTP(S) protocol
+            sameSite: 'None', // Allow cross-site usage
+            secure: true // Ensures the cookie is only sent over HTTPS
+          });
+        return successResponse(res, { user_id: currentUser._id, user_name: currentUser.username + " " , email: email, is_email_verified: is_email_verified, token: token, socket_id: currentUser.socket_id }, message);
+    } catch (error) {
+        console.error(error);
+        return internalServerErrorResponse(res, error)
+    }
+};
