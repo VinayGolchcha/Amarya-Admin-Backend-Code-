@@ -30,8 +30,16 @@ const app = express();
 config();
 app.use(helmet());
 app.use(json());
-app.use(cors());
+// CORS setup
 app.use(cookieParser());
+// const corsOptions = {
+//   origin: 'https://amarya-admin-backend-code.onrender.com', // replace with your client URL
+//   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+//   allowedHeaders: ['Content-Type', 'Authorization'],
+//   credentials: true,
+// };
+
+app.use(cors());
 // Start the cron jobs
 runCronJobs();
 // Disable the X-Powered-By header
