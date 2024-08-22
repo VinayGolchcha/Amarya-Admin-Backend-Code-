@@ -6,6 +6,7 @@ import { feedbackFormQuery, fetchFeebackQuery} from '../models/userFeedbackQuery
 import { getUserDataByUserIdQuery } from '../models/userQuery.js';
 import { fetchImagesForDashboardQuery } from '../../images/imagesQuery.js';
 import dotenv from "dotenv";
+import moment from "moment";
 dotenv.config();
 
 export const userDashboard = async (req, res, next) => {
@@ -52,8 +53,9 @@ export const feedbackForm = async (req, res, next) => {
     if (!errors.isEmpty()) {
       return errorResponse(res, errors.array(), "")
     }
-    const { emp_id, date, subject, description } = req.body;
-
+    const { emp_id, subject, description } = req.body;
+    let date = moment()
+    date = date.format("YYYY-MM-DD")
     const [user] = await getUserDataByUserIdQuery([emp_id]);
     if (user.length == 0 ){
         return notFoundResponse(res, '', 'User not found');
@@ -66,7 +68,7 @@ export const feedbackForm = async (req, res, next) => {
       description
     ]);
 
-    return successResponse(res, '', 'Feedback send successfully.');
+    return successResponse(res, '', 'Feedback sent successfully.');
   } catch (error) {
     return internalServerErrorResponse(res, error);
   }

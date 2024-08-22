@@ -308,7 +308,7 @@ export const getUserVal = [
 export const feedbackVal = [
     body('emp_id').isString().withMessage('Invalid emp_id input.').notEmpty().withMessage('emp_id cannot be empty.'),
     body('subject').isString().withMessage('Invalid input.').notEmpty().withMessage('subject cannot be empty.'),
-    body('description').isLength({ max: 100 }).withMessage('Description cannot be more than 100 characters.').isString().withMessage('Invalid input.').notEmpty().withMessage('description cannot be empty.')
+    body('description').isLength({ max: 500 }).withMessage('Description cannot be more than 500 characters.').isString().withMessage('Invalid input.').notEmpty().withMessage('description cannot be empty.')
 ]
 
 const isValidMonthYear = (value) => {

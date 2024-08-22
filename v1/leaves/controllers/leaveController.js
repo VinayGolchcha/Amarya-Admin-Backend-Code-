@@ -7,7 +7,7 @@ import {
     fetchAllEmployeesQuery,
     insertUserLeaveCountQuery
 } from "../../leaves/models/leaveQuery.js"
-import { checkIfAlreadyRequestedQuery, leaveTakenCountQuery } from "../../approvals/models/leaveApprovalQuery.js"
+import { checkIfAlreadyRequestedQuery, getUserGender, leaveTakenCountQuery } from "../../approvals/models/leaveApprovalQuery.js"
 import { successResponse, errorResponse, notFoundResponse, unAuthorizedResponse, internalServerErrorResponse } from "../../../utils/response.js"
 import { incrementId, createDynamicUpdateQuery } from "../../helpers/functions.js"
 import { validationResult } from "express-validator";
@@ -229,15 +229,23 @@ export const leaveRequest = async (req, res, next) => {
         const current_date = new Date().toISOString().split('T')[0];
         let from = new Date(from_date);
         let to = new Date(to_date);
+        const [getUserData] = await getUserGender([emp_id]);
+        if(getUserData[0].gender == "male" && leave_type == "maternity leaves") {
+            return notFoundResponse(res, "", "Maternity leave is not applicable for male employees.");
+        }
         const [existingData] = await checkIfAlreadyRequestedQuery(emp_id, from_date, to_date)
-
         if(existingData.length > 0){
             return notFoundResponse(res, "", "The requested leave period overlaps with an existing leave request.");
         }
         // Check if from_date is in the past
-        if (from < new Date() && to < new Date()) {
-            return notFoundResponse(res, "", "The date entered cannot be in the past.");
+        if (from < new Date()) {
+            return notFoundResponse(res, "", "The 'from' date cannot be in the past.");
         }
+        
+        if (to < from) {
+            return notFoundResponse(res, "", "The 'to' date cannot be before the 'from' date.");
+        }
+        
         // Calculate the difference in milliseconds
         let diffInMs = Math.abs(to - from);
 
