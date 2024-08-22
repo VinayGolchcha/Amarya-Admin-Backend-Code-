@@ -2,7 +2,8 @@ import { validationResult } from "express-validator";
 import dotenv from "dotenv"
 import { successResponse, errorResponse, notFoundResponse, unAuthorizedResponse, internalServerErrorResponse } from "../../../utils/response.js"
 import { incrementId, createDynamicUpdateQuery } from "../../helpers/functions.js"
-import { insertUserProjectQuery,getUserProjectQuery,userUpdateProjectQuery,checkProjectIdQuery, getUserProjectTimelineQuery, checkUserProjectExists} from "../models/userProjectQuery.js";
+import moment from "moment";
+import { insertUserProjectQuery,getUserProjectQuery,userUpdateProjectQuery,checkProjectIdQuery, getUserProjectTimelineQuery, checkUserProjectExists, getUserJoiningDate} from "../models/userProjectQuery.js";
 dotenv.config();
 
 
@@ -20,6 +21,18 @@ export const createUserProject = async (req, res, next) => {
             start_month,
             end_month,
             project_manager} = req.body;
+              
+        const [getJoiningDate] = await getUserJoiningDate([emp_id])
+        const joining_date = moment(getJoiningDate[0].joining_date);
+
+        const startDate = moment(start_month, "MM/YY");
+        const endDate = moment(end_month, "MM/YY");
+        if (endDate.isBefore(startDate)) {
+            return notFoundResponse(res, "", "The 'end_month' cannot be before the 'start_month'.");
+        }
+        if (joining_date.isAfter(startDate, 'month')) {
+            return notFoundResponse(res, "", "The start month cannot be before the joining month.");
+        }
         const [data] = await checkUserProjectExists([project_id, emp_id])
         if (data.length > 0 ){
             return notFoundResponse(res, '', 'User already working on this project.');

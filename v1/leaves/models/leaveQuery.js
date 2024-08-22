@@ -249,10 +249,30 @@ export const getLeaveTypeCountByAdmin = async (array) => {
 export const getAllUsersLeaveCountQuery = async (array)=>{
     try {
         let query = 
-        `SELECT emp_id, leave_type, leave_count, leave_taken_count 
-        FROM userLeaveCounts
-        WHERE emp_id = ?
-        GROUP BY emp_id, leave_type, leave_count, leave_taken_count;
+        `SELECT 
+            u.emp_id,
+            ulc.leave_type, 
+            ulc.leave_taken_count,
+            ltc.leave_count
+        FROM 
+            userLeaveCounts ulc
+        JOIN 
+            users u 
+        ON 
+            ulc.emp_id = u.emp_id
+        JOIN 
+            leaveTypeCounts ltc 
+        ON 
+            ulc.leave_type = ltc.leave_type
+        WHERE
+            u.emp_id = ?
+            AND (
+                (u.gender = ltc.gender AND ltc.gender IN ('male', 'female')) 
+                OR ltc.gender = 'both'
+            )
+        ORDER BY 
+            ulc.leave_type;
+
         `
         return await pool.query(query, array);
     } catch (error) {

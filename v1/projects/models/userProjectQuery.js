@@ -28,6 +28,15 @@ export const checkUserProjectExists = async(array)=>{
         throw error;
     }
 }
+export const getUserJoiningDate = async(array)=>{
+    try {
+        let query = ` SELECT joining_date FROM users WHERE emp_id = ?`;
+        return pool.query(query, array);
+    } catch (error) {
+        console.error("Error executing getUserJoiningDate:", error);
+        throw error;
+    }
+}
 
 export const getUserProjectQuery = async (array) => {
     try {
