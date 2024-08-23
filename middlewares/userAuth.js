@@ -4,6 +4,7 @@ import { getTokenSessionById } from "../v1/helpers/functions.js"; // Adjust impo
 
 export const authenticateUserSession = async (req, res, next) => {
     const token = req.cookies.jwt || req.body.token || req.params.token || req.headers['x-access-token'] || req.headers['authorization'];
+    const emp_id = req.body.emp_id || req.params.emp_id
     const encrypted_user_id = req.headers['x-encryption-key'];
 
     if (!token) {
@@ -41,11 +42,12 @@ export const authenticateUserSession = async (req, res, next) => {
                 jwtErrorMessage = err.message;
             } else {
                 decoded = verifiedDetails;
-                if (String(decoded.user_id) !== String(decrypted_user_id)) {
-                    jwtErrorMessage = 'User ID mismatch. Possible token misuse.';
-                } else {
-                    validAccess = true;
-                }
+                if (String(decoded.user_id) === String(decrypted_user_id) && 
+                String(decoded.user_id) === String(emp_id)) {
+                validAccess = true;
+            } else {
+                jwtErrorMessage = 'User ID mismatch. Possible token misuse';
+            }
             }
         });
 
