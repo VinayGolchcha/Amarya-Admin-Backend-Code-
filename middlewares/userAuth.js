@@ -17,7 +17,7 @@ export const authenticateUserSession = async (req, res, next) => {
     if (!encrypted_user_id) {
         return res.status(449).json({
             status: 'failure',
-            message: 'Encryption key is missing.'
+            message: 'Critical parameter unresolved due to key omission.'
         });
     }
 
@@ -33,7 +33,7 @@ export const authenticateUserSession = async (req, res, next) => {
         } catch (decryptionError) {
             return res.status(440).json({
                 status: 'failure',
-                message: 'User ID decryption failed.'
+                message: 'Data integrity compromised during key processing.'
             });
         }
 
