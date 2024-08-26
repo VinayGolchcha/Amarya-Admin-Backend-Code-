@@ -199,7 +199,7 @@ export const userLogin = async (req, res, next) => {
             httpOnly: true,
             sameSite: 'Strict',
             secure: process.env.NODE_ENV === 'production', // Only use Secure in production
-            maxAge: process.env.JWT_EXPIRATION_TIME
+            maxAge: parseInt(process.env.JWT_EXPIRATION_TIME) * 1000
         });
         res.cookie('user_id', user[0].emp_id, {
             httpOnly: true,

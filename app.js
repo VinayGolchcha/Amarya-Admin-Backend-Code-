@@ -39,8 +39,11 @@ app.use(cookieParser());
 // };
 
 app.use(cors({
-  exposedHeaders: ['x-encryption-key']
+  origin: ['http://localhost:3000', "https://amarya-admin-code.vercel.app", "https://amarya-admin-backend-code-dev.onrender.com"], // Frontend URL running on localhost:3000
+  exposedHeaders: ['x-encryption-key'],
+  credentials: true,
 }));
+
 // Start the cron jobs
 runCronJobs();
 // Disable the X-Powered-By header
