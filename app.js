@@ -38,7 +38,9 @@ app.use(cookieParser());
 //   credentials: true,
 // };
 
-app.use(cors());
+app.use(cors({
+  exposedHeaders: ['x-encryption-key']
+}));
 // Start the cron jobs
 runCronJobs();
 // Disable the X-Powered-By header
