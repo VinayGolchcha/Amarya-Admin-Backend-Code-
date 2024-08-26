@@ -6,7 +6,7 @@ dotenv.config();
 
 export const authenticateUserAdminSession  = async (req, res, next) => {
 
-    const token = req.cookies.jwt || req.body.token || req.params.token || req.headers['x-access-token'] || req.headers['authorization'] || req.headers['Authorization'];
+    const token = req.cookies.jwt
     const encrypted_user_id = req.headers['x-encryption-key'];
     if (!token) {
         return res.status(449).json({
