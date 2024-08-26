@@ -211,7 +211,6 @@ export const userLogin = async (req, res, next) => {
         console.log(encrypted_user_id);
         return successResponse(res, [{
             user_id: user[0].emp_id,
-            token,
             profile_picture: user[0].profile_picture,
             user_name: user[0].username,
             role: user[0].role
