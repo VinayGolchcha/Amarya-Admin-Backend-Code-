@@ -4,6 +4,7 @@ import { getTokenSessionById } from "../v1/helpers/functions.js"; // Adjust impo
 
 export const authenticateUserSession = async (req, res, next) => {
     const token = req.cookies.jwt
+    console.log(token);
     const emp_id = req.body.emp_id || req.params.emp_id
     const encrypted_user_id = req.headers['x-encryption-key'];
 
