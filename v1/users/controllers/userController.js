@@ -193,18 +193,18 @@ export const userLogin = async (req, res, next) => {
         });
 
         await updateTokenQuery([token, user_id]);
-
         // Set JWT and user_id as HttpOnly and SameSite=Strict cookies
         res.cookie('jwt', token, {
-            httpOnly: true,
-            sameSite: 'Strict',
-            secure: process.env.NODE_ENV === 'production', // Only use Secure in production
+            httpOnly: false,
+            sameSite: 'None',
+            secure: true, // Only use Secure in production
             maxAge: parseInt(process.env.JWT_EXPIRATION_TIME) * 1000
         });
         res.cookie('user_id', user[0].emp_id, {
-            httpOnly: true,
-            sameSite: 'Strict',
-            secure: process.env.NODE_ENV === 'production',
+            httpOnly: false,
+            sameSite: 'None',
+            secure: true,
+            path: '/',
             maxAge: process.env.JWT_EXPIRATION_TIME
         });
         res.setHeader('x-encryption-key', encrypted_user_id);
