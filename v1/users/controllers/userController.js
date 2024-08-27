@@ -201,7 +201,7 @@ export const userLogin = async (req, res, next) => {
             maxAge: parseInt(process.env.JWT_EXPIRATION_TIME) * 1000
         });
         res.cookie('user_id', user[0].emp_id, {
-            httpOnly: false,
+            httpOnly: true,
             sameSite: 'None',
             secure: true,
             path: '/',
