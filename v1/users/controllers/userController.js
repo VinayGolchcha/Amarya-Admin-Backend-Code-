@@ -205,7 +205,7 @@ export const userLogin = async (req, res, next) => {
             sameSite: 'None',
             secure: true,
             path: '/',
-            maxAge: process.env.JWT_EXPIRATION_TIME
+            maxAge: parseInt(process.env.JWT_EXPIRATION_TIME) * 1000
         });
         res.setHeader('x-encryption-key', encrypted_user_id);
         console.log(encrypted_user_id);
@@ -228,13 +228,13 @@ export const userLogout = async (req, res, next) => {
         await updateTokenQuery(["", user_id]);
         if(user_id){
             res.clearCookie('jwt', {
-                httpOnly: false,
+                httpOnly: true,
                 sameSite: 'None',
                 secure: true,
                 path: '/',
               });
             res.clearCookie('user_id', {
-                httpOnly: false,
+                httpOnly: true,
                 sameSite: 'None',
                 secure: true,
                 path: '/',
