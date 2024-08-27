@@ -195,7 +195,7 @@ export const userLogin = async (req, res, next) => {
         await updateTokenQuery([token, user_id]);
         // Set JWT and user_id as HttpOnly and SameSite=Strict cookies
         res.cookie('jwt', token, {
-            httpOnly: false,
+            httpOnly: true,
             sameSite: 'None',
             secure: true, // Only use Secure in production
             maxAge: parseInt(process.env.JWT_EXPIRATION_TIME) * 1000
