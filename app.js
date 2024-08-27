@@ -32,10 +32,10 @@ app.use(json());
 // CORS setup
 app.use(cookieParser());
 const corsOptions = {
-  origin: ['http://localhost:3000', "https://amarya-admin-code.vercel.app", "https://amarya-admin-backend-code-dev.onrender.com"], // Frontend URL running on localhost:3000
-  exposedHeaders: ['x-encryption-key'],
+  origin: '*', // Frontend URL running on localhost:3000
+  exposedHeaders: '*',
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'x-encryption-key', 'x-access-token'],
+  allowedHeaders: '*',
   credentials: true
 }
 
