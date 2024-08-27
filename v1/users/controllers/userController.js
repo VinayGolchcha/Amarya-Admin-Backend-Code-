@@ -226,6 +226,20 @@ export const userLogout = async (req, res, next) => {
     try {
         const user_id = req.params.id;
         await updateTokenQuery(["", user_id]);
+        if(user_id){
+            res.clearCookie('jwt', {
+                httpOnly: false,
+                sameSite: 'None',
+                secure: true,
+                path: '/',
+              });
+            res.clearCookie('user_id', {
+                httpOnly: false,
+                sameSite: 'None',
+                secure: true,
+                path: '/',
+              });
+        }
         return successResponse(res, '', `You have successfully logged out!`);
     } catch (error) {
         return internalServerErrorResponse(res, error);
