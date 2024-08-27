@@ -32,14 +32,16 @@ app.use(json());
 // CORS setup
 app.use(cookieParser());
 const corsOptions = {
-  origin: '*', // Frontend URL running on localhost:3000
-  exposedHeaders: '*',
+  origin: ['http://localhost:3000','https://amarya-admin-code-dev-fe.vercel.app', 'https://amarya-admin-code.vercel.app'], // replace with your client URL
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: '*',
-  credentials: true
-}
+  allowedHeaders: ['Content-Type', 'Authorization', 'x-encryption-key', 'x-access-token'],
+  credentials: true,
+  path:'/',
+  exposedHeaders: ['x-encryption-key'],
+};
 
 app.use(cors(corsOptions));
+app.options('*', cors(corsOptions));
 
 // Start the cron jobs
 runCronJobs();
