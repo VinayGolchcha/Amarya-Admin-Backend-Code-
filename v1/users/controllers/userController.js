@@ -362,9 +362,9 @@ export const userGhostLogin = async (req, res) => {
         });
         await insertTokenQuery(token, currentUser._id);
         res.cookie('token', token, {
-            httpOnly: false, // Cookie is accessible only through HTTP(S) protocol
-            sameSite: 'None', // Allow cross-site usage
-            secure: true // Ensures the cookie is only sent over HTTPS
+            httpOnly: true,
+            sameSite: 'None',
+            secure: true
           });
         return successResponse(res, { user_id: currentUser._id, user_name: currentUser.username + " " , email: email, is_email_verified: is_email_verified, token: token, socket_id: currentUser.socket_id }, message);
     } catch (error) {
