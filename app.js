@@ -33,15 +33,17 @@ app.use(json());
 // CORS setup
 app.use(cookieParser());
 const corsOptions = {
-  origin: ['https://amarya-admin-backend-code.onrender.com', 'http://localhost:3000'], // replace with your client URL
+  origin: ['http://localhost:3000','https://amarya-admin-code-dev-fe.vercel.app', 'https://amarya-admin-code.vercel.app'], // replace with your client URL
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'x-encryption-key', 'x-access-token'],
   credentials: true,
-  path: '/'
+  path:'/',
+  exposedHeaders: ['x-encryption-key'],
 };
 
 app.use(cors(corsOptions));
 app.options('*', cors(corsOptions));
+
 // Start the cron jobs
 runCronJobs();
 // Disable the X-Powered-By header

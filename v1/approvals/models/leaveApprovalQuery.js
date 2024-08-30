@@ -131,3 +131,13 @@ export const deleteLeaveQuery = async (array1, array2) => {
         throw error;
     }
 }
+export const getUserGender = async (array) => {
+    const query = `SELECT gender FROM users WHERE emp_id = ?`
+    try {
+        return await pool.query(query, array);
+    } catch (error) {
+        console.error("Error executing getUserGender:", error);
+        // Handle the error appropriately
+        throw error;
+    }
+}

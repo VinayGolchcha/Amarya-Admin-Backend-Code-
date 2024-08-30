@@ -57,27 +57,32 @@ export const fetchUserAssetsQuery = (array) => {
 export const fetchAssetsQuery = (array) => {
     let query = `
     SELECT 
-    CONCAT(u.first_name, ' ', u.last_name) AS assignee, 
-    a.asset_id, 
-    a.purchase_date, 
-    images.image_url, 
-    a.item, 
-    a.item_description, 
-    ua.issued_from, 
-    ua.issued_till, 
-    a.warranty_period,
-    images.public_id,
-    images.original_filename    
-FROM 
-    assets AS a
-LEFT JOIN 
-    userAssets AS ua ON a.asset_id = ua.asset_id
-LEFT JOIN
-    images ON a.asset_id = images.asset_id 
-LEFT JOIN 
-    users AS u ON u.emp_id = ua.emp_id`
+        CONCAT(u.first_name, ' ', u.last_name) AS assignee, 
+        a.asset_id, 
+        a.purchase_date, 
+        a.item, 
+        a.item_description, 
+        ua.issued_from, 
+        ua.issued_till, 
+        a.warranty_period,
+        MIN(images.image_url) AS image_url,
+        MIN(images.public_id) AS public_id,
+        MIN(images.original_filename) AS original_filename
+    FROM 
+        assets AS a
+    LEFT JOIN 
+        userAssets AS ua ON a.asset_id = ua.asset_id
+    LEFT JOIN
+        images ON a.asset_id = images.asset_id 
+    LEFT JOIN 
+        users AS u ON u.emp_id = ua.emp_id
+    GROUP BY 
+        a.asset_id, u.first_name, u.last_name, a.purchase_date, a.item, 
+        a.item_description, ua.issued_from, ua.issued_till, a.warranty_period;
+    `;
     return pool.query(query, array);
 }
+
 
 
 export const deleteAssetQuery = async (array) => {
