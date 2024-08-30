@@ -2,6 +2,7 @@ import jwt from "jsonwebtoken"
 import { validationResult } from "express-validator";
 import bcrypt from "bcrypt"
 import dotenv from "dotenv"
+import crypto from 'crypto-js';
 import { successResponse, errorResponse, notFoundResponse, unAuthorizedResponse, internalServerErrorResponse } from "../../../utils/response.js"
 import { incrementId, createDynamicUpdateQuery } from "../../helpers/functions.js"
 import {sendMail} from "../../../config/nodemailer.js"
@@ -172,42 +173,80 @@ export const userLogin = async (req, res, next) => {
     try {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
-            return errorResponse(res, errors.array(), "")
+            return errorResponse(res, errors.array(), "");
         }
 
         const { username, password } = req.body;
         const [user] = await getUserDataByUsernameQuery([username]);
-        if (user.length == 0 ){
+
+        if (user.length === 0) {
             return notFoundResponse(res, '', 'User not found');
-        }else{
-            let message = '';
-            let token = '';
-            if (username && password) {
-                const isPasswordValid = await bcrypt.compare(password, user[0].password);
-                if (isPasswordValid) {
-                    message = 'You are successfully logged in';
-                } else {
-                    return unAuthorizedResponse(res, '', 'Authentication failed');
-                }
-            } else {
-                return notFoundResponse(res, '', 'Input fields are incorrect!');
-            }
-            token = jwt.sign({ user_id: user[0].emp_id, name: user[0].first_name, role:user[0].role }, process.env.JWT_SECRET, {
-                expiresIn: process.env.JWT_EXPIRATION_TIME,
-            });
-            await updateTokenQuery([ token, user[0].emp_id]);
-            return successResponse(res, [{ user_id: user[0].emp_id, token: token, profile_picture:user[0].profile_picture, user_name: user[0].username, role:user[0].role }], message);
         }
-    }
-    catch(error){
+
+        const isPasswordValid = await bcrypt.compare(password, user[0].password);
+        const user_id = user[0].emp_id;
+        if (!isPasswordValid) {
+            return unAuthorizedResponse(res, '', 'Authentication failed');
+        }
+
+        // const ip_address = req.ip || req.connection.remoteAddress; // Get user's IP address
+        const encrypted_user_id = crypto.AES.encrypt(user_id.toString(), process.env.ENCRYPTION_SECRET).toString();
+        const token = jwt.sign({
+            user_id: user_id,
+            name: user[0].first_name,
+            role: user[0].role,
+        }, process.env.JWT_SECRET, {
+            expiresIn: process.env.JWT_EXPIRATION_TIME,
+        });
+
+        await updateTokenQuery([token, user_id]);
+        // Set JWT and user_id as HttpOnly and SameSite=Strict cookies
+        res.cookie('jwt', token, {
+            httpOnly: true,
+            sameSite: 'None',
+            secure: true, // Only use Secure in production
+            maxAge: parseInt(process.env.JWT_EXPIRATION_TIME) * 1000
+        });
+        res.cookie('user_id', user[0].emp_id, {
+            httpOnly: true,
+            sameSite: 'None',
+            secure: true,
+            path: '/',
+            maxAge: parseInt(process.env.JWT_EXPIRATION_TIME) * 1000
+        });
+        res.setHeader('x-encryption-key', encrypted_user_id);
+        console.log(encrypted_user_id);
+        return successResponse(res, [{
+            user_id: user[0].emp_id,
+            profile_picture: user[0].profile_picture,
+            user_name: user[0].username,
+            role: user[0].role
+        }], 'You are successfully logged in');
+
+    } catch (error) {
         return internalServerErrorResponse(res, error);
     }
 }
+
 
 export const userLogout = async (req, res, next) => {
     try {
         const user_id = req.params.id;
         await updateTokenQuery(["", user_id]);
+        if(user_id){
+            res.clearCookie('jwt', {
+                httpOnly: true,
+                sameSite: 'None',
+                secure: true,
+                path: '/',
+              });
+            res.clearCookie('user_id', {
+                httpOnly: true,
+                sameSite: 'None',
+                secure: true,
+                path: '/',
+              });
+        }
         return successResponse(res, '', `You have successfully logged out!`);
     } catch (error) {
         return internalServerErrorResponse(res, error);
@@ -220,10 +259,15 @@ export const updateUserPassword = async (req, res, next) => {
         if (!errors.isEmpty()) {
             return errorResponse(res, errors.array(), "")
         }
-        const { email, password, confirm_password } = req.body;
+        let { otp, email, password, confirm_password } = req.body;
         let [user_data] = await userDetailQuery([email]);
         if (user_data.length == 0) {
             return notFoundResponse(res, '', 'User not found');
+        }
+        otp = parseInt(otp, 10);
+        const [user_otp] = await getOtpQuery([email]);
+        if (otp != user_otp[0].otp) {
+            return errorResponse(res, '', 'Invalid OTP');
         }
         if (password === confirm_password) {
             const password_hash = await bcrypt.hash(password.toString(), 12);

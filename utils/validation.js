@@ -131,6 +131,7 @@ export const checkUserNameAvailabilityVal = [
 ]
 
 export const upPassVal = [
+    body('otp').isNumeric().withMessage('Invalid otp input.').notEmpty().withMessage('otp cannot be empty.'),
     body('email').isEmail().withMessage('Invalid email input.').notEmpty().withMessage('Email cannot be empty.'),
     body('password').isLength({ min: 8 }).withMessage('Password must be at least 8 characters long').notEmpty().withMessage('Password cannot be empty.').custom(passwordValidation),
     body('confirm_password').isLength({ min: 8 }).withMessage('confirm_Password must be at least 8 characters long').notEmpty().withMessage('confirm_Password cannot be empty.').custom(passwordValidation)
@@ -313,7 +314,7 @@ export const getUserVal = [
 export const feedbackVal = [
     body('emp_id').isString().withMessage('Invalid emp_id input.').notEmpty().withMessage('emp_id cannot be empty.'),
     body('subject').isString().withMessage('Invalid input.').notEmpty().withMessage('subject cannot be empty.'),
-    body('description').isLength({ max: 100 }).withMessage('Description cannot be more than 100 characters.').isString().withMessage('Invalid input.').notEmpty().withMessage('description cannot be empty.')
+    body('description').isLength({ max: 500 }).withMessage('Description cannot be more than 500 characters.').isString().withMessage('Invalid input.').notEmpty().withMessage('description cannot be empty.')
 ]
 
 const isValidMonthYear = (value) => {

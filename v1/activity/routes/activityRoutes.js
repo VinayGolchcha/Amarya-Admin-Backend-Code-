@@ -13,7 +13,7 @@ const router = Router();
 
 app.post("/admin/add-activity",authenticateAdminSession, upload.array('files', 10), crAnnVal, addActivity);
 app.get("/filter-activity-by-date/:date",authenticateUserAdminSession,activityDateVal, filterActivityByDate);
-app.get("/get-activity/:id",authenticateUserSession, getActIdVal, getActivityById);
+app.get("/get-activity/:id",authenticateUserAdminSession, getActIdVal, getActivityById);
 app.put("/admin/update-activity/:id",authenticateAdminSession, upload.array('files', 10), upAnnVal, updateActivity);
 app.delete("/admin/delete-activity/:id",authenticateAdminSession, delAnnVal , deleteActivity);
 app.get("/fetch-activity",authenticateUserAdminSession, getAllActivities);
