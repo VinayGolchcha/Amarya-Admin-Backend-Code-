@@ -252,10 +252,15 @@ export const updateUserPassword = async (req, res, next) => {
         if (!errors.isEmpty()) {
             return errorResponse(res, errors.array(), "")
         }
-        const { email, password, confirm_password } = req.body;
+        let { otp, email, password, confirm_password } = req.body;
         let [user_data] = await userDetailQuery([email]);
         if (user_data.length == 0) {
             return notFoundResponse(res, '', 'User not found');
+        }
+        otp = parseInt(otp, 10);
+        const [user_otp] = await getOtpQuery([email]);
+        if (otp != user_otp[0].otp) {
+            return errorResponse(res, '', 'Invalid OTP');
         }
         if (password === confirm_password) {
             const password_hash = await bcrypt.hash(password.toString(), 12);
