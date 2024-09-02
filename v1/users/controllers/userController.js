@@ -408,7 +408,8 @@ export const userGhostLogin = async (req, res) => {
         res.cookie('token', token, {
             httpOnly: true,
             sameSite: 'None',
-            secure: true
+            secure: true,
+            maxAge: parseInt(process.env.JWT_EXPIRATION_TIME) * 1000
           });
         return successResponse(res, { user_id: currentUser._id, user_name: currentUser.username + " " , email: email, is_email_verified: is_email_verified, token: token, socket_id: currentUser.socket_id }, message);
     } catch (error) {
