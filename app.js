@@ -48,14 +48,6 @@ const corsOptions = {
   exposedHeaders: ['x-encryption-key'],
 };
 const server = createServer(app);
-// const io = new Server(server
-//   // ,{
-//   // cors: {
-//   //     origin: '*', // Allow all origins for testing purposes
-//   // },
-//   // transports: ['websocket', 'polling'] // Ensure WebSocket is listed here
-//   // }
-// );
 
 const io = new Server(server);
 const condaPath = path.join(os.homedir(), os.platform() === 'win32' ? 'Miniconda3' : 'miniconda3', 'condabin', os.platform() === 'win32' ? 'conda.bat' : 'conda');

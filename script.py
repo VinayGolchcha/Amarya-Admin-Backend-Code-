@@ -54,7 +54,8 @@ model = YOLO("./best.pt")
 
 # Object classes
 classNames = [
-    "person", "Kartik", "kriti", "kiara", "govind", "tabu", "ronit", "baddy"
+'AnkitK','Anuj','Depanshu','Divij','Eish','Itesh','Kishan','Lucky','Prabal','Prashant','Pujita',
+'Tamanna','Sanjana','ShubhamK','ShubhamS','Surya','Vshwabhushan', 'Yogesh'
 ]
 
 def object_detection(img):
