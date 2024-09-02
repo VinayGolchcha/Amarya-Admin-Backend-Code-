@@ -25,9 +25,16 @@ import dashboardRoutes from "./v1/dashboard/routes/dashboardRoutes.js";
 import { runCronJobs } from './crons/schedulers.js';
 import userDashboardRoutes from './v1/users/routes/userdashboardRoutes.js';
 import policiesRoutes from "./v1/policies/routes/policiesRoutes.js"
-
+import { createServer } from 'http';
+import { Server } from 'socket.io';
+import { spawn,exec} from 'child_process';
+import path from 'path';
+import os from 'os';
+import { installConda, setupEnvironment } from './install.js';
+config()
+await installConda();
+await setupEnvironment();
 const app = express();
-config();
 app.use(helmet());
 app.use(json());
 // CORS setup
@@ -40,10 +47,49 @@ const corsOptions = {
   path:'/',
   exposedHeaders: ['x-encryption-key'],
 };
+const server = createServer(app);
+// const io = new Server(server
+//   // ,{
+//   // cors: {
+//   //     origin: '*', // Allow all origins for testing purposes
+//   // },
+//   // transports: ['websocket', 'polling'] // Ensure WebSocket is listed here
+//   // }
+// );
 
+const io = new Server(server);
+const condaPath = path.join(os.homedir(), os.platform() === 'win32' ? 'Miniconda3' : 'miniconda3', 'condabin', os.platform() === 'win32' ? 'conda.bat' : 'conda');
+const pythonProcess = spawn(condaPath, ['run', '-n', 'conda_env', 'python', 'script.py']);
+io.on('connection', (socket) => {
+  console.log('Client connected');
+
+  pythonProcess.stdout.on('data', (data) => {
+      const output = data.toString();
+      console.log('output',output);
+      socket.emit('python_output', output);
+  });
+
+  pythonProcess.stderr.on('data', (data) => {
+      console.error(`Python Error: ${data}`);
+  });
+
+  pythonProcess.on('close', (code) => {
+      console.log(`Python script exited with code ${code}`);
+  });
+
+  socket.on('detections', (data) => {
+      console.log('Received detections:', data.detections);
+      console.log('Received URL:', data.rtsp_url);
+      console.log('stream_id :', data.stream_id);
+  });
+
+  socket.on('disconnect', () => {
+      console.log('Client disconnected');
+      pythonProcess.kill('SIGINT');
+  });
+});
 app.use(cors(corsOptions));
 app.options('*', cors(corsOptions));
-
 // Start the cron jobs
 runCronJobs();
 // Disable the X-Powered-By header
@@ -65,7 +111,6 @@ app.use("/api/v1/activity", activityRoutes);
 app.use("/api/v1/dashboard" , dashboardRoutes);
 app.use("/api/v1/policy", policiesRoutes);
 app.use("/api/v1/userDashboard", userDashboardRoutes);
-// Catch-all route for undefined routes
 app.use('/', (req, res) => {
   res.send({
       statusCode: 403,
@@ -83,7 +128,7 @@ try {
 }
 
 // Start the server
-const port = process.env.PORT || 4000;
-app.listen(port, () => {
-  console.log(`Server is running on port ${port}`);
+const PORT = process.env.PORT || 3000;
+server.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
 });
