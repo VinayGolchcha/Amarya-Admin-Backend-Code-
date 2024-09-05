@@ -4,7 +4,7 @@ await setupDatabase();
 import express, { json } from 'express';
 import cookieParser from 'cookie-parser';
 import { config } from 'dotenv';
-import {errorHandler} from './middlewares/errorMiddleware.js';
+import { errorHandler } from './middlewares/errorMiddleware.js';
 import { connectToDatabase } from './config/db_mongo.js';
 import cors from 'cors';
 import helmet from 'helmet';
@@ -27,10 +27,13 @@ import userDashboardRoutes from './v1/users/routes/userdashboardRoutes.js';
 import policiesRoutes from "./v1/policies/routes/policiesRoutes.js"
 import { createServer } from 'http';
 import { Server } from 'socket.io';
-import { spawn,exec} from 'child_process';
+import { spawn, exec } from 'child_process';
 import path from 'path';
 import os from 'os';
 import { installConda, setupEnvironment } from './install.js';
+import { checkUserAttendanceQuery, getUserByClassNameQuery, insertUserAttendanceQuery, updateOutTime } from './v1/attendance/models/query.js';
+import { inAllowedTime, outAllowedTime } from './utils/commonUtils.js';
+import { saveAttendance } from './v1/attendance/controllers/attendanceController.js';
 config()
 await installConda();
 await setupEnvironment();
@@ -40,23 +43,14 @@ app.use(json());
 // CORS setup
 app.use(cookieParser());
 const corsOptions = {
-  origin: ['http://localhost:3000','https://amarya-admin-code-dev-fe.vercel.app', 'https://amarya-admin-code.vercel.app'], // replace with your client URL
+  origin: ['http://localhost:3000', 'https://amarya-admin-code-dev-fe.vercel.app', 'https://amarya-admin-code.vercel.app'], // replace with your client URL
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'x-encryption-key', 'x-access-token'],
   credentials: true,
-  path:'/',
+  path: '/',
   exposedHeaders: ['x-encryption-key'],
 };
 const server = createServer(app);
-// const io = new Server(server
-//   // ,{
-//   // cors: {
-//   //     origin: '*', // Allow all origins for testing purposes
-//   // },
-//   // transports: ['websocket', 'polling'] // Ensure WebSocket is listed here
-//   // }
-// );
-
 const io = new Server(server);
 const condaPath = path.join(os.homedir(), os.platform() === 'win32' ? 'Miniconda3' : 'miniconda3', 'condabin', os.platform() === 'win32' ? 'conda.bat' : 'conda');
 const pythonProcess = spawn(condaPath, ['run', '-n', 'conda_env', 'python', 'script.py']);
@@ -64,28 +58,40 @@ io.on('connection', (socket) => {
   console.log('Client connected');
 
   pythonProcess.stdout.on('data', (data) => {
-      const output = data.toString();
-      console.log('output',output);
-      socket.emit('python_output', output);
+    const output = data.toString();
+    console.log('output', output);
+    socket.emit('python_output', output);
   });
 
   pythonProcess.stderr.on('data', (data) => {
-      console.error(`Python Error: ${data}`);
+    console.error(`Python Error: ${data}`);
   });
 
   pythonProcess.on('close', (code) => {
-      console.log(`Python script exited with code ${code}`);
+    console.log(`Python script exited with code ${code}`);
   });
 
-  socket.on('detections', (data) => {
-      console.log('Received detections:', data.detections);
-      console.log('Received URL:', data.rtsp_url);
-      console.log('stream_id :', data.stream_id);
+  socket.on('detections', async (data) => {
+    console.log('Received detections:', data.detections);
+    console.log('Received URL:', data.rtsp_url);
+    console.log('stream_id :', data.stream_id);
+
+    // filtering unique data
+    let filterDuplicateDate = Object.values(
+      data.detections.reduce((acc, item) => {
+        acc[item.class_name] = item;
+        return acc;
+      }, {})
+    );
+
+    // save attedance and update out time
+    await saveAttendance(filterDuplicateDate);
+
   });
 
   socket.on('disconnect', () => {
-      console.log('Client disconnected');
-      pythonProcess.kill('SIGINT');
+    console.log('Client disconnected');
+    pythonProcess.kill('SIGINT');
   });
 });
 app.use(cors(corsOptions));
@@ -108,14 +114,14 @@ app.use('/api/v1/category', categoryRoutes);
 app.use('/api/v1/project', projectRoutes);
 app.use("/api/v1/stickynotes", stickynotesRoutes);
 app.use("/api/v1/activity", activityRoutes);
-app.use("/api/v1/dashboard" , dashboardRoutes);
+app.use("/api/v1/dashboard", dashboardRoutes);
 app.use("/api/v1/policy", policiesRoutes);
 app.use("/api/v1/userDashboard", userDashboardRoutes);
 app.use('/', (req, res) => {
   res.send({
-      statusCode: 403,
-      status: 'failure',
-      message: 'Invalid API'
+    statusCode: 403,
+    status: 'failure',
+    message: 'Invalid API'
   })
 });
 app.use(errorHandler)
