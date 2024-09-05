@@ -3,8 +3,8 @@ import pool from "../../../config/db.js"
 export const insertUserAttendanceQuery = async (array) => {
     try {
         let query = `
-        INSERT INTO userAttendance (status, date, in_time, out_time, snapshot, user_id) 
-        VALUES (?, ?, ?, ?, ?, ?)
+        INSERT INTO userAttendance (status, date, in_time, out_time, in_snapshot, user_id, out_snapshot) 
+        VALUES (?, ?, ?, ?, ?, ?, ?)
         `;
         return pool.query(query, array);
     } catch (error) {
@@ -38,7 +38,7 @@ export const updateOutTime = async (array) => {
     try {
         let query = `
             UPDATE userAttendance
-            SET updated_at=NOW(), out_time=NOW(), snapshot= null where id=?
+            SET out_time=NOW(), out_snapshot= ? where id=?
             `;
         return pool.query(query, array);
     } catch (error) {

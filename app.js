@@ -34,6 +34,7 @@ import { installConda, setupEnvironment } from './install.js';
 import { checkUserAttendanceQuery, getUserByClassNameQuery, insertUserAttendanceQuery, updateOutTime } from './v1/attendance/models/query.js';
 import { inAllowedTime, outAllowedTime } from './utils/commonUtils.js';
 import { saveAttendance } from './v1/attendance/controllers/attendanceController.js';
+import { checkCameraStatus } from './utils/cameraUtils.js';
 config()
 await installConda();
 await setupEnvironment();
@@ -69,12 +70,23 @@ io.on('connection', (socket) => {
 
   pythonProcess.on('close', (code) => {
     console.log(`Python script exited with code ${code}`);
+    if (code !== 0) {
+        console.error('Python script crashed. Restarting...');
+        pythonProcess = spawn(condaPath, ['run', '-n', 'conda_env', 'python', 'script.py']);
+    }
+});
+  io.on('error', (err) => {
+    console.error('Socket.io error:', err);
   });
 
   socket.on('detections', async (data) => {
     console.log('Received detections:', data.detections);
     console.log('Received URL:', data.rtsp_url);
-    console.log('stream_id :', data.stream_id);
+    console.log('stream_id :', data.stream_id); 
+
+    // if(data.stream_id !== 0){
+      // await checkCameraStatus();
+    // }
 
     // filtering unique data
     let filterDuplicateDate = Object.values(
@@ -91,7 +103,9 @@ io.on('connection', (socket) => {
 
   socket.on('disconnect', () => {
     console.log('Client disconnected');
-    pythonProcess.kill('SIGINT');
+    if (pythonProcess && !pythonProcess.killed) {
+        pythonProcess.kill('SIGINT');
+    }
   });
 });
 app.use(cors(corsOptions));
