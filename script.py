@@ -97,12 +97,21 @@ def process_stream(rtsp_url, stream_id):
                     'stream_id': stream_id
                 })
 
+            # Display the frame in a separate window for each stream
+            window_name = f"Stream {stream_id}"
+            cv2.imshow(window_name, frame)
+
+            # Add a small delay and break if the user presses the 'q' key
+            if cv2.waitKey(1) & 0xFF == ord('q'):
+                break
+
     except Exception as e:
         print(f"Error processing stream {stream_id}: {e}")
         time.sleep(5)  # Brief pause before retrying
     finally:
         if cap is not None:
             cap.release()
+        cv2.destroyAllWindows()
 
 def start_streams():
     print("Starting streams")
@@ -113,7 +122,7 @@ def start_streams():
         threads.append(thread)
         thread.start()
 
-if _name_ == '_main_':
+if __name__ == '__main__':
     # Connect to the Node.js server
     try:
         sio.connect(server_url)

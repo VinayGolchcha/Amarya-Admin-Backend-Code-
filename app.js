@@ -31,10 +31,7 @@ import { spawn, exec } from 'child_process';
 import path from 'path';
 import os from 'os';
 import { installConda, setupEnvironment } from './install.js';
-import { checkUserAttendanceQuery, getUserByClassNameQuery, insertUserAttendanceQuery, updateOutTime } from './v1/attendance/models/query.js';
-import { inAllowedTime, outAllowedTime } from './utils/commonUtils.js';
 import { saveAttendance } from './v1/attendance/controllers/attendanceController.js';
-import { checkCameraStatus } from './utils/cameraUtils.js';
 config()
 await installConda();
 await setupEnvironment();
@@ -74,9 +71,6 @@ io.on('connection', (socket) => {
         console.error('Python script crashed. Restarting...');
         pythonProcess = spawn(condaPath, ['run', '-n', 'conda_env', 'python', 'script.py']);
     }
-});
-  io.on('error', (err) => {
-    console.error('Socket.io error:', err);
   });
 
   socket.on('detections', async (data) => {
@@ -107,6 +101,9 @@ io.on('connection', (socket) => {
         pythonProcess.kill('SIGINT');
     }
   });
+});
+io.on('error', (err) => {
+  console.error('Socket.io error:', err);
 });
 app.use(cors(corsOptions));
 app.options('*', cors(corsOptions));
