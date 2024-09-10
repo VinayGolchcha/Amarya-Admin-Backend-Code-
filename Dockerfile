@@ -1,22 +1,32 @@
+# Dockerfile for deploying Node.js backend to Render
+
+# Use an official Node runtime as a parent image
 FROM node:18-bullseye-slim
 
-# Set working directory
+# Install latest npm
+RUN npm i npm@latest -g
+
+# Update apt-get and install netcat (for any health checks)
+RUN apt-get update && apt-get install -y netcat
+
+# Set the working directory inside the container
 WORKDIR /app
 
-# Copy package.json and package-lock.json to the container
-COPY package*.json ./
+# Copy the package.json and package-lock.json to the container
+COPY package.json .
+COPY package-lock.json .
 
 # Install dependencies
 RUN npm install
 
-# Copy the rest of the app to the container
+# Copy the remaining source code to the container
 COPY . .
 
-# Set environment variables
-ENV PORT=3000
+# Set environment variable for the port
+ENV PORT 3000
 
 # Expose the port
-EXPOSE 3000
+EXPOSE $PORT
 
-# Start the application
-CMD ["node", "app.js"]
+# Run the application
+CMD [ "node", "app.js" ]
