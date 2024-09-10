@@ -33,8 +33,8 @@ import os from 'os';
 import { installConda, setupEnvironment } from './install.js';
 import { saveAttendanceLogs } from './v1/attendance/controllers/attendanceController.js';
 config()
-// await installConda();
-// await setupEnvironment();
+await installConda();
+await setupEnvironment();
 const app = express();
 app.use(helmet());
 app.use(json());
