@@ -1,46 +1,28 @@
 import { inAllowedTime, outAllowedTime } from "../../../utils/commonUtils.js";
-import { checkUserAttendanceQuery, getUserByClassNameQuery, insertUserAttendanceQuery, updateOutTime } from "../models/query.js";
+import { checkUserAttendanceLogsQuery, checkUserAttendanceQuery, checkUserTimeFromLogs, getUserByClassNameQuery, insertUserAttendanceLogsQuery, insertUserAttendanceQuery, updateOutTime } from "../models/query.js";
 
-export const saveAttendance = async (uniqueMockData) => {
+export const saveAttendanceLogs = async (uniqueMockData) => {
   try {
     let promises = uniqueMockData.map(async (detection) => {
 
-      if (await outAllowedTime() || await inAllowedTime()) {
-        let [getUsers] = await getUserByClassNameQuery(detection.class_name);
+      let [getUsers] = await getUserByClassNameQuery(detection.class_name);
 
-        if (getUsers.length === 0) {
-          console.log(`No user found for class_name: ${detection.class_name}`);
-          return;
-        }
+      let is_indentify = null;
 
-        let [getUserAttendance] = await checkUserAttendanceQuery([new Date().toISOString().slice(0, 10), getUsers[0]._id]);
-
-        if (getUserAttendance.length === 0) {
-
-          if (await inAllowedTime()) {
-            await insertUserAttendanceQuery(['PRESENT', new Date().toISOString().slice(0, 10), new Date(), null, detection.image, getUsers[0]._id, null]);
-            console.log("Attendance marked successfully for user: ", getUsers[0].username);
-          }
-        }
-
-        if (getUserAttendance.length !== 0) {
-
-          if (await outAllowedTime()) {
-            await updateOutTime([detection.image, getUserAttendance[0].id])
-            console.log("Outtime marked successfully for user: ", getUsers[0].username);
-          }
-        }
-
-        
-
-        return "saving attedance";
-
-      } else {
-
-        return "no data saved";
-      
+      if (getUsers.length !== 0) {
+        is_indentify = true;
+        await insertUserAttendanceLogsQuery(['PRESENT', new Date(), detection.image, getUsers[0]._id, is_indentify]);
+        console.log("Attendance marked successfully for user: ", getUsers[0].username);
+      }
+      else {
+        is_indentify = false;
+        await insertUserAttendanceLogsQuery(['PRESENT', new Date(), detection.image, null, is_indentify]);
+        console.log("Attendance marked successfully for unidentified user");
       }
 
+
+
+      return "saving attedance";
 
     });
     await Promise.all(promises);
@@ -51,7 +33,6 @@ export const saveAttendance = async (uniqueMockData) => {
     return false;
   }
 };
-
 
 // export const checkAndUpdateCameraStatus = async (req, res, next) => {
 //   try {

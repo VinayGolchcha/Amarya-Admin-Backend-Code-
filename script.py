@@ -98,12 +98,12 @@ def process_stream(rtsp_url, stream_id):
                 })
 
             # Display the frame in a separate window for each stream
-            window_name = f"Stream {stream_id}"
-            cv2.imshow(window_name, frame)
+            # window_name = f"Stream {stream_id}"
+            # cv2.imshow(window_name, frame)
 
-            # Add a small delay and break if the user presses the 'q' key
-            if cv2.waitKey(1) & 0xFF == ord('q'):
-                break
+            # # Add a small delay and break if the user presses the 'q' key
+            # if cv2.waitKey(1) & 0xFF == ord('q'):
+            #     break
 
     except Exception as e:
         print(f"Error processing stream {stream_id}: {e}")
