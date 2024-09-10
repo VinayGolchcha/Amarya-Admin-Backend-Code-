@@ -1,0 +1,37 @@
+version: "3"
+
+services:
+  nodeapp:
+    container_name: nodeappcontainer
+    build: .
+    image: nodeapp:v1
+    restart: always
+    command: ["sh", "-c", "node app.js"]
+    ports: 
+      - "3000:3000"
+    environment:
+      PORT: ${PORT}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      DATABASE: ${DATABASE}
+      MYSQL_HOST: ${MYSQL_HOST}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PORT: ${MYSQL_PORT}
+      JWT_SECRET: ${JWT_SECRET}
+      ENCRYPTION_SECRET: ${ENCRYPTION_SECRET}
+      JWT_EXPIRATION_TIME: ${JWT_EXPIRATION_TIME}
+      CLOUDINARY_CLOUDNAME: ${CLOUDINARY_CLOUDNAME}
+      CLOUDINARY_API_KEY: ${CLOUDINARY_API_KEY}
+      CLOUDINARY_API_SECRET: ${CLOUDINARY_API_SECRET}
+      DB_STRING: ${DB_STRING}
+      PROD_SERVER_URL: ${PROD_SERVER_URL}
+      LOCAL_SERVER_URL: ${LOCAL_SERVER_URL}
+      NODE_ENV: ${NODE_ENV}
+      NODEMAILER_USER: ${NODEMAILER_USER}
+      NODEMAILER_PASS: ${NODEMAILER_PASS}
+      SERVICE_TAGS: ${SERVICE_TAGS}
+      SERVICE_NAME: ${SERVICE_NAME}
+    networks:
+      - internalnet
+
+networks: 
+  internalnet:
