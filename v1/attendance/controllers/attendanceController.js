@@ -53,3 +53,11 @@ export const saveAttendanceLogs = async (uniqueMockData) => {
 //     return internalServerErrorResponse(res, error);
 //   }
 // };
+
+export const fetchEmployeeAttendanceList = async (req, res, next) => {
+  try {
+    
+  } catch (error) {
+    return internalServerErrorResponse(res, error);
+  }
+}

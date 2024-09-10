@@ -29,8 +29,7 @@ def disconnect():
 
 # List of RTSP streams
 rtsp_streams = [
-    "rtsp://192.168.1.28:5543/c09aa8be6a70054108fb66336c2b82c9/live/channel0",
-    0  # This assumes 0 is your webcam
+    "rtsp://223.181.188.158:5543/c09aa8be6a70054108fb66336c2b82c9/live/channel0"
 ]
 
 # Load the YOLO model
