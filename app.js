@@ -31,7 +31,7 @@ import { spawn, exec } from 'child_process';
 import path from 'path';
 import os from 'os';
 import { installConda, setupEnvironment } from './install.js';
-import { saveAttendance } from './v1/attendance/controllers/attendanceController.js';
+import { saveAttendanceLogs } from './v1/attendance/controllers/attendanceController.js';
 config()
 await installConda();
 await setupEnvironment();
@@ -74,7 +74,9 @@ io.on('connection', (socket) => {
   });
 
   socket.on('detections', async (data) => {
-    console.log('Received detections:', data.detections);
+    console.log('Received detections:', data.detections.class_name);
+    console.log('Received detections:', data.detections.confidence);
+    console.log('Received detections:', data.detections.bounding_box);
     console.log('Received URL:', data.rtsp_url);
     console.log('stream_id :', data.stream_id); 
 
@@ -91,7 +93,7 @@ io.on('connection', (socket) => {
     );
 
     // save attedance and update out time
-    await saveAttendance(filterDuplicateDate);
+    await saveAttendanceLogs(filterDuplicateDate);
 
   });
 
