@@ -1,0 +1,24 @@
+# Use the official Miniconda image as a base
+FROM continuumio/miniconda3:latest
+
+# Set the working directory
+WORKDIR /app
+
+# Copy the environment.yml file to the working directory
+COPY environment.yml .
+
+# Create the conda environment from the environment.yml file
+RUN conda env create -f environment.yml
+
+# Set the environment variable for the Conda environment path
+ENV PATH /opt/conda/envs/conda_env/bin:$PATH
+
+# Copy your Python script into the container
+COPY script.py .
+
+# Expose the necessary port (if your Python app uses a port)
+EXPOSE 8000
+
+# Activate the conda environment and run the Python script
+CMD ["conda", "run", "--no-capture-output", "-n", "conda_env", "python", "script.py"]
+
