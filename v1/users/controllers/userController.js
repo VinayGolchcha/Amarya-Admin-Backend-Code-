@@ -1,6 +1,6 @@
 import jwt from "jsonwebtoken"
 import { validationResult } from "express-validator";
-import bcrypt from "bcrypt"
+import bcrypt from "bcryptjs"
 import dotenv from "dotenv"
 import crypto from 'crypto-js';
 import { successResponse, errorResponse, notFoundResponse, unAuthorizedResponse, internalServerErrorResponse } from "../../../utils/response.js"

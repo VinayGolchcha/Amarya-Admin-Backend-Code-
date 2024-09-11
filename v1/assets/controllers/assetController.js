@@ -1,6 +1,6 @@
 import jwt from "jsonwebtoken"
 import { validationResult } from "express-validator";
-import bcrypt from "bcrypt"
+import bcrypt from "bcryptjs"
 import dotenv from "dotenv"
 import { successResponse, errorResponse, notFoundResponse, internalServerErrorResponse } from "../../../utils/response.js"
 import { checkIfAlreadyExistsQuery,insertAssetQuery, getLastAssetIdQuery, insertUserAssetDataQuery, fetchUserAssetsQuery, deleteAssetQuery, getAssetDataQuery, fetchAssetsQuery, updateAssetQuery } from "../models/assetQuery.js";

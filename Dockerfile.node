@@ -11,9 +11,11 @@ WORKDIR /app
 COPY package.json .
 COPY package-lock.json .
 
-# Install Node.js dependencies
-RUN npm install --force
-RUN npm rebuild bcrypt --build-from-source
+# Install Node.js dependencies and bcryptjs
+RUN apt-get update && apt-get install -y python3 make g++ && rm -rf /var/lib/apt/lists/* \
+    && npm install --force \
+    && npm install bcryptjs@2.4.3 --save \
+    && npm rebuild bcrypt --build-from-source
 
 # Copy the remaining source code to the container
 COPY . .
