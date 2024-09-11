@@ -418,4 +418,4 @@ export const userGhostLogin = async (req, res) => {
         console.error(error);
         return internalServerErrorResponse(res, error)
     }
-};
+}
