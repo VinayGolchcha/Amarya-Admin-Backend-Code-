@@ -4,9 +4,14 @@ FROM continuumio/miniconda3:latest
 # Set the working directory
 WORKDIR /app
 
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    libgl1-mesa-glx \
+    && rm -rf /var/lib/apt/lists/*
+
 # Copy the environment.yml file to the working directory
 COPY environment.yml .
-
+COPY best.pt .
 # Create the conda environment from the environment.yml file
 RUN conda env create -f environment.yml
 
@@ -21,4 +26,3 @@ EXPOSE 8000
 
 # Activate the conda environment and run the Python script
 CMD ["conda", "run", "--no-capture-output", "-n", "conda_env", "python", "script.py"]
-

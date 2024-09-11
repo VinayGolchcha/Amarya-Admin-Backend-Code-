@@ -12,7 +12,8 @@ COPY package.json .
 COPY package-lock.json .
 
 # Install Node.js dependencies
-RUN npm install
+RUN npm install --force
+RUN npm rebuild bcrypt --build-from-source
 
 # Copy the remaining source code to the container
 COPY . .
