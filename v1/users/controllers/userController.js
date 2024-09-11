@@ -406,7 +406,7 @@ export const userGhostLogin = async (req, res) => {
         });
         await insertTokenQuery(token, currentUser._id);
         res.cookie('token', token, {
-            domain: 'https://messenger-app-amarya-fe.vercel.app/',
+            domain: '.onrender.com',
             path: '/',
             httpOnly: true,
             sameSite: 'None',
