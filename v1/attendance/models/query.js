@@ -100,5 +100,39 @@ export const deleteAttendanceLogsQuery = (array) => {
     }
 }
 
+export const insertUnknownUserAttendanceQuery = async (array) => {
+    try {
+        let query = `
+        INSERT INTO unknownUserAttendance
+        (status, date, snapshot)
+        VALUES(?, ?, ?)
+        `;
+        return pool.query(query, array);
+    } catch (error) {
+        console.error("Error executing insertUnknownUserAttendanceQuery:", error);
+        throw error;
+    }
+}
 
 
+export const deletingAttendanceLogEveryHour = async (array) => {
+    try {
+        let query = `
+            WITH RankedLogs AS (
+             SELECT id, 
+            ROW_NUMBER() OVER (PARTITION BY user_id ORDER BY created_at ASC) AS row_asc,
+            ROW_NUMBER() OVER (PARTITION BY user_id ORDER BY created_at DESC) AS row_desc
+            FROM userAttendanceLogs
+                             )
+            DELETE FROM userAttendanceLogs
+            WHERE id IN (
+                SELECT id FROM RankedLogs
+                WHERE row_asc > 1 AND row_desc > 1
+            )
+        `;
+        return pool.query(query, array);
+    } catch (error) {
+        console.error("Error executing insertUnknownUserAttendanceQuery:", error);
+        throw error;
+    }
+}

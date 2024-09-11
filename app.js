@@ -1,4 +1,3 @@
-
 import pool, { setupDatabase } from './config/db.js';
 await setupDatabase();
 import express, { json } from 'express';
@@ -74,15 +73,11 @@ io.on('connection', (socket) => {
   });
 
   socket.on('detections', async (data) => {
-    console.log('Received detections:', data.detections.class_name);
-    console.log('Received detections:', data.detections.confidence);
-    console.log('Received detections:', data.detections.bounding_box);
+    console.log('Received class_name:', data.detections[0].class_name);
+    console.log('Received confidence:', data.detections[0].confidence);
+    console.log('Received bounding_box:', data.detections[0].bounding_box);
     console.log('Received URL:', data.rtsp_url);
     console.log('stream_id :', data.stream_id); 
-
-    // if(data.stream_id !== 0){
-      // await checkCameraStatus();
-    // }
 
     // filtering unique data
     let filterDuplicateDate = Object.values(

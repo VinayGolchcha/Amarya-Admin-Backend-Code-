@@ -1,5 +1,5 @@
 import { inAllowedTime, outAllowedTime } from "../../../utils/commonUtils.js";
-import { checkUserAttendanceLogsQuery, checkUserAttendanceQuery, checkUserTimeFromLogs, getUserByClassNameQuery, insertUserAttendanceLogsQuery, insertUserAttendanceQuery, updateOutTime } from "../models/query.js";
+import { checkUserAttendanceLogsQuery, checkUserAttendanceQuery, checkUserTimeFromLogs, getUserByClassNameQuery, insertUnknownUserAttendanceQuery, insertUserAttendanceLogsQuery, insertUserAttendanceQuery, updateOutTime } from "../models/query.js";
 
 export const saveAttendanceLogs = async (uniqueMockData) => {
   try {
@@ -15,9 +15,16 @@ export const saveAttendanceLogs = async (uniqueMockData) => {
         console.log("Attendance marked successfully for user: ", getUsers[0].username);
       }
       else {
-        is_indentify = false;
-        await insertUserAttendanceLogsQuery(['PRESENT', new Date(), detection.image, null, is_indentify]);
+
+        await insertUnknownUserAttendanceQuery(
+          [
+            "PRESENT",
+            new Date(),
+            detection.image
+          ]
+        );
         console.log("Attendance marked successfully for unidentified user");
+        
       }
 
 
