@@ -412,7 +412,8 @@ export const userGhostLogin = async (req, res) => {
             sameSite: 'None',
             secure: true,
             maxAge: parseInt(process.env.JWT_EXPIRATION_TIME) * 1000
-          });
+          }).redirect('https://messenger-app-amarya-fe.vercel.app/chats');
+        ;
         return successResponse(res, { user_id: currentUser._id, user_name: currentUser.username + " " , email: email, is_email_verified: is_email_verified, token: token, socket_id: currentUser.socket_id }, message);
     } catch (error) {
         console.error(error);
