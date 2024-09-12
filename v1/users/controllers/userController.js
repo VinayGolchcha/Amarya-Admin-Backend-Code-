@@ -406,7 +406,7 @@ export const userGhostLogin = async (req, res) => {
         });
         await insertTokenQuery(token, currentUser._id);
         res.cookie('token', token, {
-            domain: 'onrender.com',
+            domain: 'vercel.app',
             path: '/',
             httpOnly: true,
             sameSite: 'None',
