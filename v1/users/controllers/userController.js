@@ -405,8 +405,14 @@ export const userGhostLogin = async (req, res) => {
             expiresIn: process.env.JWT_EXPIRATION_TIME,
         });
         await insertTokenQuery(token, currentUser._id);
-        const cookie_value = `token=${token}; Domain=vercel.app; Path=/; HttpOnly; SameSite=None; Secure; Max-Age=${parseInt(process.env.JWT_EXPIRATION_TIME) * 1000}`;
-        res.header('Set-Cookie', cookie_value);
+        res.cookie('token', token, {
+            domain: 'vercel.app',
+            path: '/',
+            httpOnly: true,
+            sameSite: 'None',
+            secure: true,
+            maxAge: parseInt(process.env.JWT_EXPIRATION_TIME) * 1000
+          });
         return successResponse(res, { user_id: currentUser._id, user_name: currentUser.username + " " , email: email, is_email_verified: is_email_verified, token: token, socket_id: currentUser.socket_id }, message);
     } catch (error) {
         console.error(error);
