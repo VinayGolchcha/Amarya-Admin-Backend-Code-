@@ -1,7 +1,7 @@
 name: conda_env
 channels:
   - defaults
-  - conda-forge  # Added channel for additional packages
+  - conda-forge
 dependencies:
   - python=3.10  # Adjust the Python version if needed
   - flask
@@ -11,17 +11,10 @@ dependencies:
   - pip
   - pip:
       - ultralytics  # YOLO-related package
-      - flask-socketio  # Real-time socket connection
-      - aiofiles  # Async file handling
       - alive-progress  # Progress bar utility
-      - ffmpeg-python  # FFmpeg wrapper for multimedia processing
       - opencv-python-headless  # OpenCV for image processing
       - opencv-contrib-python  # Additional OpenCV functionality
-      - pydantic  # Data validation and parsing
+      - python-socketio  # Socket.IO for real-time communication
       - python-dotenv  # Manage environment variables in .env files
-      - psutil  # For system resource management
-      - uvicorn  # ASGI server for running fast APIs
-      - requests  # HTTP requests
-      - tqdm  # Progress bars
       - torch  # PyTorch for deep learning (YOLO)
       - torchvision  # PyTorch vision utilities

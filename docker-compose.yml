@@ -1,14 +1,9 @@
 version: "3"
 services:
-  nodeapp:
-    container_name: nodeappcontainer
-    build:
-      context: .
-      dockerfile: Dockerfile.node  # Specify the Dockerfile for Node.js
-    image: nodeapp:v1
-    restart: always
-    command: ["sh", "-c", "node app.js"]
-    ports: 
+  app:
+    container_name: node-python-app
+    build: .
+    ports:
       - "3000:3000"
     environment:
       PORT: ${PORT}
@@ -34,17 +29,6 @@ services:
     networks:
       - internalnet
 
-  pythonapp:
-    container_name: pythonappcontainer
-    build:
-      context: .
-      dockerfile: Dockerfile.python  # Specify the Dockerfile for Python
-    image: pythonapp:v1
-    restart: always
-    command: ["conda", "run", "-n", "conda_env", "python", "script.py"]
-    networks:
-      - internalnet
-
 networks:
   internalnet:
-
+    driver: bridge

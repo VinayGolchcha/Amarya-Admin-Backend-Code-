@@ -26,15 +26,15 @@ import userDashboardRoutes from './v1/users/routes/userdashboardRoutes.js';
 import policiesRoutes from "./v1/policies/routes/policiesRoutes.js";
 import { createServer } from 'http';
 import { Server } from 'socket.io';
-// import { spawn, exec } from 'child_process';
-// import path from 'path';
-// import os from 'os';
-// import { installConda, setupEnvironment } from './install.js';
+import { spawn, exec } from 'child_process';
+import path from 'path';
+import os from 'os';
+import { installConda, setupEnvironment } from './install.js';
 import { saveAttendanceLogs } from './v1/attendance/controllers/attendanceController.js';
 
 config();
-// await installConda();
-// await setupEnvironment();
+await installConda();
+await setupEnvironment();
 const app = express();
 app.use(helmet());
 app.use(json());
@@ -61,28 +61,28 @@ const io = new Server(server, {
   reconnectionDelayMax: 5000, // Maximum delay between reconnections
   timeout: 20000 // Connection timeout
 });
-// const condaPath = path.join(os.homedir(), os.platform() === 'win32' ? 'Miniconda3' : 'miniconda3', 'condabin', os.platform() === 'win32' ? 'conda.bat' : 'conda');
-// const pythonProcess = spawn(condaPath, ['run', '-n', 'conda_env', 'python', 'script.py']);
+const condaPath = path.join(os.homedir(), os.platform() === 'win32' ? 'Miniconda3' : 'miniconda3', 'condabin', os.platform() === 'win32' ? 'conda.bat' : 'conda');
+const pythonProcess = spawn(condaPath, ['run', '-n', 'conda_env', 'python', 'script.py']);
 
 io.on('connection', (socket) => {
   console.log('Client connected');
-  // pythonProcess.stdout.on('data', (data) => {
-  //   const output = data.toString();
-  //   console.log('output', output);
-  //   socket.emit('python_output', output);
-  // });
+  pythonProcess.stdout.on('data', (data) => {
+    const output = data.toString();
+    console.log('output', output);
+    socket.emit('python_output', output);
+  });
 
-  // pythonProcess.stderr.on('data', (data) => {
-  //   console.error(`Python Error: ${data}`);
-  // });
+  pythonProcess.stderr.on('data', (data) => {
+    console.error(`Python Error: ${data}`);
+  });
 
-  // pythonProcess.on('close', (code) => {
-  //   console.log(`Python script exited with code ${code}`);
-  //   if (code !== 0) {
-  //       console.error('Python script crashed. Restarting...');
-  //       pythonProcess = spawn(condaPath, ['run', '-n', 'conda_env', 'python', 'script.py']);
-  //   }
-  // });
+  pythonProcess.on('close', (code) => {
+    console.log(`Python script exited with code ${code}`);
+    if (code !== 0) {
+        console.error('Python script crashed. Restarting...');
+        pythonProcess = spawn(condaPath, ['run', '-n', 'conda_env', 'python', 'script.py']);
+    }
+  });
   socket.on('detections', async (data) => {
     console.log('Received detections:', data.detections[0].class_name);
     console.log('Received detections:', data.detections[0].confidence);
@@ -105,9 +105,9 @@ io.on('connection', (socket) => {
   socket.on('disconnect', () => {
     console.log('Client disconnected');
     // No need to manually handle reconnection
-    // if (pythonProcess && !pythonProcess.killed) {
-    //   pythonProcess.kill('SIGINT');
-    // }
+    if (pythonProcess && !pythonProcess.killed) {
+      pythonProcess.kill('SIGINT');
+    }
   });
 
   socket.on('error', (err) => {
