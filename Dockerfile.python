@@ -9,20 +9,19 @@ RUN apt-get update && apt-get install -y \
     libgl1-mesa-glx \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy the environment.yml file to the working directory
-COPY environment.yml .
-COPY best.pt .
+# Copy the file to the working directory
+COPY environment.yml . 
+COPY best.pt . 
+COPY script.py . 
+
 # Create the conda environment from the environment.yml file
 RUN conda env create -f environment.yml
 
 # Set the environment variable for the Conda environment path
-ENV PATH /opt/conda/envs/conda_env/bin:$PATH
-
-# Copy your Python script into the container
-COPY script.py .
+ENV PATH=/opt/conda/envs/conda_env/bin:$PATH
 
 # Expose the necessary port (if your Python app uses a port)
 EXPOSE 8000
 
 # Activate the conda environment and run the Python script
-CMD ["conda", "run", "--no-capture-output", "-n", "conda_env", "python", "script.py"]
+CMD ["conda", "run", "-n", "conda_env", "python", "script.py"]

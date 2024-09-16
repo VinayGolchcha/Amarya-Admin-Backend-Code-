@@ -42,6 +42,8 @@ services:
     image: pythonapp:v1
     restart: always
     command: ["conda", "run", "-n", "conda_env", "python", "script.py"]
+    environment:
+      LOCAL_SERVER_URL: http://nodeapp:3000  # Use the service name and port
     networks:
       - internalnet
 

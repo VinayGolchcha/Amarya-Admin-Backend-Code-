@@ -21,6 +21,7 @@ sio = socketio.Client()
 def connect_to_server():
     while True:
         try:
+            print("Connecting to Node.js server using:", server_url)
             sio.connect(server_url)
             print("Connected to Node.js server")
             break  # If connected successfully, exit the loop
