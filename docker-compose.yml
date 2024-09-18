@@ -38,15 +38,19 @@ services:
     container_name: pythonappcontainer
     build:
       context: .
-      dockerfile: Dockerfile.python  # Specify the Dockerfile for Python
+      dockerfile: Dockerfile.python  # Specify the Dockerfile for the Python app
     image: pythonapp:v1
     restart: always
-    command: ["conda", "run", "-n", "conda_env", "python", "script.py"]
+    command: ["python", "script.py"]  # Replace 'your_script.py' with the actual script name
     environment:
+      # Add any necessary environment variables here
       LOCAL_SERVER_URL: http://nodeapp:3000  # Use the service name and port
+    ports:
+      - "5000:5000"  # Map the container port 5000 to the host
     networks:
       - internalnet
 
 networks:
   internalnet:
+    driver: host
 

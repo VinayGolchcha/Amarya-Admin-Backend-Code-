@@ -1,27 +1,22 @@
-# Use the official Miniconda image as a base
-FROM continuumio/miniconda3:latest
+# Use an official Python runtime as a parent image
+FROM python:3.10-slim
 
-# Set the working directory
+# Set the working directory in the container
 WORKDIR /app
 
-# Install system dependencies
-RUN apt-get update && apt-get install -y \
-    libgl1-mesa-glx \
-    && rm -rf /var/lib/apt/lists/*
+# Install dependencies needed for OpenCV and other requirements
+RUN apt-get update && apt-get install ffmpeg libsm6 libxext6  -y
 
-# Copy the file to the working directory
-COPY environment.yml . 
-COPY best.pt . 
-COPY script.py . 
+COPY requirements.txt .
 
-# Create the conda environment from the environment.yml file
-RUN conda env create -f environment.yml
+RUN pip install --no-cache-dir -r requirements.txt
 
-# Set the environment variable for the Conda environment path
-ENV PATH=/opt/conda/envs/conda_env/bin:$PATH
+# Copy your YOLO model and script files into the container
+COPY new_best.pt . 
+COPY script.py .
 
-# Expose the necessary port (if your Python app uses a port)
-EXPOSE 8000
+# Expose the port the app runs on (optional, based on your use case)
+EXPOSE 5000
 
-# Activate the conda environment and run the Python script
-CMD ["conda", "run", "-n", "conda_env", "python", "script.py"]
+# Command to run the Python script
+CMD ["python", "script.py"]

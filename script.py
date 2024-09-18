@@ -46,7 +46,7 @@ rtsp_streams = [
 ]
 
 # Load the YOLO model
-model = YOLO("./best.pt")
+model = YOLO("./new_best.pt")
 
 classNames = [
     'AnkitK', 'Anuj', 'Depanshu', 'Divij', 'Eish', 'Itesh', 'Kishan', 'Lucky',
