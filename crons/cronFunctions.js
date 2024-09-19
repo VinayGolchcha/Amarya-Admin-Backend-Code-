@@ -5,6 +5,7 @@ import { getWorkingDaysCountPreviousMonth } from "../v1/helpers/functions.js"
 import { getCategoryTotalPointsQuery, getUserPointsQuery, updateUserPerformanceQuery, updateUserPointsQuery, insertYearlyDataOfUsersPerformanceQuery } from "../v1/worksheets/models/performanceQuery.js"
 import { checkUserAttendanceQuery, checkUserTimeFromLogs, deleteAttendanceLogsQuery, insertUnknownUserAttendanceQuery, insertUserAttendanceQuery } from "../v1/attendance/models/query.js";
 import moment from 'moment';
+import ffmpeg from "fluent-ffmpeg";
 
 export const updateEntries = async () => {
   try {

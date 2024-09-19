@@ -37,9 +37,8 @@ rtsp_streams = [
 model = YOLO("./best.pt")
 
 classNames = [
-    'AnkitK', 'Anuj', 'Depanshu', 'Divij', 'Eish', 'Itesh', 'Kishan', 'Lucky',
-    'Prabal', 'Prashant', 'Pujita', 'Tamanna', 'Sanjana', 'ShubhamK', 'ShubhamS',
-    'Surya', 'Vshwabhushan', 'Yogesh'
+'ankit_koshta01','anuj.prajapati01','deepanshu_kushwaha01','divij_sahu01','eish_nigam01','iteesh_dubey01','kishan_chaurasia01','lucky_soni01','prabal_namdev01','prashant_pandey01','pujita_rao01',
+'tamanna_suhane01','sanjana_jain01','shubham_kushwaha01','shubham_soni01','surya_pratap01','vishwabhushan_dubey01','Yogesh'
 ]
 
 def object_detection(img):

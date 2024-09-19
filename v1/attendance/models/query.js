@@ -115,24 +115,34 @@ export const insertUnknownUserAttendanceQuery = async (array) => {
 }
 
 
-export const deletingAttendanceLogEveryHour = async (array) => {
+export const deletingAttendanceLogEveryHourQuery = async (array) => {
     try {
         let query = `
             WITH RankedLogs AS (
              SELECT id, 
             ROW_NUMBER() OVER (PARTITION BY user_id ORDER BY created_at ASC) AS row_asc,
             ROW_NUMBER() OVER (PARTITION BY user_id ORDER BY created_at DESC) AS row_desc
-            FROM userAttendanceLogs
-                             )
+            FROM userAttendanceLogs)
             DELETE FROM userAttendanceLogs
             WHERE id IN (
                 SELECT id FROM RankedLogs
-                WHERE row_asc > 1 AND row_desc > 1
+                WHERE row_asc > 5 AND row_desc > 5
             )
         `;
         return pool.query(query, array);
     } catch (error) {
         console.error("Error executing insertUnknownUserAttendanceQuery:", error);
+        throw error;
+    }
+}
+
+export const getUserAttendanceSummaryQuery = async (array) => {
+    try {
+        const [startDate, endDate, empId] = array;
+        let query = `CALL attendanceSummaryProc('${startDate}', '${endDate}', '${empId}')`;
+        return pool.query(query);
+    } catch (error) {
+        console.error("Error executing getUserAttendanceSummaryQuery:", error);
         throw error;
     }
 }
