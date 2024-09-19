@@ -9,7 +9,7 @@ services:
     restart: always
     command: ["sh", "-c", "node app.js"]
     ports: 
-      - "3000:3000"
+      - "4000:4000"
     environment:
       PORT: ${PORT}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
