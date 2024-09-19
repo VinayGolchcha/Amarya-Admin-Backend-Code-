@@ -41,10 +41,12 @@ services:
       dockerfile: Dockerfile.python  # Specify the Dockerfile for the Python app
     image: pythonapp:v1
     restart: always
+    env_file:
+      - .env
     command: ["python", "script.py"]  # Replace 'your_script.py' with the actual script name
     environment:
       # Add any necessary environment variables here
-      LOCAL_SERVER_URL: http://nodeapp:3000  # Use the service name and port
+      LOCAL_SERVER_URL: ${LOCAL_SERVER_URL} # Use the service name and port
     ports:
       - "5000:5000"  # Map the container port 5000 to the host
     networks:
