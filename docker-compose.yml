@@ -52,5 +52,5 @@ services:
 
 networks:
   internalnet:
-    driver: host
+    driver: bridge
 
