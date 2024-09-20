@@ -23,9 +23,15 @@ import feedbackFormTable from "../v1/users/models/userFeedbackModel.js";
 import userProjectTable from "../v1/projects/models/userProjectModel.js";
 import userYearlyPerformanceTable from "../v1/worksheets/models/userYearlyPerformanceModel.js";
 import userPerformanceTable from "../v1/worksheets/models/userPerformanceModel.js";
+import attendanceLogsTable from "../v1/attendance/models/attendanceLogsModel.js";
+import unknownUserAttendanceTable from "../v1/attendance/models/unknownUserAttendanceModel.js";
+import attendanceTable from "../v1/attendance/models/attendanceModel.js";
+import devicesTable from "../v1/attendance/models/devicesModel.js";
+import attendanceSummaryProc from "../v1/attendance/models/attendanceSummaryProc.js";
 
 export default [userTable, assetTable, trainingTable, usertrainingTable, assetRequestTable, approvalTable, announcementTable,
     holidayTable, leaveDatesAndReasonTable,leaveTypeTable, leaveTypeCountTable, userLeaveCountTable, categoryTable, teamTable,
     projectTable, worksheetTable, skillSetTable , temporaryNotesTable , policiesTable, userTeamsTable,
-    userYearlyPerformanceTable, userPerformanceTable, imagesTable, feedbackFormTable, userProjectTable
+    userYearlyPerformanceTable, userPerformanceTable, imagesTable, feedbackFormTable, userProjectTable, attendanceLogsTable, unknownUserAttendanceTable,
+    attendanceTable, devicesTable, attendanceSummaryProc
 ];

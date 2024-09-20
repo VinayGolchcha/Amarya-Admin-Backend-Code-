@@ -2,6 +2,7 @@
 import cron from "node-cron";
 import pool from "../config/db.js";
 import { generateUserWorksheetExcel, updateEntries, calculatePerformanceForEachEmployee, updateYearlyDataForEachEmployee, saveAttendance, deleteAttendanceLogs } from "./cronFunctions.js";
+import {deletingAttendanceLogEveryHourQuery } from "../v1/attendance/models/query.js";
 
 
 export const runCronJobs = () => {
@@ -63,11 +64,23 @@ export const runCronJobs = () => {
     cron.schedule('0 0 * * *', async () => {
         try {
 
-            console.log("scheduler called: ")
+            console.log("scheduler called: saving attendance and deleting logs before 2 days")
             await saveAttendance();
-            await deleteAttendanceLogs(); //deleting logs of 
+            await deleteAttendanceLogs(); //deleting all logs before 2 days
         } catch (error) {
             console.error('Error executing cron saveAttendance:', error);
         }
     });
+
+    cron.schedule('*/30 * * * *', async () => {
+        try {
+            console.log("scheduler called: deleting attendance logs excluding 1st and last 5 entries per user")
+            await deletingAttendanceLogEveryHourQuery();
+        } catch (error) {
+            console.error('Error executing cron deletingAttendanceLogEveryHour:', error);
+        }
+    });
+
+
+    
 }

@@ -3,7 +3,9 @@ import XlsxPopulate from "xlsx-populate"
 import fs from 'fs/promises';
 import { getWorkingDaysCountPreviousMonth } from "../v1/helpers/functions.js"
 import { getCategoryTotalPointsQuery, getUserPointsQuery, updateUserPerformanceQuery, updateUserPointsQuery, insertYearlyDataOfUsersPerformanceQuery } from "../v1/worksheets/models/performanceQuery.js"
-import { checkUserAttendanceQuery, checkUserTimeFromLogs, deleteAttendanceLogsQuery, insertUserAttendanceQuery } from "../v1/attendance/models/query.js";
+import { checkUserAttendanceQuery, checkUserTimeFromLogs, deleteAttendanceLogsQuery, insertUnknownUserAttendanceQuery, insertUserAttendanceQuery } from "../v1/attendance/models/query.js";
+import moment from 'moment';
+import ffmpeg from "fluent-ffmpeg";
 
 export const updateEntries = async () => {
   try {
@@ -137,25 +139,31 @@ export const updateYearlyDataForEachEmployee = async () => {
 
 export const saveAttendance = async () => {
   try {
-    const date = new Date();
-    date.setDate(date.getDate() - 1);
-    const previousDayDt = date.toISOString().slice(0, 10);
+    // const date = new Date();
+    // date.setDate(date.getDate() - 1);
+    // const previousDayDt = date.toISOString().slice(0, 10);
+
+    // const moment = require('moment');
+    const previousDayDt = moment().subtract(1, 'days').format('YYYY-MM-DD');
+    console.log(previousDayDt);
 
     let [getUserAttendanceLogs] = await checkUserTimeFromLogs([previousDayDt]);
 
-    // console.log(getUserAttendanceLogs[0])
-
-    if(getUserAttendanceLogs.length === 0){
-        console.log("no records found for date: ",previousDayDt)
-        return;
+    if (getUserAttendanceLogs.length === 0) {
+      console.log("no records found for date: ", previousDayDt)
+      return;
     }
 
     for (const log of getUserAttendanceLogs) {
 
-      const utcDate = new Date(log.date);
-      const dateOnly = utcDate.toISOString().slice(0, 10)
+      // const utcDate = new Date(log.date);
+      // const year = utcDate.getFullYear();
+      // const month = String(utcDate.getMonth() + 1).padStart(2, '0');
+      // const day = String(utcDate.getDate()).padStart(2, '0');
+      // const dateOnly = `${year}-${month}-${day}`;
 
-      console.log(dateOnly)
+      const dateOnly = moment(log.date).format('YYYY-MM-DD');
+      console.log(dateOnly);
 
       let [getUserAttendance] = await checkUserAttendanceQuery([previousDayDt, log.user_id]);
 
@@ -163,22 +171,22 @@ export const saveAttendance = async () => {
 
         await insertUserAttendanceQuery(
           ["PRESENT",
-          dateOnly,
-          log.in_time,
-          log.out_time,
-          log.in_snapshot,
-          log.user_id,
-          log.out_snapshot]
+            dateOnly,
+            log.in_time,
+            log.out_time,
+            log.in_snapshot,
+            log.user_id,
+            log.out_snapshot]
         );
 
-        console.log("Saving attendance for user: ",log.user_id);
+        console.log("Saving attendance for user: ", log.user_id);
       } else {
         console.log("Attendance already marked for the user.")
         continue;
       }
 
     }
-    // await insertUserAttendanceQuery("PRESENT", getUserAttendanceLogs[0].date, getUserAttendanceLogs[0].in_time, getUserAttendanceLogs[0].out_time, getUserAttendanceLogs[0].in_snapshot, getUserAttendanceLogs[0].user_id, getUserAttendanceLogs[0].in_snapshot);
+    
     return;
 
   } catch (error) {
@@ -190,11 +198,15 @@ export const saveAttendance = async () => {
 export const deleteAttendanceLogs = async () => {
   try {
 
-    const date = new Date();
-    date.setDate(date.getDate() - 2);
-    const previousDayDt = date.toISOString().slice(0, 10);
+    // const date = new Date();
+    // date.setDate(date.getDate() - 2);
+    // const previousDayDt = date.toISOString().slice(0, 10);
 
-    console.log("Deleting attendance logs for date: ",previousDayDt);
+    // const moment = require('moment');
+    const previousDayDt = moment().subtract(2, 'days').format('YYYY-MM-DD');
+    console.log(previousDayDt);
+
+    console.log("Deleting attendance logs for date: ", previousDayDt);
     await deleteAttendanceLogsQuery(previousDayDt);
 
     return `Attendance logs delete successfully.`;

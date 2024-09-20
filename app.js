@@ -27,7 +27,7 @@ import policiesRoutes from "./v1/policies/routes/policiesRoutes.js";
 import { createServer } from 'http';
 import { Server } from 'socket.io';
 import { saveAttendanceLogs } from './v1/attendance/controllers/attendanceController.js';
-
+import attendanceRoutes from './v1/attendance/routes/attendanceRoutes.js';
 config();
 
 const app = express();
@@ -37,7 +37,7 @@ app.use(cookieParser());
 
 // CORS setup
 const corsOptions = {
-  origin: ['http://localhost:3000', 'https://amarya-admin-code-dev-fe.vercel.app', 'https://amarya-admin-code.vercel.app', 'https://messenger-app-amarya-fe.vercel.app'],
+  origin: ['http://localhost:3000',  'https://amarya-admin-code-dev-fe.vercel.app', 'https://amarya-admin-code.vercel.app', 'https://messenger-app-amarya-fe.vercel.app'],
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'x-encryption-key', 'x-access-token', '*'],
   credentials: true,
@@ -75,8 +75,9 @@ io.on('connection', (socket) => {
       }, {})
     );
 
-    // Save attendance and update out time
-    await saveAttendanceLogs(filterDuplicateDate);
+    if (data.detections[0].confidence > 0.50) {
+      await saveAttendanceLogs(filterDuplicateDate);
+    }
   });
 
   socket.on('disconnect', () => {
@@ -128,6 +129,7 @@ app.use("/api/v1/activity", activityRoutes);
 app.use("/api/v1/dashboard", dashboardRoutes);
 app.use("/api/v1/policy", policiesRoutes);
 app.use("/api/v1/userDashboard", userDashboardRoutes);
+app.use("/api/v1/attendance", attendanceRoutes);
 app.use('/', (req, res) => {
   res.send({
     statusCode: 403,

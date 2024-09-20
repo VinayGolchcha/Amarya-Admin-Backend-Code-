@@ -1,5 +1,5 @@
 const attendanceLogsTable = `
-CREATE TABLE "userAttendanceLogs" (
+CREATE TABLE IF NOT EXISTS "userAttendanceLogs" (
   "id" int NOT NULL AUTO_INCREMENT,
   "status" enum('PRESENT','ABSENT') DEFAULT NULL,
   "date" date DEFAULT NULL,
