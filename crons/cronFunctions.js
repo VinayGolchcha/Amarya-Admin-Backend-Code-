@@ -108,8 +108,7 @@ export const calculatePerformanceForEachEmployee = async () => {
           let monthly_performance = earned_points / category_points_can_be_earned_per_month
           monthly_performance = Math.round(monthly_performance)
           // Add Performance to user table
-         await updateUserPerformanceQuery([monthly_performance, emp_id])
-         await updateUserPointsQuery(previous_month_name, earned_points, emp_id)
+          const [userTable, performanceTable] = await Promise.all([updateUserPerformanceQuery([monthly_performance, emp_id]), updateUserPointsQuery(previous_month_name, earned_points, emp_id)])
       }
 
       return `Performance Updated successfully.`;

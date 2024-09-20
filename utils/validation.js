@@ -188,6 +188,7 @@ export const createWorksheetVal = [
     body('category_id').notEmpty().withMessage('Category id cannot be empty.').isInt().withMessage('Invalid category id input.'),
     body('skill_set_id').isString().withMessage('Invalid skill set input.').notEmpty().withMessage('skill set cannot be empty.'),
     body('description').isString().withMessage('Invalid description input.').notEmpty().withMessage('description cannot be empty.'),
+    body('hours').isInt().withMessage('Invalid hours input.').notEmpty().withMessage('hours cannot be empty.')
 ]
 
 export const updateWorksheetVal = [

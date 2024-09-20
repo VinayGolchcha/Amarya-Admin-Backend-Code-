@@ -11,6 +11,16 @@ export const getUserDataByUsernameQuery = (array)=> {
     }
 }
 
+export const getAllUserData = ()=> {
+    try {
+        let query = `SELECT * FROM users`
+        return pool.query(query);
+    } catch (error) {
+        console.error("Error executing getAllUserData:", error);
+        throw error;
+    }
+}
+
 export const userRegistrationQuery = (array)=> {
     try {
         let query = `INSERT INTO users (

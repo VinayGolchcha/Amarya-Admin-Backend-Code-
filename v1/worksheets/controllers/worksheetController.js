@@ -13,20 +13,22 @@ export const createUserWorksheet = async (req, res, next) => {
         if (!errors.isEmpty()) {
             return errorResponse(res, errors.array(), "")
         }
-        const { emp_id, team_id, project_id, category_id, skill_set_id, description, date } = req.body;  // date format should be YYYY-MM-DD
+        const { emp_id, team_id, project_id, category_id, hours, skill_set_id, description, date } = req.body;  // date format should be YYYY-MM-DD
 
         const current_date = new Date();
         const seven_days_ago = new Date(); // Initialize a new date object
         seven_days_ago.setDate(current_date.getDate() - 7);
         const check_date = new Date(date);
         if(check_date.toISOString().split('T')[0] < seven_days_ago.toISOString().split('T')[0] ){
-            return notFoundResponse(res, '', "Date should be greater than or equal to last seven days");
+            return errorResponse(res, '', "Date should be greater than or equal to last seven days");
         }
-
+        if(hours > 10){
+            return errorResponse(res, '', "Hour input cannot be greater than 10");
+        }
         if(description.length >200){
-            return notFoundResponse(res, '', "Description must be written in less than 200 characters");
+            return errorResponse(res, '', "Description must be written in less than 200 characters");
         }
-        const [data] = await insertUserWorksheetQuery([emp_id, team_id,project_id, category_id, skill_set_id, description, date]);
+        const [data] = await insertUserWorksheetQuery([emp_id, team_id,project_id, category_id, skill_set_id, description, date, hours]);
         return successResponse(res,{_id: data.insertId}, 'Worksheet filled successfully.');
     } catch (error) {
         return internalServerErrorResponse(res, error);

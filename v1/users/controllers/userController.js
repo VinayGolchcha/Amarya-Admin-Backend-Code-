@@ -16,6 +16,7 @@ dotenv.config();
 import {userRegistrationQuery, getUserDataByUsernameQuery, userDetailQuery, updateTokenQuery, updateUserProfileQuery,
         getLastEmployeeIdQuery, updateUserPasswordQuery, getAllLeaveCounts, insertUserLeaveCountQuery, checkUserNameAvailabilityQuery, insertOtpQuery, getOtpQuery,getUserDataByUserIdQuery
         ,checkUserDataByUserIdQuery, updateUserProfilePictureQuery, fetchAllEmployeeIdsQuery} from "../models/userQuery.js";
+import { insertPerformanceQuery } from "../../worksheets/models/performanceQuery.js";
 
 export const userRegistration = async (req, res, next) => {
     try {
@@ -108,7 +109,7 @@ export const userRegistration = async (req, res, next) => {
         await create(user_message_data)
         await insertTeamToUser([emp_id, team_id]);
     
-        let [leaveTypeAndCount] = await getAllLeaveCounts();
+        let [leaveTypeAndCount, performanceData] = await Promise.all([getAllLeaveCounts(), insertPerformanceQuery([emp_id])]);
         for(let i = 0; i < leaveTypeAndCount.length; i++) {
             let leaveType = leaveTypeAndCount[i].leave_type;
             let leaveCount = leaveTypeAndCount[i].leave_count;

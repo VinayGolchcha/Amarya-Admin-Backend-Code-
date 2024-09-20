@@ -6,6 +6,7 @@ CREATE TABLE IF NOT EXISTS worksheets (
     project_id INT NOT NULL,
     category_id INT NOT NULL,
     date date NOT NULL,
+    hours INT DEFAULT 0,
     description varchar(255) NOT NULL,
     skill_set_id varchar(255),
     created_at datetime DEFAULT CURRENT_TIMESTAMP,

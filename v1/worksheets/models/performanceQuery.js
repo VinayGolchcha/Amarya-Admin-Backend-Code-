@@ -99,3 +99,15 @@ export const insertYearlyDataOfUsersPerformanceQuery = (year) =>{
         throw error;
     }
 }
+
+export const insertPerformanceQuery = (array)=> {
+    try {
+        let query = `INSERT INTO userPerformance (
+            emp_id
+        ) VALUES (?)`
+        return pool.query(query, array);
+    } catch (error) {
+        console.error("Error executing insertPerfromacne:", error);
+        throw error;
+    }
+}

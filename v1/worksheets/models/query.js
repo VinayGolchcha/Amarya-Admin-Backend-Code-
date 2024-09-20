@@ -1,7 +1,7 @@
 import pool from "../../../config/db.js"
 export const insertUserWorksheetQuery = async (array) => {
     try {
-        let query = `INSERT INTO worksheets (emp_id, team_id, project_id, category_id, skill_set_id, description, date) VALUES (?, ?, ?, ?, ?, ?, ?)`;
+        let query = `INSERT INTO worksheets (emp_id, team_id, project_id, category_id, skill_set_id, description, date, hours) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
         return pool.query(query, array);
     } catch (error) {
         console.error("Error executing insertUserWorksheetQuery:", error);
