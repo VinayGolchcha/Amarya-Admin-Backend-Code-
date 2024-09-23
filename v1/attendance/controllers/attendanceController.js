@@ -1,7 +1,7 @@
 import moment from "moment";
 import { checkRtspStatus } from "../../../utils/cameraUtils.js";
 import { cameraDownResponse, cameraUpResponse, internalServerErrorResponse, internalServerErrorResponseForCamera, successResponse } from "../../../utils/response.js";
-import { getUserAttendanceSummaryQuery, getUserByClassNameQuery, insertUnknownUserAttendanceQuery, insertUserAttendanceLogsQuery } from "../models/query.js";
+import { getUserAttendanceSummaryQuery, getUserByClassNameQuery, getWeeklyPresentCountQuery, insertUnknownUserAttendanceQuery, insertUserAttendanceLogsQuery } from "../models/query.js";
 
 export const saveAttendanceLogs = async (uniqueMockData) => {
   try {
@@ -89,3 +89,16 @@ export const getUserAttendanceSummary = async (req, res, next) => {
     return internalServerErrorResponse(res, error);
   }
 };
+
+export const getWeeklyPresentCount = async (req, res, next) => {
+  try {
+    const [empWeeklyData] = await getWeeklyPresentCountQuery()
+    if (empWeeklyData.length == 0) {
+      return notFoundResponse(res, "", "Data not found");
+    }
+    return successResponse(res, empWeeklyData, 'Employee weekly present count fetched successfully');
+
+  } catch (error) {
+    return internalServerErrorResponse(res, error);
+  }
+}

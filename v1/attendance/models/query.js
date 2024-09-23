@@ -146,3 +146,27 @@ export const getUserAttendanceSummaryQuery = async (array) => {
         throw error;
     }
 }
+export const getWeeklyPresentCountQuery = async () => {
+    try {
+        let query = `
+        SELECT 
+            DATE_FORMAT(date, '%Y-%m-%d') AS attendance_date,
+            DAYNAME(date) AS day_name,
+            COUNT(*) AS present_count
+        FROM 
+            userAttendance
+        WHERE 
+            YEARWEEK(date, 1) = YEARWEEK(CURDATE(), 1) 
+            AND status = 'PRESENT'
+            AND DAYOFWEEK(date) BETWEEN 2 AND 6
+        GROUP BY 
+            attendance_date, day_name
+        ORDER BY 
+            attendance_date;
+        `;
+        return pool.query(query);
+    } catch (error) {
+        console.error("Error executing getWeeklyPresentCountQuery:", error);
+        throw error;
+    }
+}
