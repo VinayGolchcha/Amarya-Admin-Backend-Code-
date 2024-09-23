@@ -12,8 +12,8 @@ import { generateUserWorksheetExcel } from '../../../crons/cronFunctions.js';
 
 
 app.post('/create-worksheet', authenticateUserSession, createWorksheetVal, createUserWorksheet);
-app.put('/update-worksheet/:id/:emp_id', authenticateAdminSession, updateWorksheetVal, updateUserWorksheet);
-app.delete('/delete-worksheet/:id/:emp_id',deleteUserWorksheetVal, deleteUserWorksheet);
+app.put('/update-worksheet/:id/:emp_id', authenticateUserAdminSession, updateWorksheetVal, updateUserWorksheet);
+app.delete('/delete-worksheet/:id/:emp_id',authenticateAdminSession, deleteUserWorksheetVal, deleteUserWorksheet);
 app.get("/fetch-user-worksheet/:emp_id", authenticateUserAdminSession, fetchUserWorksheetVal, fetchUserWorksheet);
 app.get("/admin/calculate-team-performance", authenticateAdminSession, calculatePerformanceForTeam);
 app.post("/upload-worksheet",generateUserWorksheetExcel)
