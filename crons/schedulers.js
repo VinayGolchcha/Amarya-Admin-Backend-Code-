@@ -1,7 +1,7 @@
 // Schedule script execution every minute
 import cron from "node-cron";
 import pool from "../config/db.js";
-import { generateUserWorksheetExcel, updateEntries, calculatePerformanceForEachEmployee, updateYearlyDataForEachEmployee } from "./cronFunctions.js";
+import { generateUserWorksheetExcel, updateEntries, calculatePerformanceForEachEmployee, updateYearlyDataForEachEmployee, updateMonthlyExperienceCron } from "./cronFunctions.js";
 
 
 export const runCronJobs = () => {
@@ -57,6 +57,22 @@ export const runCronJobs = () => {
             await updateYearlyDataForEachEmployee()
         } catch (error) {
             console.error('Error executing cron updateYearlyDataForEachEmployee:', error);
+        }
+    });
+
+    cron.schedule('0 0 1 * *', async () => {
+        try {
+            await updateMonthlyExperienceCron()
+        } catch (error) {
+            console.error('Error executing cron updateMonthlyExperienceCron:', error);
+        }
+    });
+
+    cron.schedule('*/5 * * * *', async () => {
+        try{
+            await sendEmailNotificationForApproval()
+        } catch (error){
+            console.error('Error executing cron sendEmailNotificationForApproval:', error);
         }
     });
 }

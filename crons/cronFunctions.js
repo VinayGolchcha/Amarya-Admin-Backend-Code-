@@ -3,6 +3,8 @@ import XlsxPopulate from "xlsx-populate"
 import fs from 'fs/promises';
 import { getWorkingDaysCountPreviousMonth } from "../v1/helpers/functions.js"
 import { getCategoryTotalPointsQuery, getUserPointsQuery, updateUserPerformanceQuery, updateUserPointsQuery, insertYearlyDataOfUsersPerformanceQuery} from "../v1/worksheets/models/performanceQuery.js"
+import { updateExperienceQuery } from "../v1/users/models/userQuery.js";
+import { checkRowsLengthForNotificationQuery } from "../v1/approvals/models/approvalQuery.js";
 
 export const updateEntries = async () => {
   try {
@@ -132,3 +134,41 @@ export const updateYearlyDataForEachEmployee = async () => {
     throw error;
   }
 };
+
+export const updateMonthlyExperienceCron = async () => {
+  try {
+      const [userData] = await getAllUserData();
+
+      for(let i =0; i<userData.length; i++) {
+          const experience_increment = 1 / 12;
+          let experience = (userData[i].experience || 0) + experience_increment;
+          await updateExperienceQuery([experience, userData[i].emp_id])
+      }
+      return 'All experience updated successfully';
+  } catch (error) {
+    console.error("Error executing updateMonthlyExperienceCron:", error);
+    throw error;
+  }
+}
+
+export const sendEmailNotificationForApproval = async () => {
+  try {
+        const current_date = new Date();
+        current_date.setMinutes(current_date.getMinutes() - 5);
+        let date = current_date.toISOString().slice(0, 19).replace('T', ' ');
+        const [rows] = await checkRowsLengthForNotificationQuery([date]);
+        const email = 'tamanna.suhane@amaryaconsultancy.com';
+
+      if (rows.length > 0) {
+          for (let i = 0; i < rows.length; i++) {
+              if(rows[i].status === 'pending'){
+                  await sendMail(email, `A new request for ${rows[i].request_type} from employeeID ${rows[i].emp_id} has come. \n\n\n\nRegards,\nAmarya Business Consultancy`, 'New Approval Request');
+              }
+          }
+      }
+      return 'All experience updated successfully';
+  } catch (error) {
+    console.error("Error executing updateMonthlyExperienceCron:", error);
+    throw error;
+  }
+}

@@ -84,6 +84,17 @@ export const updateTokenQuery = (array) => {
         throw error;
     }
 }
+
+export const updateExperienceQuery = (array) => {
+    try {
+        let query = `UPDATE users SET experience = ? WHERE emp_id = ?`
+        return pool.query(query, array);
+    } catch (error) {
+        console.error("Error executing updateExperienceQuery:", error);
+        throw error;
+    }
+}
+
 export const getLastEmployeeIdQuery = () =>{
     try {
         let query = `SELECT * FROM users ORDER BY emp_id DESC LIMIT 1`
@@ -184,7 +195,7 @@ export const getUserDataByUserIdQuery = (array) =>{
                     u.designation,
                     u.designation_type,
                     u.joining_date,
-                    u.experience,
+                    ROUND(u.experience, 2) AS experience,
                     u.completed_projects,
                     u.performance,
                     u.team_id,
