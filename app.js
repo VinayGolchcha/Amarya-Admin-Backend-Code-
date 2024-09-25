@@ -64,6 +64,7 @@ io.on('connection', (socket) => {
     console.log('Received detections:', data.detections[0].class_name);
     console.log('Received detections:', data.detections[0].confidence);
     console.log('Received detections:', data.detections[0].bounding_box);
+    console.log('Received time:', new Date().toLocaleTimeString());
     console.log('Received URL:', data.rtsp_url);
     console.log('stream_id:', data.stream_id); 
 
@@ -82,6 +83,11 @@ io.on('connection', (socket) => {
 
   socket.on('disconnect', () => {
     console.log('Client disconnected');
+  });
+
+  socket.on('forceDisconnect', () => {
+    console.log('Forcefully disconnecting the client...');
+    socket.disconnect();
   });
 
   socket.on('error', (err) => {

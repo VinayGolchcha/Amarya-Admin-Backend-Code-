@@ -4,6 +4,7 @@ import base64
 import time
 import socketio
 import os
+import datetime
 from threading import Thread
 from dotenv import load_dotenv
 load_dotenv()
@@ -17,18 +18,22 @@ else:
     server_url = os.getenv('LOCAL_SERVER_URL')
 
 # Set up a client to connect to the Node.js WebSocket server
-sio = socketio.Client()
+sio = socketio.Client(reconnection=True)
 
 def connect_to_server():
+    retry_interval = 5  # Start with 5 seconds
+    max_interval = 60  # Cap the interval at 60 seconds
+    
     while True:
         try:
-            print("Connecting to Node.js server using:", server_url)
+            print(f"Connecting to Node.js server using: {server_url}")
             sio.connect(server_url)
             print("Connected to Node.js server")
-            break  # If connected successfully, exit the loop
+            break  # Exit the loop on successful connection
         except Exception as e:
             print(f"Error connecting to Node.js server: {e}")
-            time.sleep(5)
+            time.sleep(retry_interval)
+            retry_interval = min(max_interval, retry_interval * 2) 
 
 @sio.event
 def connect():
@@ -37,12 +42,15 @@ def connect():
 @sio.event
 def disconnect():
     print("Disconnected from Node.js server")
-    # Try to reconnect
-    connect_to_server()
+
+@sio.event
+def reconnect_attempt(attempt_number):
+    print(f"Attempting to reconnect... Attempt number: {attempt_number}")
 
 # List of RTSP streams
 rtsp_streams = [
-    "rtsp://amarya.ddns.net:5543/c09aa8be6a70054108fb66336c2b82c9/live/channel0"
+    # "rtsp://192.168.1.28:5543/c09aa8be6a70054108fb66336c2b82c9/live/channel0",
+    0
 ]
 
 # Load the YOLO model
@@ -56,7 +64,7 @@ classNames = [
 def object_detection(img):
     detections = []
     results = model(img, stream=True)
-
+    current_time = datetime.datetime.utcnow().isoformat() + "Z"
     for r in results:
         boxes = r.boxes
         for box in boxes:
@@ -75,7 +83,8 @@ def object_detection(img):
                 "class_name": class_name,
                 "confidence": confidence,
                 "bounding_box": {"x1": x1, "y1": y1, "x2": x2, "y2": y2},
-                "image": frame_data
+                "image": frame_data,
+                "detection_time": current_time
             })
 
             # Draw label
