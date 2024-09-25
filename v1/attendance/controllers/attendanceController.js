@@ -1,7 +1,7 @@
 import moment from "moment";
 import { checkRtspStatus } from "../../../utils/cameraUtils.js";
 import { cameraDownResponse, cameraUpResponse, internalServerErrorResponse, internalServerErrorResponseForCamera, successResponse } from "../../../utils/response.js";
-import { getUserAttendanceSummaryQuery, getUserByClassNameQuery, getWeeklyPresentCountQuery, insertUnknownUserAttendanceQuery, insertUserAttendanceLogsQuery } from "../models/query.js";
+import { fetchUnidentifiedPeopleListQuery, fetchUserPresentAttendanceQuery, getUserAttendanceSummaryQuery, getUserByClassNameQuery, getWeeklyPresentCountQuery, insertUnknownUserAttendanceQuery, insertUserAttendanceLogsQuery } from "../models/query.js";
 
 export const saveAttendanceLogs = async (uniqueMockData) => {
   try {
@@ -90,7 +90,7 @@ export const getUserAttendanceSummary = async (req, res, next) => {
   }
 };
 
-export const getWeeklyPresentCount = async (req, res, next) => {
+export const fetchWeeklyPresentCount = async (req, res, next) => {
   try {
     const [empWeeklyData] = await getWeeklyPresentCountQuery()
     if (empWeeklyData.length == 0) {
@@ -98,6 +98,46 @@ export const getWeeklyPresentCount = async (req, res, next) => {
     }
     return successResponse(res, empWeeklyData, 'Employee weekly present count fetched successfully');
 
+  } catch (error) {
+    return internalServerErrorResponse(res, error);
+  }
+}
+
+export const fetchUserPresentAttendance = async (req, res, next) => {
+  try {
+    const page = req.query.page ? parseInt(req.query.page) : 1;
+    if (isNaN(page) || page <= 0) {
+      return res.status(400).json({ error: 'Invalid page number.' });
+    }
+
+    const skip = (page - 1) * 10;  
+    const [data]  = await fetchUserPresentAttendanceQuery(skip);
+
+    if (data.length === 0) {
+      return notFoundResponse(res, "", "Data not found");
+    }
+
+    return successResponse(res, data, 'Attendance fetched successfully');
+  } catch (error) {
+    return internalServerErrorResponse(res, error);
+  }
+};
+
+export const fetchUnidentifiedPeopleList = async (req, res, next) => {
+  try {
+    const page = req.query.page ? parseInt(req.query.page) : 1;
+    if (isNaN(page) || page <= 0) {
+      return res.status(400).json({ error: 'Invalid page number.' });
+    }
+
+    const skip = (page - 1) * 10;  
+    const [data]  = await fetchUnidentifiedPeopleListQuery(skip);
+
+    if (data.length === 0) {
+      return notFoundResponse(res, "", "Data not found");
+    }
+
+    return successResponse(res, data, 'Unknown detections fetched successfully');
   } catch (error) {
     return internalServerErrorResponse(res, error);
   }

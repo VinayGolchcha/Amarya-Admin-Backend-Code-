@@ -156,7 +156,8 @@ export const getWeeklyPresentCountQuery = async () => {
         FROM 
             userAttendance
         WHERE 
-            YEARWEEK(date, 1) = YEARWEEK(CURDATE(), 1) 
+            YEARWEEK(date, 1) BETWEEN YEARWEEK(CURDATE() - INTERVAL 1 WEEK, 1) 
+                                AND YEARWEEK(CURDATE(), 1)
             AND status = 'PRESENT'
             AND DAYOFWEEK(date) BETWEEN 2 AND 6
         GROUP BY 
@@ -167,6 +168,48 @@ export const getWeeklyPresentCountQuery = async () => {
         return pool.query(query);
     } catch (error) {
         console.error("Error executing getWeeklyPresentCountQuery:", error);
+        throw error;
+    }
+}
+
+export const fetchUserPresentAttendanceQuery = async (skip) => {
+    try {
+        let query = `
+        SELECT
+            UA.id AS id,
+            U.emp_id AS emp_id,
+            U.username AS username,
+            UA.status AS status,
+            UA.in_time AS in_time,
+            UA.out_time AS out_time,
+            UA.in_snapshot AS in_snapshot,
+            UA.out_snapshot AS out_snapshot
+        FROM
+            userAttendance as UA
+        JOIN users AS U ON UA.user_id = U._id
+        WHERE
+            date = DATE_FORMAT(CURDATE() - INTERVAL 1 DAY, '%Y-%m-%d')
+        ORDER BY date DESC
+        LIMIT 10 OFFSET ${skip}
+        `;
+        return pool.query(query);
+    } catch (error) {
+        console.error("Error executing fetchUserPresentAttendanceQuery:", error);
+        throw error;
+    }
+}
+export const fetchUnidentifiedPeopleListQuery = async (skip) => {
+    try {
+        let query = `
+        SELECT 
+            * 
+        FROM unknownUserAttendance
+        ORDER BY date DESC
+        LIMIT 10 OFFSET ${skip}
+        `;
+        return pool.query(query);
+    } catch (error) {
+        console.error("Error executing fetchUnidentifiedPeopleListQuery:", error);
         throw error;
     }
 }
