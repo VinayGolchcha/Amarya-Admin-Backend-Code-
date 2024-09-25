@@ -51,7 +51,7 @@ const corsOptions = {
 const server = createServer(app);
 const io = new Server(server);
 const condaPath = path.join(os.homedir(), os.platform() === 'win32' ? 'Miniconda3' : 'miniconda3', 'condabin', os.platform() === 'win32' ? 'conda.bat' : 'conda');
-const pythonProcess = spawn(condaPath, ['run', '-n', 'conda_env', 'python', 'script.py']);
+ const pythonProcess = spawn(condaPath, ['run', '-n', 'conda_env', 'python', 'script.py']);
 // const pythonProcess = spawn(condaPath, ['run', '-n', 'conda_env', 'python', 'script.py'], {
 //   shell: os.platform() === 'win32', // Use shell for Windows
 //   cwd: process.cwd(), // Ensure the working directory is set correctly

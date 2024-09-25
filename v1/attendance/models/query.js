@@ -3,8 +3,8 @@ import pool from "../../../config/db.js"
 export const insertUserAttendanceLogsQuery = async (array) => {
     try {
         let query = `
-        INSERT INTO userAttendanceLogs (status, date, snapshot, user_id, is_indentify) 
-        VALUES (?, ?, ?, ?, ?)
+        INSERT INTO userAttendanceLogs (status, date, snapshot, user_id) 
+        VALUES (?, ?, ?, ?)
         `;
         return pool.query(query, array);
     } catch (error) {
@@ -27,25 +27,23 @@ export const insertUserAttendanceQuery = async (array) => {
 }
 
 
-export const checkUserAttendanceQuery = (array) => {
+export const getUserAttendanceByUserIdAndDateQuery = (array) => {
     try {
         let query = `SELECT * FROM userAttendance WHERE date = ? AND user_id = ?`;
         return pool.query(query, array);
     } catch (error) {
-        console.error("Error executing checkUserAttendanceQuery:", error);
+        console.error("Error executing getUserAttendanceByUserIdAndDateQuery:", error);
         throw error;
     }
 }
 
-export const getUserByClassNameQuery = (array) => {
+export const getUserByUserNameQuery = (array) => {
     try {
         let query = `select * From users where username = ?`;
         return pool.query(query, array);
     } catch (error) {
-        console.error("Error executing getUserByClassNameQuery", error);
+        console.error("Error executing getUserByUserNameQuery", error);
     }
-
-
 }
 
 export const updateOutTime = async (array) => {
@@ -56,7 +54,7 @@ export const updateOutTime = async (array) => {
             `;
         return pool.query(query, array);
     } catch (error) {
-        console.error("Error executing insertUserAttendanceQuery:", error);
+        console.error("Error executing updateOutTime:", error);
         throw error;
     }
 }
@@ -85,7 +83,7 @@ export const checkUserTimeFromLogs = (array) => {
                     GROUP BY ua.user_id, DATE(ua.created_at), ua.date`;
         return pool.query(query, array);
     } catch (error) {
-        console.error("Error executing checkUserAttendanceLogsQuery:", error);
+        console.error("Error executing checkUserTimeFromLogs:", error);
         throw error;
     }
 }
@@ -131,7 +129,7 @@ export const deletingAttendanceLogEveryHourQuery = async (array) => {
         `;
         return pool.query(query, array);
     } catch (error) {
-        console.error("Error executing insertUnknownUserAttendanceQuery:", error);
+        console.error("Error executing deletingAttendanceLogEveryHourQuery:", error);
         throw error;
     }
 }
@@ -144,5 +142,67 @@ export const getUserAttendanceSummaryQuery = async (array) => {
     } catch (error) {
         console.error("Error executing getUserAttendanceSummaryQuery:", error);
         throw error;
+    }
+}
+
+export const getUnknownUserAttendanceQuery = async (array) => {
+    try {
+        let query = `
+        select * from unknownUserAttendance uua where uua.id = ? and uua.date = ? `;
+        return pool.query(query, array);
+    } catch (error) {
+        console.error("Error executing getUnknownUserAttendanceQuery:", error);
+        throw error;
+    }
+}
+
+export const updateInTimeUserAttenQuery = async (array) => {
+    try {
+        let query = `
+        UPDATE userAttendance SET in_time = ? WHERE user_id = ? and date = ?`;
+        return pool.query(query, array);
+    } catch (error) {
+        console.error("Error executing updateInTimeUserAttenQuery:", error);
+        throw error;
+    }
+}
+
+export const updateUserAttendanceQuery = async (array) => {
+    try {
+        let query = `
+        INSERT INTO userAttendance (status, date, in_time, in_snapshot, user_id) 
+        VALUES (?, ?, ?, ?, ?)
+        `;
+        return pool.query(query, array);
+    } catch (error) {
+        console.error("Error executing updateUserAttendanceQuery:", error);
+        throw error;
+    }
+}
+
+export const getUserByEmpIdQuery = (array) => {
+    try {
+        let query = `select * From users where emp_id = ?`;
+        return pool.query(query, array);
+    } catch (error) {
+        console.error("Error executing getUserByEmpIdQuery", error);
+    }
+}
+
+export const getUserAttendanceLogByUserIdAndDateForInTimeQuery = (array) => {
+    try {
+        let query = `select * From userAttendanceLogs ual where user_id = ? and date = ? order by id asc limit 2`;
+        return pool.query(query, array);
+    } catch (error) {
+        console.error("Error executing getUserAttendanceLogByUserIdAndDateForInTimeQuery", error);
+    }
+}
+
+export const updateUnknownAttendance = (array) => {
+    try {
+        let query = `UPDATE amaryadashboard.unknownUserAttendance SET  emp_id = ? WHERE id = ?`;
+        return pool.query(query, array);
+    } catch (error) {
+        console.error("Error executing updateUnknownAttendance", error);
     }
 }
