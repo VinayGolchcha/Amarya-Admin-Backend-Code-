@@ -15,3 +15,17 @@ export const internalServerErrorResponse = (res, errors, message = 'Something we
     errors = String(errors)
     return res.status(statusCode).send({ success: false, message, errors });
 };
+
+export const cameraUpResponse = (res, message = 'Success', statusCode = 200) => {
+    return res.status(statusCode).json({ camera_status: true, message});
+};
+
+export const cameraDownResponse = (res, message = 'Success', statusCode = 200) => {
+    return res.status(statusCode).json({ camera_status: false, message});
+};
+
+
+export const internalServerErrorResponseForCamera = (res, errors, message = 'Something went wrong, Please try again', statusCode = 500) => {
+    errors = String(errors)
+    return res.status(statusCode).send({ camera_status: false, message, errors });
+};

@@ -1,4 +1,3 @@
-
 import pool, { setupDatabase } from './config/db.js';
 await setupDatabase();
 import express, { json } from 'express';
@@ -32,6 +31,7 @@ import path from 'path';
 import os from 'os';
 import { installConda, setupEnvironment } from './install.js';
 import { saveAttendanceLogs } from './v1/attendance/controllers/attendanceController.js';
+import attendanceRoutes from './v1/attendance/routes/attendanceRoutes.js';
 config()
 await installConda();
 await setupEnvironment();
@@ -52,6 +52,13 @@ const server = createServer(app);
 const io = new Server(server);
 const condaPath = path.join(os.homedir(), os.platform() === 'win32' ? 'Miniconda3' : 'miniconda3', 'condabin', os.platform() === 'win32' ? 'conda.bat' : 'conda');
 const pythonProcess = spawn(condaPath, ['run', '-n', 'conda_env', 'python', 'script.py']);
+// const pythonProcess = spawn(condaPath, ['run', '-n', 'conda_env', 'python', 'script.py'], {
+//   shell: os.platform() === 'win32', // Use shell for Windows
+//   cwd: process.cwd(), // Ensure the working directory is set correctly
+//   stdio: ['pipe', 'pipe', 'pipe'], // Ensure to capture stdout and stderr
+// });
+
+
 io.on('connection', (socket) => {
   console.log('Client connected');
 
@@ -68,21 +75,21 @@ io.on('connection', (socket) => {
   pythonProcess.on('close', (code) => {
     console.log(`Python script exited with code ${code}`);
     if (code !== 0) {
-        console.error('Python script crashed. Restarting...');
-        pythonProcess = spawn(condaPath, ['run', '-n', 'conda_env', 'python', 'script.py']);
+      console.error('Python script crashed. Restarting...');
+      pythonProcess = spawn(condaPath, ['run', '-n', 'conda_env', 'python', 'script.py']);
     }
   });
 
-  socket.on('detections', async (data) => {
-    console.log('Received detections:', data.detections.class_name);
-    console.log('Received detections:', data.detections.confidence);
-    console.log('Received detections:', data.detections.bounding_box);
-    console.log('Received URL:', data.rtsp_url);
-    console.log('stream_id :', data.stream_id); 
+  pythonProcess.on('error', (err) => {
+    console.error('Failed to start subprocess:', err);
+  });
 
-    // if(data.stream_id !== 0){
-      // await checkCameraStatus();
-    // }
+  socket.on('detections', async (data) => {
+    console.log('Received class_name:', data.detections[0].class_name);
+    console.log('Received confidence:', data.detections[0].confidence);
+    console.log('Received bounding_box:', data.detections[0].bounding_box);
+    console.log('Received URL:', data.rtsp_url);
+    console.log('stream_id :', data.stream_id);
 
     // filtering unique data
     let filterDuplicateDate = Object.values(
@@ -93,14 +100,16 @@ io.on('connection', (socket) => {
     );
 
     // save attedance and update out time
-    await saveAttendanceLogs(filterDuplicateDate);
+    if (data.detections[0].confidence > 0.50) {
+      await saveAttendanceLogs(filterDuplicateDate);
+    }
 
   });
 
   socket.on('disconnect', () => {
     console.log('Client disconnected');
     if (pythonProcess && !pythonProcess.killed) {
-        pythonProcess.kill('SIGINT');
+      pythonProcess.kill('SIGINT');
     }
   });
 });
@@ -130,6 +139,7 @@ app.use("/api/v1/activity", activityRoutes);
 app.use("/api/v1/dashboard", dashboardRoutes);
 app.use("/api/v1/policy", policiesRoutes);
 app.use("/api/v1/userDashboard", userDashboardRoutes);
+app.use("/api/v1/attendance", attendanceRoutes);
 app.use('/', (req, res) => {
   res.send({
     statusCode: 403,

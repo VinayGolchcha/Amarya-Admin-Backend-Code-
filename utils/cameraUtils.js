@@ -1,26 +1,37 @@
-import ffmpeg from 'fluent-ffmpeg'; 
-import ffmpegPath from 'ffmpeg-static'; 
+import ffmpeg from 'fluent-ffmpeg';
 
-// Set ffmpeg path
-ffmpeg.setFfmpegPath(ffmpegPath);
+export const checkRtspStatus = async (rtspUrl) => {
+    return new Promise((resolve, reject) => {
+        const command = ffmpeg(rtspUrl)
+            .on('start', (commandLine) => {
+                console.log(`FFmpeg process started: ${commandLine}`);
+            })
+            .on('stderr', (stderrLine) => {
+                console.log('FFmpeg log:', stderrLine);
+            })
+            .on('error', (err) => {
+                console.log(`RTSP stream is down or unreachable: ${err.message}`);
+                reject(new Error('Stream is down or unreachable.'));
+            })
+            .on('end', () => {
+                console.log('RTSP stream is accessible and running.');
+                resolve('Stream is accessible and running.');
+            });
 
-// Function to check camera status
-export const checkCameraStatus = () => {
-  return new Promise((resolve, reject) => {
-    ffmpeg("rtsp://192.168.1.28:5543/c09aa8be6a70054108fb66336c2b82c9/live/channel0")
-      .on('start', () => {
-        console.log('Attempting to connect to the camera...');
-      })
-      .on('error', (err) => {
-        console.log('Camera is offline or unreachable.');
-        resolve(false); // Camera is offline
-      })
-      .on('end', () => {
-        console.log('Camera is online and accessible.');
-        resolve(true); // Camera is online
-      })
-      .addOutputOptions('-t 1') // Add a short timeout to avoid hanging
-      .output('/dev/null') // Use a dummy output
-      .run();
-  });
+        command
+            .inputOptions('-analyzeduration', '100000')
+            .inputOptions('-probesize', '50000')
+            .outputOptions('-vframes 1')
+            .outputOptions('-f null')
+            .output('NUL')
+            .run();
+
+        const timeout = setTimeout(() => {
+            console.log('FFmpeg process timed out.');
+            command.kill('SIGKILL');
+            reject(new Error('FFmpeg process timed out.'));
+        }, 10000);
+
+        command.on('end', () => clearTimeout(timeout));
+    });
 };

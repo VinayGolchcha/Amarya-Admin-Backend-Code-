@@ -1,7 +1,10 @@
-// import express, { Router } from 'express';
-// import { checkAndUpdateCameraStatus } from '../controllers/attendanceController.js';
-// import { authenticateAdminSession } from '../../../middlewares/adminAuth.js';
-// const app = express()
-// const router = Router();
+import express, { Router } from 'express';
+import { getCameraStatus, getUserAttendanceSummary } from '../controllers/attendanceController.js';
+const app = express()
+const router = Router();
 
-// app.get('/attendance/checkCameraStatus',authenticateAdminSession, checkAndUpdateCameraStatus);
+app.get('/checkCameraStatus', getCameraStatus);
+app.get('/getAttendanceSummary', getUserAttendanceSummary);
+
+app.use("/", router);
+export default app;

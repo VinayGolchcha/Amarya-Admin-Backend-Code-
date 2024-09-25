@@ -1,5 +1,7 @@
-import { inAllowedTime, outAllowedTime } from "../../../utils/commonUtils.js";
-import { checkUserAttendanceLogsQuery, checkUserAttendanceQuery, checkUserTimeFromLogs, getUserByClassNameQuery, insertUserAttendanceLogsQuery, insertUserAttendanceQuery, updateOutTime } from "../models/query.js";
+import moment from "moment";
+import { checkRtspStatus } from "../../../utils/cameraUtils.js";
+import { cameraDownResponse, cameraUpResponse, internalServerErrorResponse, internalServerErrorResponseForCamera, successResponse } from "../../../utils/response.js";
+import { getUserAttendanceSummaryQuery, getUserByClassNameQuery, insertUnknownUserAttendanceQuery, insertUserAttendanceLogsQuery } from "../models/query.js";
 
 export const saveAttendanceLogs = async (uniqueMockData) => {
   try {
@@ -15,13 +17,17 @@ export const saveAttendanceLogs = async (uniqueMockData) => {
         console.log("Attendance marked successfully for user: ", getUsers[0].username);
       }
       else {
-        is_indentify = false;
-        await insertUserAttendanceLogsQuery(['PRESENT', new Date(), detection.image, null, is_indentify]);
+
+        await insertUnknownUserAttendanceQuery(
+          [
+            "PRESENT",
+            new Date(),
+            detection.image
+          ]
+        );
         console.log("Attendance marked successfully for unidentified user");
+
       }
-
-
-
       return "saving attedance";
 
     });
@@ -34,22 +40,52 @@ export const saveAttendanceLogs = async (uniqueMockData) => {
   }
 };
 
-// export const checkAndUpdateCameraStatus = async (req, res, next) => {
-//   try {
-//     const errors = validationResult(req);
+export const getCameraStatus = async (req, res, next) => {
+  try {
 
-//     if (!errors.isEmpty()) {
-//       return errorResponse(res, errors.array(), "")
-//     }
+    const url = req.query.rtspUrl;
 
-//     const [data] = await fetchFeebackQuery();
+    if (!url) {
+      return res.status(400).json({ error: 'RTSP URL is required.' });
+    }
 
-//     if (data.length == 0) {
-//       return notFoundResponse(res, '', 'Data not found.');
-//     }
+    const status = await checkRtspStatus(url);
 
-//     return successResponse(res, data, 'Feedback send successfully.');
-//   } catch (error) {
-//     return internalServerErrorResponse(res, error);
-//   }
-// };
+    if (status !== 'Stream is accessible and running.') {
+
+      return cameraDownResponse(res, status);
+    } else {
+      return cameraUpResponse(res, status);
+    }
+
+  } catch (error) {
+    return internalServerErrorResponseForCamera(res, error);
+  }
+};
+
+export const getUserAttendanceSummary = async (req, res, next) => {
+  try {
+
+    const empId = req.query.empId;
+    const startDate = req.query.startDate;
+    const endDate = req.query.endDate;
+
+    if (!startDate || !endDate || !empId) {
+      return res.status(400).json({ error: 'StartDate, EndDate and EmpId is required.' });
+    }
+
+    if (!moment(startDate, 'YYYY-MM-DD', true).isValid() || !moment(endDate, 'YYYY-MM-DD', true).isValid()) {
+      return res.status(400).json({ error: 'Invalid date format. Use YYYY-MM-DD.' });
+    }
+    let [summary] = await getUserAttendanceSummaryQuery([startDate, endDate, empId]);
+
+    if (summary.length == 0) {
+      return notFoundResponse(res, "", "Data not found");
+    }
+
+    return successResponse(res, summary[0], 'User attendance summary fetched successfully');
+
+  } catch (error) {
+    return internalServerErrorResponse(res, error);
+  }
+};
