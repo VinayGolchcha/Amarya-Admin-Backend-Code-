@@ -68,7 +68,7 @@ export const runCronJobs = () => {
         }
     });
 
-    cron.schedule('*/5 * * * *', async () => {
+    cron.schedule('0 * * * *', async () => {
         try{
             await sendEmailNotificationForApproval()
         } catch (error){
