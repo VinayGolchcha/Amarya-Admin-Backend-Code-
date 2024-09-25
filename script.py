@@ -49,7 +49,7 @@ def reconnect_attempt(attempt_number):
 
 # List of RTSP streams
 rtsp_streams = [
-    # "rtsp://192.168.1.28:5543/c09aa8be6a70054108fb66336c2b82c9/live/channel0",
+    "rtsp://amarya.ddns.net:5543/c09aa8be6a70054108fb66336c2b82c9/live/channel0",
     0
 ]
 
