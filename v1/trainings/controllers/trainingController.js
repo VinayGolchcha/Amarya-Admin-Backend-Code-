@@ -7,6 +7,7 @@ import { insertTrainingDataQuery, getLastTrainingIdQuery, addUserTrainingInfoQue
     getUserDataForTrainingQuery, deleteTrainingDataQuery, updateTrainingQuery, checkSameTrainingQuery, checkExistingUserTrainingDataQuery, displayAllUsersTrainingDataQuery } from "../models/trainingQuery.js";
 import {incrementId, createDynamicUpdateQuery} from "../../helpers/functions.js"
 import {insertApprovalForTrainingQuery} from "../../approvals/models/trainingApprovalQuery.js"
+import { generateDownloadLinkMySQL } from "../../helpers/downloadLink.js";
 dotenv.config();
 
 export const addNewTraining = async (req, res, next) => {
@@ -26,21 +27,30 @@ export const addNewTraining = async (req, res, next) => {
             id = training_data[0].training_id
         }
         const training_id = await incrementId(id)
-        const {course_name, course_description, roadmap_url, details} = req.body;
+        let roadmap_url;
+        const file = req.file;
+        const {course_name, course_description, details} = req.body;
+
+        const max_size = 1 * 1024 * 1024; // 1MB in bytes
+        if (file.size > max_size) {
+            return errorResponse(res, `File ${file.originalname} exceeds the limit.`, "");
+        }
 
         const [exist_training] = await checkSameTrainingQuery([course_name])
         if (exist_training.length > 0){
             return notFoundResponse(res, '', 'Sorry, Training with this name already exists.');
         }
      
-        await insertTrainingDataQuery([
+        const download_link = await generateDownloadLinkMySQL(file.buffer, file.originalname);
+        const data = await insertTrainingDataQuery([
             training_id,
             course_name,
             course_description,
-            roadmap_url,
+            roadmap_url=download_link,
             details
         ]);
-        return successResponse(res, '', 'Training successfully added');
+
+        return successResponse(res, data, 'Training successfully added');
     } catch (error) {
         return internalServerErrorResponse(res, error);
     }
@@ -135,15 +145,25 @@ export const updateTrainingData = async(req, res, next) => {
         if (!errors.isEmpty()) {
             return errorResponse(res, errors.array(), "")
         }
-
+ 
         const req_data = req.body;
         const id = req.params.id;
+        const file = req.file;
 
         let table = 'trainings';
 
         const condition = {
             training_id: id
         };
+        const max_size = 1 * 1024 * 1024; // 1MB in bytes
+        if(file){
+            if (file.size > max_size) {
+                return errorResponse(res, `File ${file.originalname} exceeds the limit.`, "");
+            }else{
+                const download_link = await generateDownloadLinkMySQL(file.buffer, file.originalname);
+                req_data.roadmap_url = download_link
+            }
+        }
 
         let query_values = await createDynamicUpdateQuery(table, condition, req_data)
         let [data] = await updateTrainingQuery(query_values.updateQuery, query_values.updateValues)
