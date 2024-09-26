@@ -4,7 +4,7 @@ import base64
 import time
 import socketio
 import os
-import datetime
+from datetime import datetime
 from threading import Thread
 from dotenv import load_dotenv
 load_dotenv()
@@ -63,7 +63,7 @@ classNames = [
 def object_detection(img):
     detections = []
     results = model(img, stream=True)
-    current_time = datetime.datetime.utcnow().isoformat() + "Z"
+    current_time = datetime.now()
     for r in results:
         boxes = r.boxes
         for box in boxes:
@@ -102,6 +102,7 @@ def process_stream(rtsp_url, stream_id):
 
             while True:
                 ret, frame = cap.read()
+                print(datetime.now())
                 if not ret:
                     print(f"Failed to capture frame from stream {stream_id}. Reconnecting...")
                     break  # Break out to restart the stream
