@@ -64,7 +64,7 @@ io.on('connection', (socket) => {
     console.log('Received detections:', data.detections[0].class_name);
     console.log('Received detections:', data.detections[0].confidence);
     console.log('Received detections:', data.detections[0].bounding_box);
-    console.log('Received time:', new Date().toLocaleTimeString());
+    console.log('Received time:', data.detections[0].detection_time);
     console.log('Received URL:', data.rtsp_url);
     console.log('stream_id:', data.stream_id); 
 

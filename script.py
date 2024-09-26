@@ -63,7 +63,7 @@ classNames = [
 def object_detection(img):
     detections = []
     results = model(img, stream=True)
-    current_time = datetime.now()
+    current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     for r in results:
         boxes = r.boxes
         for box in boxes:
