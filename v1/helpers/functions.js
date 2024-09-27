@@ -1,5 +1,5 @@
 import pool from "../../config/db.js"
-
+import moment from "moment";
 
 export const incrementId = async(id)=>{
 
@@ -70,4 +70,28 @@ export const getWorkingDaysCountPreviousMonth = () => {
 export const getTokenSessionById = async(emp_id)=>{
         let query = `SELECT jwt_token FROM users WHERE emp_id = ?`
         return pool.query(query,[emp_id])
+}
+
+export const calculateTotalExperienceInFloat = async (dateOfJoining, previousExperienceFloat) => {
+    const currentDate = moment();
+    const joiningDate = moment(dateOfJoining);
+
+    const currentJobExperience = moment.duration(currentDate.diff(joiningDate));
+    const currentJobYears = currentJobExperience.years();
+    const currentJobMonths = currentJobExperience.months();
+
+    const previousYears = Math.floor(previousExperienceFloat);
+    const previousMonths = Math.round((previousExperienceFloat - previousYears) * 12);
+
+    let totalYears = currentJobYears + previousYears;
+    let totalMonths = currentJobMonths + previousMonths;
+
+    if (totalMonths >= 12) {
+        totalYears += Math.floor(totalMonths / 12);
+        totalMonths = totalMonths % 12;
+    }
+
+    const totalExperienceInFloat = totalYears + (totalMonths / 12);
+
+    return parseFloat(totalExperienceInFloat.toFixed(2));
 }
