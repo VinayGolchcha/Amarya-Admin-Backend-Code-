@@ -9,11 +9,8 @@ export const saveAttendanceLogs = async (uniqueMockData) => {
 
       let [getUsers] = await getUserByClassNameQuery(detection.class_name);
 
-      let is_indentify = null;
-
       if (getUsers.length !== 0) {
-        is_indentify = true;
-        await insertUserAttendanceLogsQuery(['PRESENT', new Date(), detection.image, getUsers[0]._id, is_indentify]);
+        await insertUserAttendanceLogsQuery([ new Date(), detection.image, getUsers[0]._id]);
         console.log("Attendance marked successfully for user: ", getUsers[0].username);
       }
       else {

@@ -3,8 +3,8 @@ import pool from "../../../config/db.js"
 export const insertUserAttendanceLogsQuery = async (array) => {
     try {
         let query = `
-        INSERT INTO userAttendanceLogs (status, date, snapshot, user_id, is_indentify) 
-        VALUES (?, ?, ?, ?, ?)
+        INSERT INTO userAttendanceLogs ( date, snapshot, user_id) 
+        VALUES (?, ?, ?)
         `;
         return pool.query(query, array);
     } catch (error) {
