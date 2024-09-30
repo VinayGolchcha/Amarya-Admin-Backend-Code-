@@ -1,18 +1,18 @@
 // Schedule script execution every minute
 import cron from "node-cron";
 import pool from "../config/db.js";
-import { generateUserWorksheetExcel, updateEntries, calculatePerformanceForEachEmployee, updateYearlyDataForEachEmployee } from "./cronFunctions.js";
+import { generateUserWorksheetExcel, calculatePerformanceForEachEmployee, updateYearlyDataForEachEmployee } from "./cronFunctions.js";
 
 
 export const runCronJobs = () => {
 
-    cron.schedule('* * * * *', async () => {
-        try {
-            await updateEntries();
-        } catch (error) {
-            console.error('Error executing cron updateEntries:', error);
-        }
-    });
+    // cron.schedule('* * * * *', async () => {
+    //     try {
+    //         await updateEntries();
+    //     } catch (error) {
+    //         console.error('Error executing cron updateEntries:', error);
+    //     }
+    // });
 
     cron.schedule('30 23 1 * *', async () => {
         try {
