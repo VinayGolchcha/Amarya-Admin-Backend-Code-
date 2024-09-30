@@ -51,9 +51,22 @@ export const updateUserWorksheet = async (req, res, next) => {
             emp_id: emp_id
         };
         const req_data = req.body;
+        const missingFields = [];
+        if (!req_data.team_id) missingFields.push('req_data.team_id');
+        if (!req_data.category_id) missingFields.push('req_data.category_id');
+        if (!req_data.skill_set_id) missingFields.push('req_data.skill_set_id');
+        if (!req_data.date) missingFields.push('req_data.date');
+    
+        if (missingFields.length > 0) {
+            return errorResponse(res, '', `Missing required fields: ${missingFields.join(', ')}`);
+        }
+       
         let query_values = await createDynamicUpdateQuery(table, condition, req_data)
-        await updateUserWorksheetQuery(query_values.updateQuery, query_values.updateValues);
-        return successResponse(res, 'worksheet updated successfully.');
+        const [data] = await updateUserWorksheetQuery(query_values.updateQuery, query_values.updateValues);
+        if(data.changedRows == 0){
+            return notFoundResponse(res, '', 'Worksheet not found. Params is unclear, pls check again.');
+        }
+        return successResponse(res, data, 'Worksheet updated successfully!');
     } catch (error) {
         return internalServerErrorResponse(res, error);
     }

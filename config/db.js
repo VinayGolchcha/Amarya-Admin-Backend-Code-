@@ -19,7 +19,7 @@ export let rootConnection = mysql
     user: process.env.MYSQL_USER,
     password: process.env.MYSQL_PASSWORD,
     port: process.env.MYSQL_PORT,
-    connectTimeout: 20000,
+    // connectTimeout: 20000,
 })
 .promise();
 
@@ -47,6 +47,9 @@ export const setupDatabase = async() => {
     catch(error){
         console.error('Error connecting to the database:', error);
         throw new Error('Failed to connect to the database');
+    }finally {
+        // Always close the root connection after setup
+        await rootConnection.end();
     }
 }
 

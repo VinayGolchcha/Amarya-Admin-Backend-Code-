@@ -1,0 +1,8 @@
+opencv-python==4.9.0.80
+python-dotenv==1.0.1
+python-ffmpeg==2.0.12
+python-socketio==5.11.4
+torch==2.2.1
+torchvision==0.17.1
+ultralytics==8.2.95
+websocket-client==1.8.0

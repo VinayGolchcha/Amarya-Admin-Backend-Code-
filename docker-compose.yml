@@ -1,0 +1,58 @@
+version: "3"
+services:
+  nodeapp:
+    container_name: nodeappcontainer
+    build:
+      context: .
+      dockerfile: Dockerfile.node  # Specify the Dockerfile for Node.js
+    image: nodeapp:v1
+    restart: always
+    command: ["sh", "-c", "node app.js"]
+    ports: 
+      - "4000:4000"
+    environment:
+      PORT: ${PORT}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      DATABASE: ${DATABASE}
+      MYSQL_HOST: ${MYSQL_HOST}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PORT: ${MYSQL_PORT}
+      JWT_SECRET: ${JWT_SECRET}
+      ENCRYPTION_SECRET: ${ENCRYPTION_SECRET}
+      JWT_EXPIRATION_TIME: ${JWT_EXPIRATION_TIME}
+      CLOUDINARY_CLOUDNAME: ${CLOUDINARY_CLOUDNAME}
+      CLOUDINARY_API_KEY: ${CLOUDINARY_API_KEY}
+      CLOUDINARY_API_SECRET: ${CLOUDINARY_API_SECRET}
+      DB_STRING: ${DB_STRING}
+      PROD_SERVER_URL: ${PROD_SERVER_URL}
+      LOCAL_SERVER_URL: ${LOCAL_SERVER_URL}
+      NODE_ENV: ${NODE_ENV}
+      NODEMAILER_USER: ${NODEMAILER_USER}
+      NODEMAILER_PASS: ${NODEMAILER_PASS}
+      SERVICE_TAGS: ${SERVICE_TAGS}
+      SERVICE_NAME: ${SERVICE_NAME}
+    networks:
+      - internalnet
+
+  pythonapp:
+    container_name: pythonappcontainer
+    build:
+      context: .
+      dockerfile: Dockerfile.python  # Specify the Dockerfile for the Python app
+    image: pythonapp:v1
+    restart: always
+    env_file:
+      - .env
+    command: ["python", "script.py"]  # Replace 'your_script.py' with the actual script name
+    environment:
+      # Add any necessary environment variables here
+      LOCAL_SERVER_URL: ${LOCAL_SERVER_URL} # Use the service name and port
+    ports:
+      - "5000:5000"  # Map the container port 5000 to the host
+    networks:
+      - internalnet
+
+networks:
+  internalnet:
+    driver: bridge
+

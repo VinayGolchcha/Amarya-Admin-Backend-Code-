@@ -1,6 +1,6 @@
 import jwt from "jsonwebtoken"
 import { validationResult } from "express-validator";
-import bcrypt from "bcrypt"
+import bcrypt from "bcryptjs"
 import dotenv from "dotenv"
 import { successResponse, errorResponse, notFoundResponse, unAuthorizedResponse, internalServerErrorResponse } from "../../../utils/response.js"
 import { insertTrainingDataQuery, getLastTrainingIdQuery, addUserTrainingInfoQuery, getTrainingDataQuery, displayDataForTrainingCardsQuery, displayTrainingsForUserQuery, deleteUserTrainingDataQuery, 

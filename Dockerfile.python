@@ -1,0 +1,22 @@
+# Use an official Python runtime as a parent image
+FROM python:3.10-slim
+
+# Set the working directory in the container
+WORKDIR /app
+
+# Install dependencies needed for OpenCV and other requirements
+RUN apt-get update && apt-get install ffmpeg libsm6 libxext6  -y
+
+COPY requirements.txt .
+
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy your YOLO model and script files into the container
+COPY new_best.pt . 
+COPY script.py .
+
+# Expose the port the app runs on (optional, based on your use case)
+EXPOSE 5000
+
+# Command to run the Python script
+CMD ["python", "script.py"]
