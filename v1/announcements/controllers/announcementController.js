@@ -3,7 +3,7 @@ import { validationResult } from "express-validator";
 import bcrypt from "bcryptjs"
 import dotenv from "dotenv"
 import { successResponse, errorResponse, notFoundResponse, internalServerErrorResponse } from "../../../utils/response.js"
-import { addAnnouncementQuery, fetchAnnouncementsQuery, deleteAnnouncementQuery, updateAnnouncementQuery, fetchActivityQuery} from "../models/announcementQuery.js";
+import { addAnnouncementQuery, fetchAnnouncementsQuery, deleteAnnouncementQuery, updateAnnouncementQuery, fetchActivityQuery, fetchAnnouncementByIdQuery, updateAnnouncementReadStatusQuery} from "../models/announcementQuery.js";
 dotenv.config();
 
 
@@ -59,7 +59,8 @@ export const fetchAnnouncements = async(req, res, next) => {
             return errorResponse(res, errors.array(), "")
         }
     
-        let [data] = await fetchAnnouncementsQuery()
+        const emp_id = req.params.emp_id
+        let [data] = await fetchAnnouncementsQuery([emp_id])
         return successResponse(res, data, 'Announcements Fetched Successfully');
     } catch (error) {
         return internalServerErrorResponse(res, error);
@@ -155,3 +156,51 @@ export const filterAnnouncementByDate = async (req, res, next) => {
       return internalServerErrorResponse(res, error);;
     }
   };
+
+export const fetchAnnouncementById = async(req, res, next) => {
+    try {
+        const errors = validationResult(req);
+
+        if (!errors.isEmpty()) {
+            return errorResponse(res, errors.array(), "")
+        }
+    
+        let id = req.params.id 
+        id = parseInt(id);
+        const emp_id = req.params.emp_id
+
+        const [is_data_exist] = await fetchAnnouncementByIdQuery([id])
+        if(is_data_exist.length > 0){
+            await updateAnnouncementReadStatusQuery([id, emp_id])
+        }else{
+            return notFoundResponse(res, '', 'Announcement not found, wrong input.');
+        }
+        return successResponse(res, is_data_exist, 'Announcements Fetched Successfully');
+    } catch (error) {
+        return internalServerErrorResponse(res, error);
+    }
+}
+
+export const markAllAnnouncementsAsRead = async(req, res, next) => {
+    try {
+        const errors = validationResult(req);
+
+        if (!errors.isEmpty()) {
+            return errorResponse(res, errors.array(), "")
+        }
+    
+        const emp_id = req.params.emp_id
+        const req_data = req.body.ids
+
+        for(let i = 0; i < req_data.length; i++) {
+            const [is_data_exist] = await fetchAnnouncementByIdQuery([req_data[i]])
+            if(is_data_exist.length > 0){
+                await updateAnnouncementReadStatusQuery([req_data[i], emp_id])
+            }
+        }
+
+        return successResponse(res, '', 'Announcements Updated Successfully');
+    } catch (error) {
+        return internalServerErrorResponse(res, error);
+    }
+}
