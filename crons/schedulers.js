@@ -7,13 +7,13 @@ import {deletingAttendanceLogEveryHourQuery } from "../v1/attendance/models/quer
 
 export const runCronJobs = () => {
 
-    cron.schedule('* * * * *', async () => {
-        try {
-            await updateEntries();
-        } catch (error) {
-            console.error('Error executing cron updateEntries:', error);
-        }
-    });
+    // cron.schedule('* * * * *', async () => {
+    //     try {
+    //         await updateEntries();
+    //     } catch (error) {
+    //         console.error('Error executing cron updateEntries:', error);
+    //     }
+    // });
 
     cron.schedule('30 23 1 * *', async () => {
         try {
@@ -44,7 +44,6 @@ export const runCronJobs = () => {
         }
     });
     
-
     cron.schedule('40 22 1 * *', async () => {
         try {
             await calculatePerformanceForEachEmployee()

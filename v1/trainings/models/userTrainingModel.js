@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS userTrainings (
     course_name varchar(100) NOT NULL,
     course_description varchar(255) NOT NULL,
     details varchar(255) NOT NULL,
-    roadmap_url varchar(255) NOT NULL,
+    roadmap_url LONGTEXT NOT NULL,
     status ENUM('rejected', 'approved', 'pending') DEFAULT 'pending' NOT NULL,
     progress_status ENUM('completed', 'in progress'),
     created_at datetime DEFAULT CURRENT_TIMESTAMP,
