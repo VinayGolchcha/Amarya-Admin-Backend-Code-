@@ -1,6 +1,6 @@
 import moment from "moment";
 import { checkRtspStatus } from "../../../utils/cameraUtils.js";
-import { cameraDownResponse, cameraUpResponse, internalServerErrorResponse, internalServerErrorResponseForCamera, notFoundResponse, notFoundResponse, successResponse } from "../../../utils/response.js";
+import { cameraDownResponse, cameraUpResponse, internalServerErrorResponse, internalServerErrorResponseForCamera, notFoundResponse, successResponse } from "../../../utils/response.js";
 import { deleteUnidentifiedPersonQuery, fetchUnidentifiedPeopleListQuery, fetchUserPresentAttendanceQuery, getUserAttendanceSummaryQuery, getUserByClassNameQuery, getWeeklyPresentCountQuery, insertUnknownUserAttendanceQuery, insertUserAttendanceLogsQuery, updateUnidentifiedPersonQuery } from "../models/query.js";
 
 export const saveAttendanceLogs = async (uniqueMockData) => {
