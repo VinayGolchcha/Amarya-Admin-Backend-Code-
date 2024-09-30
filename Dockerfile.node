@@ -1,0 +1,30 @@
+# Use an official Node runtime as a parent image
+FROM node:18-bullseye-slim
+
+# Install latest npm
+RUN npm i npm@latest -g
+
+# Set the working directory inside the container
+WORKDIR /app
+
+# Copy the package.json and package-lock.json to the container
+COPY package.json .
+COPY package-lock.json .
+
+# Install Node.js dependencies and bcryptjs
+RUN apt-get update && apt-get install -y python3 make g++ && rm -rf /var/lib/apt/lists/* \
+    && npm install --force \
+    && npm install bcryptjs@2.4.3 --save \
+    && npm rebuild bcrypt --build-from-source
+
+# Copy the remaining source code to the container
+COPY . .
+
+# Set the environment variable for the port
+ENV PORT 3000
+
+# Expose the port
+EXPOSE $PORT
+
+# Run the application
+CMD ["node", "app.js"]

@@ -179,7 +179,8 @@ export const getUserDataByUserIdQuery = (array) =>{
                     u.performance,
                     u.team_id,
                     u.client_report,
-                    i.public_id
+                    i.public_id,
+                    1 AS teams
                 FROM
                     users u
                 LEFT JOIN

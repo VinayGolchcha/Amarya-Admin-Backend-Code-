@@ -1,12 +1,12 @@
 from ultralytics import YOLO
 import cv2
-import math
 import base64
 import time
 import socketio
 import os
 from threading import Thread
-
+from dotenv import load_dotenv
+load_dotenv()
 print("Python script has started running")
 environment = os.getenv('NODE_ENV', 'development')
 
@@ -19,6 +19,17 @@ else:
 # Set up a client to connect to the Node.js WebSocket server
 sio = socketio.Client()
 
+def connect_to_server():
+    while True:
+        try:
+            print("Connecting to Node.js server using:", server_url)
+            sio.connect(server_url)
+            print("Connected to Node.js server")
+            break  # If connected successfully, exit the loop
+        except Exception as e:
+            print(f"Error connecting to Node.js server: {e}")
+            time.sleep(5)
+
 @sio.event
 def connect():
     print("Connected to Node.js server")
@@ -26,19 +37,20 @@ def connect():
 @sio.event
 def disconnect():
     print("Disconnected from Node.js server")
+    # Try to reconnect
+    connect_to_server()
 
 # List of RTSP streams
 rtsp_streams = [
-    "rtsp://192.168.1.28:5543/c09aa8be6a70054108fb66336c2b82c9/live/channel0",
-    0  # This assumes 0 is your webcam
+    "rtsp://amarya.ddns.net:5543/c09aa8be6a70054108fb66336c2b82c9/live/channel0"
 ]
 
 # Load the YOLO model
-model = YOLO("./best.pt")
+model = YOLO("./new_best.pt")
 
 classNames = [
 'ankit_koshta01','anuj.prajapati01','deepanshu_kushwaha01','divij_sahu01','eish_nigam01','iteesh_dubey01','kishan_chaurasia01','lucky_soni01','prabal_namdev01','prashant_pandey01','pujita_rao01',
-'tamanna_suhane01','sanjana_jain01','shubham_kushwaha01','shubham_soni01','surya_pratap01','vishwabhushan_dubey01','Yogesh'
+'tamanna_suhane01','sanjana_jain01','shubham_kushwaha01','shubham_soni01','surya_pratap01','vishwabhushan_dubey01', 'Yogesh'
 ]
 
 def object_detection(img):
@@ -75,42 +87,32 @@ def process_stream(rtsp_url, stream_id):
     print(f"Processing stream {stream_id}: {rtsp_url}")
     cap = None
 
-    try:
-        cap = cv2.VideoCapture(rtsp_url) if rtsp_url != 0 else cv2.VideoCapture(rtsp_url, cv2.CAP_DSHOW)
-        cap.set(cv2.CAP_PROP_BUFFERSIZE, 10)
+    while True:
+        try:
+            cap = cv2.VideoCapture(rtsp_url) if rtsp_url != 0 else cv2.VideoCapture(rtsp_url, cv2.CAP_DSHOW)
+            cap.set(cv2.CAP_PROP_BUFFERSIZE, 10)
 
-        while True:
-            ret, frame = cap.read()
-            if not ret:
-                print(f"Failed to capture frame from stream {stream_id}. Reconnecting...")
+            while True:
+                ret, frame = cap.read()
+                if not ret:
+                    print(f"Failed to capture frame from stream {stream_id}. Reconnecting...")
+                    break  # Break out to restart the stream
+
+                frame, detections = object_detection(frame)
+                if detections:
+                    sio.emit('detections', {
+                        'detections': detections,
+                        'rtsp_url': rtsp_url,
+                        'stream_id': stream_id
+                    })
+
+        except Exception as e:
+            print(f"Error processing stream {stream_id}: {e}")
+        finally:
+            if cap is not None:
                 cap.release()
-                time.sleep(2)
-                cap.open(rtsp_url)
-                continue
-
-            frame, detections = object_detection(frame)
-            if detections:
-                sio.emit('detections', {
-                    'detections': detections,
-                    'rtsp_url': rtsp_url,
-                    'stream_id': stream_id
-                })
-
-            # Display the frame in a separate window for each stream
-            # window_name = f"Stream {stream_id}"
-            # cv2.imshow(window_name, frame)
-
-            # # Add a small delay and break if the user presses the 'q' key
-            # if cv2.waitKey(1) & 0xFF == ord('q'):
-            #     break
-
-    except Exception as e:
-        print(f"Error processing stream {stream_id}: {e}")
-        time.sleep(5)  # Brief pause before retrying
-    finally:
-        if cap is not None:
-            cap.release()
-        cv2.destroyAllWindows()
+            cv2.destroyAllWindows()
+            time.sleep(5)  # Brief pause before retrying
 
 def start_streams():
     print("Starting streams")
@@ -123,10 +125,7 @@ def start_streams():
 
 if __name__ == '__main__':
     # Connect to the Node.js server
-    try:
-        sio.connect(server_url)
-    except Exception as e:
-        print(f"Error connecting to Node.js server: {e}")
+    connect_to_server()
 
     # Start processing streams
     start_streams()

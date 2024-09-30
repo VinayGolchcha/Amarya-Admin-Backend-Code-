@@ -23,75 +23,51 @@ import activityRoutes from "./v1/activity/routes/activityRoutes.js";
 import dashboardRoutes from "./v1/dashboard/routes/dashboardRoutes.js";
 import { runCronJobs } from './crons/schedulers.js';
 import userDashboardRoutes from './v1/users/routes/userdashboardRoutes.js';
-import policiesRoutes from "./v1/policies/routes/policiesRoutes.js"
+import policiesRoutes from "./v1/policies/routes/policiesRoutes.js";
 import { createServer } from 'http';
 import { Server } from 'socket.io';
-import { spawn, exec } from 'child_process';
-import path from 'path';
-import os from 'os';
-import { installConda, setupEnvironment } from './install.js';
 import { saveAttendanceLogs } from './v1/attendance/controllers/attendanceController.js';
 import attendanceRoutes from './v1/attendance/routes/attendanceRoutes.js';
-config()
-await installConda();
-await setupEnvironment();
+config();
+
 const app = express();
 app.use(helmet());
 app.use(json());
-// CORS setup
 app.use(cookieParser());
+
+// CORS setup
 const corsOptions = {
-  origin: ['http://localhost:3000', 'https://amarya-admin-code-dev-fe.vercel.app', 'https://amarya-admin-code.vercel.app'], // replace with your client URL
+  origin: ['http://localhost:3000',  'https://amarya-admin-code-dev-fe.vercel.app', 'https://amarya-admin-code.vercel.app', 'https://messenger-app-amarya-fe.vercel.app'],
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'x-encryption-key', 'x-access-token'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'x-encryption-key', 'x-access-token', '*'],
   credentials: true,
   path: '/',
   exposedHeaders: ['x-encryption-key'],
 };
-const server = createServer(app);
-const io = new Server(server);
-const condaPath = path.join(os.homedir(), os.platform() === 'win32' ? 'Miniconda3' : 'miniconda3', 'condabin', os.platform() === 'win32' ? 'conda.bat' : 'conda');
- const pythonProcess = spawn(condaPath, ['run', '-n', 'conda_env', 'python', 'script.py']);
-// const pythonProcess = spawn(condaPath, ['run', '-n', 'conda_env', 'python', 'script.py'], {
-//   shell: os.platform() === 'win32', // Use shell for Windows
-//   cwd: process.cwd(), // Ensure the working directory is set correctly
-//   stdio: ['pipe', 'pipe', 'pipe'], // Ensure to capture stdout and stderr
-// });
+app.use(cors(corsOptions));
+app.options('*', cors(corsOptions));
 
+// Create server and socket.io instance
+const server = createServer(app);
+const io = new Server(server, {
+  reconnection: true, // Enable automatic reconnection
+  reconnectionAttempts: Infinity, // Number of reconnection attempts before giving up
+  reconnectionDelay: 1000, // Delay before starting the reconnection attempts
+  reconnectionDelayMax: 5000, // Maximum delay between reconnections
+  timeout: 20000 // Connection timeout
+});
 
 io.on('connection', (socket) => {
   console.log('Client connected');
 
-  pythonProcess.stdout.on('data', (data) => {
-    const output = data.toString();
-    console.log('output', output);
-    socket.emit('python_output', output);
-  });
-
-  pythonProcess.stderr.on('data', (data) => {
-    console.error(`Python Error: ${data}`);
-  });
-
-  pythonProcess.on('close', (code) => {
-    console.log(`Python script exited with code ${code}`);
-    if (code !== 0) {
-      console.error('Python script crashed. Restarting...');
-      pythonProcess = spawn(condaPath, ['run', '-n', 'conda_env', 'python', 'script.py']);
-    }
-  });
-
-  pythonProcess.on('error', (err) => {
-    console.error('Failed to start subprocess:', err);
-  });
-
   socket.on('detections', async (data) => {
-    console.log('Received class_name:', data.detections[0].class_name);
-    console.log('Received confidence:', data.detections[0].confidence);
-    console.log('Received bounding_box:', data.detections[0].bounding_box);
+    console.log('Received detections:', data.detections[0].class_name);
+    console.log('Received detections:', data.detections[0].confidence);
+    console.log('Received detections:', data.detections[0].bounding_box);
     console.log('Received URL:', data.rtsp_url);
-    console.log('stream_id :', data.stream_id);
+    console.log('stream_id:', data.stream_id); 
 
-    // filtering unique data
+    // Filter unique data
     let filterDuplicateDate = Object.values(
       data.detections.reduce((acc, item) => {
         acc[item.class_name] = item;
@@ -99,29 +75,43 @@ io.on('connection', (socket) => {
       }, {})
     );
 
-    // save attedance and update out time
     if (data.detections[0].confidence > 0.50) {
       await saveAttendanceLogs(filterDuplicateDate);
     }
-
   });
 
   socket.on('disconnect', () => {
     console.log('Client disconnected');
-    if (pythonProcess && !pythonProcess.killed) {
-      pythonProcess.kill('SIGINT');
-    }
+  });
+
+  socket.on('error', (err) => {
+    console.error('Socket.io error:', err);
   });
 });
-io.on('error', (err) => {
-  console.error('Socket.io error:', err);
+
+// Handle reconnection events
+io.on('reconnect_attempt', (attemptNumber) => {
+  console.log(`Reconnection attempt #${attemptNumber}`);
 });
-app.use(cors(corsOptions));
-app.options('*', cors(corsOptions));
+
+io.on('reconnect', () => {
+  console.log('Reconnected to WebSocket server');
+});
+
+io.on('reconnect_error', (error) => {
+  console.error('Reconnection error:', error);
+});
+
+io.on('reconnect_failed', () => {
+  console.error('Failed to reconnect to WebSocket server');
+});
+
 // Start the cron jobs
 runCronJobs();
+
 // Disable the X-Powered-By header
 app.disable('x-powered-by');
+
 // Import & Define API versions
 app.use('/api/v1/user', userRoutes);
 app.use('/api/v1/asset', assetRoutes);
@@ -147,7 +137,7 @@ app.use('/', (req, res) => {
     message: 'Invalid API'
   })
 });
-app.use(errorHandler)
+app.use(errorHandler);
 
 try {
   await connectToDatabase();

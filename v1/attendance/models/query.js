@@ -120,7 +120,7 @@ export const deletingAttendanceLogEveryHourQuery = async (array) => {
              SELECT id, 
             ROW_NUMBER() OVER (PARTITION BY user_id ORDER BY created_at ASC) AS row_asc,
             ROW_NUMBER() OVER (PARTITION BY user_id ORDER BY created_at DESC) AS row_desc
-            FROM userAttendanceLogs)
+            FROM userAttendanceLogs WHERE date = CURRENT_DATE())
             DELETE FROM userAttendanceLogs
             WHERE id IN (
                 SELECT id FROM RankedLogs
@@ -144,6 +144,74 @@ export const getUserAttendanceSummaryQuery = async (array) => {
         throw error;
     }
 }
+export const getWeeklyPresentCountQuery = async () => {
+    try {
+        let query = `
+        SELECT 
+            DATE_FORMAT(date, '%Y-%m-%d') AS attendance_date,
+            DAYNAME(date) AS day_name,
+            COUNT(*) AS present_count
+        FROM 
+            userAttendance
+        WHERE 
+            YEARWEEK(date, 1) BETWEEN YEARWEEK(CURDATE() - INTERVAL 1 WEEK, 1) 
+                                AND YEARWEEK(CURDATE(), 1)
+            AND status = 'PRESENT'
+            AND DAYOFWEEK(date) BETWEEN 2 AND 6
+        GROUP BY 
+            attendance_date, day_name
+        ORDER BY 
+            attendance_date;
+        `;
+        return pool.query(query);
+    } catch (error) {
+        console.error("Error executing getWeeklyPresentCountQuery:", error);
+        throw error;
+    }
+}
+
+export const fetchUserPresentAttendanceQuery = async (skip) => {
+    try {
+        let query = `
+        SELECT
+            UA.id AS id,
+            U.emp_id AS emp_id,
+            U.username AS username,
+            UA.status AS status,
+            UA.in_time AS in_time,
+            UA.out_time AS out_time,
+            UA.in_snapshot AS in_snapshot,
+            UA.out_snapshot AS out_snapshot
+        FROM
+            userAttendance as UA
+        JOIN users AS U ON UA.user_id = U._id
+        WHERE
+            date = DATE_FORMAT(CURDATE() - INTERVAL 1 DAY, '%Y-%m-%d')
+        ORDER BY date DESC
+        LIMIT 10 OFFSET ${skip}
+        `;
+        return pool.query(query);
+    } catch (error) {
+        console.error("Error executing fetchUserPresentAttendanceQuery:", error);
+        throw error;
+    }
+}
+export const fetchUnidentifiedPeopleListQuery = async (skip) => {
+    try {
+        let query = `
+        SELECT 
+            * 
+        FROM unknownUserAttendance
+        ORDER BY date DESC
+        LIMIT 10 OFFSET ${skip}
+        `;
+        return pool.query(query);
+    } catch (error) {
+        console.error("Error executing fetchUnidentifiedPeopleListQuery:", error);
+        throw error;
+    }
+}
+
 
 export const getUnknownUserAttendanceQuery = async (array) => {
     try {
@@ -159,7 +227,7 @@ export const getUnknownUserAttendanceQuery = async (array) => {
 export const updateInTimeUserAttenQuery = async (array) => {
     try {
         let query = `
-        UPDATE userAttendance SET in_time = ? WHERE user_id = ? and date = ?`;
+        UPDATE userAttendance SET in_time = ?, in_snapshot = ? WHERE user_id = ? and date = ?`;
         return pool.query(query, array);
     } catch (error) {
         console.error("Error executing updateInTimeUserAttenQuery:", error);
@@ -204,5 +272,42 @@ export const updateUnknownAttendance = (array) => {
         return pool.query(query, array);
     } catch (error) {
         console.error("Error executing updateUnknownAttendance", error);
+    }
+}
+
+export const updateOutTimeUserAttenQuery = async (array) => {
+    try {
+        let query = `
+        UPDATE userAttendance SET out_time = ?, out_snapshot = ?  WHERE user_id = ? and date = ?`;
+        return pool.query(query, array);
+    } catch (error) {
+        console.error("Error executing updateOutTimeUserAttenQuery:", error);
+        throw error;
+    }
+}
+
+export const getUserAttendanceLogByUserIdAndDateForOutTimeQuery = (array) => {
+    try {
+        let query = `select * From userAttendanceLogs ual where user_id = ? and date = ? order by id desc limit 2`;
+        return pool.query(query, array);
+    } catch (error) {
+        console.error("Error executing getUserAttendanceLogByUserIdAndDateForOutTimeQuery", error);
+    }
+}
+
+
+export const fetchAttedancePercentageOfUsersByDateQuery = (array) => {
+    try {
+        let query = `SELECT 
+        COUNT(u._id) AS total_users,
+        COUNT(ua.user_id) AS present_users,
+        COUNT(u._id) - COUNT(ua.user_id) AS absent_users,
+        FORMAT((COUNT(ua.user_id) / COUNT(u._id)) * 100, 2) AS present_percentage,
+        FORMAT(((COUNT(u._id) - COUNT(ua.user_id)) / COUNT(u._id)) * 100, 2) AS absent_percentage
+        FROM users u LEFT JOIN 
+        userAttendance ua ON u._id = ua.user_id AND ua.date IN (?)`;
+        return pool.query(query, array);
+    } catch (error) {
+        console.error("Error executing getUserAttendanceLogByUserIdAndDateForOutTimeQuery", error);
     }
 }
