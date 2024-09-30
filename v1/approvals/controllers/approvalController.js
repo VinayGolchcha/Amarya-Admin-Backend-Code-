@@ -3,7 +3,7 @@ import dotenv from "dotenv"
 import { successResponse, errorResponse, notFoundResponse, internalServerErrorResponse } from "../../../utils/response.js"
 import {assetApprovalQuery, fetchAssetDataQuery, assetRejectionQuery, deleteAssetQuery, checkIfAlreadyAssigned} from "../models/assetApprovalQuery.js"
 import {fetchTrainingDataQuery, trainingApprovalQuery, trainingRejectionQuery, deleteTrainingQuery} from "../models/trainingApprovalQuery.js"
-import {leaveApprovalQuery, deleteLeaveQuery, leaveRejectionQuery, getUserLeaveDaysQuery, leaveTakenCountQuery} from "../models/leaveApprovalQuery.js"
+import {leaveApprovalQuery, deleteLeaveQuery, leaveRejectionQuery, getUserLeaveDaysQuery, leaveTakenCountQuery, checkIfLeaveAlreadyApprovedQuery} from "../models/leaveApprovalQuery.js"
 dotenv.config();
 
 
@@ -41,7 +41,7 @@ export const approvalByAdmin = async (req, res, next) => {
                 const [assetData] = await checkIfAlreadyAssigned([emp_id, foreign_id, status])
                 if (assetData.length > 0) {
                     message = 'Asset already assigned to this user';
-                    statusCode = 404
+                    statusCode = 400
                     return {message, statusCode}
                 }
                 try {
@@ -50,11 +50,17 @@ export const approvalByAdmin = async (req, res, next) => {
                     statusCode = 200
                     return {message, statusCode}
                 } catch (error) {
-                    message = 'Request item item do not match';
-                    statusCode = 404
+                    message = 'Request item do not match';
+                    statusCode = 400
                     return {message, statusCode}
                 }
             } else if (status === "rejected") {
+                const [assetData] = await checkIfAlreadyAssigned([emp_id, foreign_id, "approved"])
+                if (assetData.length > 0) {
+                    message = 'Asset already assigned to this user';
+                    statusCode = 400
+                    return {message, statusCode}
+                }
                 await assetRejectionQuery([status, emp_id, item], [status, emp_id, item]);
                 message = 'Asset rejected successfully';
                 statusCode = 200
@@ -75,11 +81,21 @@ export const approvalByAdmin = async (req, res, next) => {
             }
 
             if (status === "approved") {
+                if(requestData[0].status==="approved"){
+                    message = 'Training request already approved';
+                    statusCode = 400
+                    return {message, statusCode}
+                }
                 await trainingApprovalQuery([status, emp_id, foreign_id], [status, current_date, emp_id, foreign_id]);
                 message = 'Training request approved successfully';
                 statusCode = 200
                 return {message, statusCode}
             } else if (status === "rejected") {
+                if(requestData[0].status==="rejected"){
+                    message = 'Training request already approved';
+                    statusCode = 400
+                    return {message, statusCode}
+                }
                 await trainingRejectionQuery([status, emp_id, foreign_id], [status, emp_id, foreign_id]);
                 message = 'Training request rejected successfully';
                 statusCode = 200
@@ -101,7 +117,13 @@ export const approvalByAdmin = async (req, res, next) => {
             let leave_type = userLeaveData[0].leave_type
             let leave_type_count_by_admin = userLeaveData[0].leave_count
 
+            let [current_status] = await checkIfLeaveAlreadyApprovedQuery([emp_id, foreign_id, request_type])
             if (status === "approved") {
+                if (current_status[0].status==="approved") {
+                    message = 'Leave already approved.';
+                    statusCode = 400
+                    return {message, statusCode}
+                }
                 let [userLeaveTakenCount] = await leaveTakenCountQuery([emp_id, leave_type])
                 if(leave_type_count_by_admin >= (userLeaveTakenCount[0].leave_taken_count + leave_taken_count)){
                     await leaveApprovalQuery([leave_taken_count, emp_id, leave_type], [status, current_date, emp_id, foreign_id], [status, foreign_id, leave_type]);
@@ -114,6 +136,11 @@ export const approvalByAdmin = async (req, res, next) => {
                     return {message, statusCode}
                 }
             } else if (status === "rejected") {
+                if (current_status[0].status==="rejected") {
+                    message = 'Leave already approved.';
+                    statusCode = 400
+                    return {message, statusCode}
+                }
                 await leaveRejectionQuery([status, emp_id, foreign_id], [status, foreign_id, leave_type]);
                 message = 'Leave rejected successfully.';
                 statusCode = 200

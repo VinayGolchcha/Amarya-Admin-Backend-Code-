@@ -1,7 +1,7 @@
 // Schedule script execution every minute
 import cron from "node-cron";
 import pool from "../config/db.js";
-import { generateUserWorksheetExcel, updateEntries, calculatePerformanceForEachEmployee, updateYearlyDataForEachEmployee, updateMonthlyExperienceCron, saveAttendance, deleteAttendanceLogs } from "./cronFunctions.js";
+import { generateUserWorksheetExcel, updateEntries, calculatePerformanceForEachEmployee, updateYearlyDataForEachEmployee, updateMonthlyExperienceCron, saveAttendance, deleteAttendanceLogs, sendEmailNotificationForApproval } from "./cronFunctions.js";
 import {deletingAttendanceLogEveryHourQuery } from "../v1/attendance/models/query.js";
 
 

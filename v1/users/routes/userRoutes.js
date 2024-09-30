@@ -18,7 +18,7 @@ app.post('/verify-email-for-password-update', verifyOtpVal, verifyEmailForPasswo
 app.post('/update-password', upPassVal, updateUserPassword);
 app.post('/get-user-profile/:emp_id', authenticateUserAdminSession, getUserVal, getUserProfile);
 app.put('/update-user-profile/:id' , authenticateUserAdminSession, upload.single('file'), updateUserProfile);
-app.get('/fetch-all-employee-ids', fetchAllEmployeeIds);
+app.get('/fetch-all-employee-ids',authenticateUserAdminSession, fetchAllEmployeeIds);
 app.post('/ghost-login', loginVal, userGhostLogin);
 
 

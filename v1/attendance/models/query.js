@@ -213,3 +213,29 @@ export const fetchUnidentifiedPeopleListQuery = async (skip) => {
         throw error;
     }
 }
+
+export const deleteUnidentifiedPersonQuery = async (id) => {
+    try {
+        let query = `
+            DELETE FROM unknownUserAttendance
+            WHERE id = ${id}
+        `;
+        return pool.query(query);
+    } catch (error) {
+        console.error("Error executing deleteUnidentifiedPersonQuery:", error);
+        throw error;
+    }
+}
+export const updateUnidentifiedPersonQuery = async (array) => {
+    try {
+        let query = `
+            UPDATE unknownUserAttendance
+            SET tag = ?
+            WHERE id = ?
+        `;
+        return pool.query(query, array);
+    } catch (error) {
+        console.error("Error executing updateUnidentifiedPersonQuery:", error);
+        throw error;
+    }
+}

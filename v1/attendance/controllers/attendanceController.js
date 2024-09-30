@@ -1,7 +1,7 @@
 import moment from "moment";
 import { checkRtspStatus } from "../../../utils/cameraUtils.js";
-import { cameraDownResponse, cameraUpResponse, internalServerErrorResponse, internalServerErrorResponseForCamera, successResponse } from "../../../utils/response.js";
-import { fetchUnidentifiedPeopleListQuery, fetchUserPresentAttendanceQuery, getUserAttendanceSummaryQuery, getUserByClassNameQuery, getWeeklyPresentCountQuery, insertUnknownUserAttendanceQuery, insertUserAttendanceLogsQuery } from "../models/query.js";
+import { cameraDownResponse, cameraUpResponse, internalServerErrorResponse, internalServerErrorResponseForCamera, notFoundResponse, successResponse } from "../../../utils/response.js";
+import { deleteUnidentifiedPersonQuery, fetchUnidentifiedPeopleListQuery, fetchUserPresentAttendanceQuery, getUserAttendanceSummaryQuery, getUserByClassNameQuery, getWeeklyPresentCountQuery, insertUnknownUserAttendanceQuery, insertUserAttendanceLogsQuery, updateUnidentifiedPersonQuery } from "../models/query.js";
 
 export const saveAttendanceLogs = async (uniqueMockData) => {
   try {
@@ -136,6 +136,34 @@ export const fetchUnidentifiedPeopleList = async (req, res, next) => {
 
     return successResponse(res, data, 'Unknown detections fetched successfully');
   } catch (error) {
+    return internalServerErrorResponse(res, error);
+  }
+}
+
+export const deleteUnidentifiedPerson = async (req, res, next) => {
+  try {
+    const {id} = req.params;
+    const [data] = await deleteUnidentifiedPersonQuery([id]);
+    if(data.affectedRows == 0) {
+      return notFoundResponse(res, "", "Data not found");
+    }
+    return successResponse(res, "", 'Data Deleted Successfully');
+  } catch(error){
+    return internalServerErrorResponse(res, error);
+  }
+}
+
+export const updateUnidentifiedPerson = async (req, res, next) => {
+  try {
+    const {id} = req.params;
+    let tag = req.body.tag;
+    tag = tag.toUpperCase();
+    const [data] = await updateUnidentifiedPersonQuery([tag, id]);
+    if(data.affectedRows == 0) {
+      return notFoundResponse(res, "", "Data not found");
+    }
+    return successResponse(res, "", 'Data Updated Successfully');
+  } catch(error){
     return internalServerErrorResponse(res, error);
   }
 }

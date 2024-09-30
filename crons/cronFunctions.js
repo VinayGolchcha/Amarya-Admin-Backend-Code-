@@ -8,6 +8,8 @@ import moment from 'moment';
 import ffmpeg from "fluent-ffmpeg";
 import { updateExperienceQuery } from "../v1/users/models/userQuery.js";
 import { checkRowsLengthForNotificationQuery } from "../v1/approvals/models/approvalQuery.js";
+import {sendMail} from "../config/nodemailer.js"
+
 
 export const updateEntries = async () => {
   try {

@@ -141,3 +141,13 @@ export const getUserGender = async (array) => {
         throw error;
     }
 }
+
+export const checkIfLeaveAlreadyApprovedQuery = async (array) => {
+    const query = `SELECT status FROM approvals WHERE emp_id = ? AND foreign_id = ? AND request_type = ?;`
+    try {
+        return await pool.query(query, array);
+    } catch (error) {
+        console.error("Error executing checkIfLeaveAlreadyApprovedQuery:", error);
+        throw error;
+    }
+}
