@@ -4,7 +4,7 @@ import bcrypt from "bcryptjs"
 import dotenv from "dotenv"
 import crypto from 'crypto-js';
 import { successResponse, errorResponse, notFoundResponse, unAuthorizedResponse, internalServerErrorResponse } from "../../../utils/response.js"
-import { incrementId, createDynamicUpdateQuery } from "../../helpers/functions.js"
+import { incrementId, createDynamicUpdateQuery, calculateTotalExperienceInFloat } from "../../helpers/functions.js"
 import {sendMail} from "../../../config/nodemailer.js"
 import {getTeamQuery} from "../../teams/models/query.js"
 import {insertTeamToUser} from "../models/userTeamsQuery.js"
@@ -15,7 +15,10 @@ dotenv.config();
 
 import {userRegistrationQuery, getUserDataByUsernameQuery, userDetailQuery, updateTokenQuery, updateUserProfileQuery,
         getLastEmployeeIdQuery, updateUserPasswordQuery, getAllLeaveCounts, insertUserLeaveCountQuery, checkUserNameAvailabilityQuery, insertOtpQuery, getOtpQuery,getUserDataByUserIdQuery
-        ,checkUserDataByUserIdQuery, updateUserProfilePictureQuery, fetchAllEmployeeIdsQuery} from "../models/userQuery.js";
+        ,checkUserDataByUserIdQuery, updateUserProfilePictureQuery, fetchAllEmployeeIdsQuery,
+        getAllUserData,
+        updateExperienceQuery} from "../models/userQuery.js";
+import { insertPerformanceQuery } from "../../worksheets/models/performanceQuery.js";
 
 export const userRegistration = async (req, res, next) => {
     try {
@@ -108,7 +111,7 @@ export const userRegistration = async (req, res, next) => {
         await create(user_message_data)
         await insertTeamToUser([emp_id, team_id]);
     
-        let [leaveTypeAndCount] = await getAllLeaveCounts();
+        let [leaveTypeAndCount, performanceData] = await Promise.all([getAllLeaveCounts(), insertPerformanceQuery([emp_id])]);
         for(let i = 0; i < leaveTypeAndCount.length; i++) {
             let leaveType = leaveTypeAndCount[i].leave_type;
             let leaveCount = leaveTypeAndCount[i].leave_count;
@@ -272,7 +275,7 @@ export const updateUserPassword = async (req, res, next) => {
         if (password === confirm_password) {
             const password_hash = await bcrypt.hash(password.toString(), 12);
             await updateUserPasswordQuery([password_hash, email]);
-            await updateQuery(email, password_hash)
+            // await updateQuery(email, password_hash)
             return successResponse(res, 'User password updated successfully');
         } else {
             return notFoundResponse(res, '', 'Password and confirm password must be same, please try again.');
@@ -419,5 +422,27 @@ export const userGhostLogin = async (req, res) => {
     } catch (error) {
         console.error(error);
         return internalServerErrorResponse(res, error)
+    }
+}
+
+export const updateExperience = async (req, res, next) => {
+    try {
+        const errors = validationResult(req);
+
+        if (!errors.isEmpty()) {
+            return errorResponse(res, errors.array(), "")
+        }
+
+        const [userData] = await getAllUserData();
+
+        for(let i =0; i<=userData.length; i++) {
+            let previousExp = userData[i].experience
+            let joiningDate = userData[i].joining_date
+            let exp = await calculateTotalExperienceInFloat(joiningDate, previousExp);
+            await updateExperienceQuery([exp, userData[i].emp_id])
+        }
+        return successResponse(res, '', 'All experience updated successfully');
+    } catch (error) {
+        return internalServerErrorResponse(res, error);
     }
 }

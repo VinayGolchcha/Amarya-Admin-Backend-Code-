@@ -6,6 +6,10 @@ import { getCategoryTotalPointsQuery, getUserPointsQuery, updateUserPerformanceQ
 import { checkUserTimeFromLogs, deleteAttendanceLogsQuery, getUserAttendanceByUserIdAndDateQuery, insertUserAttendanceQuery } from "../v1/attendance/models/query.js";
 import moment from 'moment';
 import ffmpeg from "fluent-ffmpeg";
+import { updateExperienceQuery } from "../v1/users/models/userQuery.js";
+import { checkRowsLengthForNotificationQuery } from "../v1/approvals/models/approvalQuery.js";
+import {sendMail} from "../config/nodemailer.js"
+
 
 export const updateEntries = async () => {
   try {
@@ -102,18 +106,17 @@ export const calculatePerformanceForEachEmployee = async () => {
     let [category_points_can_be_earned_per_day] = await getCategoryTotalPointsQuery()
     let category_points_can_be_earned_per_month = category_points_can_be_earned_per_day[0].total_points * number_of_working_days_previous_month
 
-    let [data] = await getUserPointsQuery()
-
-    //Employee Performance Logic
-    for (let i = 0; i < data.length; i++) {
-      let emp_id = data[i].emp_id
-      let earned_points = parseInt(data[i].total_earned_points)
-      let monthly_performance = earned_points / category_points_can_be_earned_per_month
-      monthly_performance = Math.round(monthly_performance)
-      // Add Performance to user table
-      await updateUserPerformanceQuery([monthly_performance, emp_id])
-      await updateUserPointsQuery(previous_month_name, earned_points, emp_id)
-    }
+      let [data] = await getUserPointsQuery()
+     
+      //Employee Performance Logic
+      for(let i=0; i< data.length; i++){
+          let emp_id = data[i].emp_id
+          let earned_points = parseInt(data[i].total_earned_points)
+          let monthly_performance = earned_points / category_points_can_be_earned_per_month
+          monthly_performance = Math.round(monthly_performance)
+          // Add Performance to user table
+          const [userTable, performanceTable] = await Promise.all([updateUserPerformanceQuery([monthly_performance, emp_id]), updateUserPointsQuery(previous_month_name, earned_points, emp_id)])
+      }
 
     return `Performance Updated successfully.`;
   } catch (error) {
@@ -136,6 +139,44 @@ export const updateYearlyDataForEachEmployee = async () => {
     throw error;
   }
 };
+
+export const updateMonthlyExperienceCron = async () => {
+  try {
+      const [userData] = await getAllUserData();
+
+      for(let i =0; i<userData.length; i++) {
+          const experience_increment = 1 / 12;
+          let experience = (userData[i].experience || 0) + experience_increment;
+          await updateExperienceQuery([experience, userData[i].emp_id])
+      }
+      return 'All experience updated successfully';
+  } catch (error) {
+    console.error("Error executing updateMonthlyExperienceCron:", error);
+    throw error;
+  }
+}
+
+export const sendEmailNotificationForApproval = async () => {
+  try {
+        const current_date = new Date();
+        current_date.setMinutes(current_date.getMinutes() - 5);
+        let date = current_date.toISOString().slice(0, 19).replace('T', ' ');
+        const [rows] = await checkRowsLengthForNotificationQuery([date]);
+        const email = 'tamanna.suhane@amaryaconsultancy.com';
+
+      if (rows.length > 0) {
+          for (let i = 0; i < rows.length; i++) {
+              if(rows[i].status === 'pending'){
+                  await sendMail(email, `A new request for ${rows[i].request_type} from employeeID ${rows[i].emp_id} has come. \n\n\n\nRegards,\nAmarya Business Consultancy`, 'New Approval Request');
+              }
+          }
+      }
+      return 'All experience updated successfully';
+  } catch (error) {
+    console.error("Error executing updateMonthlyExperienceCron:", error);
+    throw error;
+  }
+}
 
 export const saveAttendance = async () => {
   try {

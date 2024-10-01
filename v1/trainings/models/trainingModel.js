@@ -4,7 +4,7 @@ CREATE TABLE IF NOT EXISTS trainings (
     training_id varchar(255) NOT NULL,
     course_name varchar(100) NOT NULL,
     course_description varchar(255) NOT NULL,
-    roadmap_url varchar(255) NOT NULL,
+    roadmap_url LONGTEXT NOT NULL,
     details varchar(255) NOT NULL,
     created_at datetime DEFAULT CURRENT_TIMESTAMP,
     updated_at datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,

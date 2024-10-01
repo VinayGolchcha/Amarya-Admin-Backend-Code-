@@ -55,7 +55,6 @@ export const fetUserAssVal = [
 export const addTrnVal = [
     body('course_name').notEmpty().withMessage('course_name cannot be empty.').isString().withMessage("course_name must be a string."),
     body('course_description').notEmpty().withMessage('course_description cannot be empty.').isString().withMessage("course_description must be a string."),
-    body('roadmap_url').notEmpty().withMessage('roadmap_url cannot be empty.').isString().withMessage("roadmap_url must be a string."),
     body('details').notEmpty().withMessage('details cannot be empty.').isString().withMessage("details must be a string."),
 ]
 
@@ -188,6 +187,7 @@ export const createWorksheetVal = [
     body('category_id').notEmpty().withMessage('Category id cannot be empty.').isInt().withMessage('Invalid category id input.'),
     body('skill_set_id').isString().withMessage('Invalid skill set input.').notEmpty().withMessage('skill set cannot be empty.'),
     body('description').isString().withMessage('Invalid description input.').notEmpty().withMessage('description cannot be empty.'),
+    body('hours').isInt().withMessage('Invalid hours input.').notEmpty().withMessage('hours cannot be empty.')
 ]
 
 export const updateWorksheetVal = [

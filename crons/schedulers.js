@@ -1,19 +1,19 @@
 // Schedule script execution every minute
 import cron from "node-cron";
 import pool from "../config/db.js";
-import { generateUserWorksheetExcel, updateEntries, calculatePerformanceForEachEmployee, updateYearlyDataForEachEmployee, saveAttendance, deleteAttendanceLogs } from "./cronFunctions.js";
+import { generateUserWorksheetExcel, updateEntries, calculatePerformanceForEachEmployee, updateYearlyDataForEachEmployee, updateMonthlyExperienceCron, saveAttendance, deleteAttendanceLogs, sendEmailNotificationForApproval } from "./cronFunctions.js";
 import {deletingAttendanceLogEveryHourQuery } from "../v1/attendance/models/query.js";
 
 
 export const runCronJobs = () => {
 
-    cron.schedule('* * * * *', async () => {
-        try {
-            await updateEntries();
-        } catch (error) {
-            console.error('Error executing cron updateEntries:', error);
-        }
-    });
+    // cron.schedule('* * * * *', async () => {
+    //     try {
+    //         await updateEntries();
+    //     } catch (error) {
+    //         console.error('Error executing cron updateEntries:', error);
+    //     }
+    // });
 
     cron.schedule('30 23 1 * *', async () => {
         try {
@@ -44,7 +44,6 @@ export const runCronJobs = () => {
         }
     });
     
-
     cron.schedule('40 22 1 * *', async () => {
         try {
             await calculatePerformanceForEachEmployee()
@@ -58,6 +57,22 @@ export const runCronJobs = () => {
             await updateYearlyDataForEachEmployee()
         } catch (error) {
             console.error('Error executing cron updateYearlyDataForEachEmployee:', error);
+        }
+    });
+
+    cron.schedule('0 0 1 * *', async () => {
+        try {
+            await updateMonthlyExperienceCron()
+        } catch (error) {
+            console.error('Error executing cron updateMonthlyExperienceCron:', error);
+        }
+    });
+
+    cron.schedule('0 * * * *', async () => {
+        try{
+            await sendEmailNotificationForApproval()
+        } catch (error){
+            console.error('Error executing cron sendEmailNotificationForApproval:', error);
         }
     });
 

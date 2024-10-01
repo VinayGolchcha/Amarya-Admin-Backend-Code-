@@ -3,8 +3,8 @@ import pool from "../../../config/db.js"
 export const insertUserAttendanceLogsQuery = async (array) => {
     try {
         let query = `
-        INSERT INTO userAttendanceLogs (status, date, snapshot, user_id) 
-        VALUES (?, ?, ?, ?)
+        INSERT INTO userAttendanceLogs ( date, snapshot, user_id) 
+        VALUES (?, ?, ?)
         `;
         return pool.query(query, array);
     } catch (error) {
@@ -212,6 +212,31 @@ export const fetchUnidentifiedPeopleListQuery = async (skip) => {
     }
 }
 
+export const deleteUnidentifiedPersonQuery = async (id) => {
+    try {
+        let query = `
+            DELETE FROM unknownUserAttendance
+            WHERE id = ${id}
+        `;
+        return pool.query(query);
+    } catch (error) {
+        console.error("Error executing deleteUnidentifiedPersonQuery:", error);
+        throw error;
+    }
+}
+export const updateUnidentifiedPersonQuery = async (array) => {
+    try {
+        let query = `
+            UPDATE unknownUserAttendance
+            SET tag = ?
+            WHERE id = ?
+        `;
+        return pool.query(query, array);
+    } catch (error) {
+        console.error("Error executing updateUnidentifiedPersonQuery:", error);
+        throw error;
+    }
+}
 
 export const getUnknownUserAttendanceQuery = async (array) => {
     try {
