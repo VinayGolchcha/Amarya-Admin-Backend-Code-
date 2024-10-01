@@ -1,5 +1,5 @@
 import express, { Router } from 'express';
-import { fetchUserPresentAttendance, getCameraStatus, getUserAttendancePercentage, getUserAttendanceSummary, updateMismatchedUserAttendance, updateUnknownAttendanceToKnown, fetchWeeklyPresentCount, fetchUnidentifiedPeopleList} from '../controllers/attendanceController.js';
+import { fetchUserPresentAttendance, getCameraStatus, getUserAttendancePercentage, getUserAttendanceSummary, updateMismatchedUserAttendance, updateUnknownAttendanceToKnown, fetchWeeklyPresentCount, fetchUnidentifiedPeopleList, getAllUserAttendanceSummary, getAllUserAttendanceSummaryExcelBuffer} from '../controllers/attendanceController.js';
 import {authenticateAdminSession} from "../../../middlewares/adminAuth.js"
 const app = express()
 const router = Router();
@@ -12,7 +12,8 @@ app.get('/fetch-unknown-detections?:page', fetchUnidentifiedPeopleList);
 app.get('/get-user-attendance-percentage', getUserAttendancePercentage);
 app.put('/update-unknown-attendance', updateUnknownAttendanceToKnown);
 app.put('/update-missmatched-attendance', updateMismatchedUserAttendance);
-
+app.get('/get-all-attendance-summary', getAllUserAttendanceSummary);
+app.get('/get-all-attendance-summary-excel', getAllUserAttendanceSummaryExcelBuffer);
 
 app.use("/", router);
 export default app;

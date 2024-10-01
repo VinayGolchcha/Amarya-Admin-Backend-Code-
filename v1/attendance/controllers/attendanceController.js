@@ -1,7 +1,9 @@
 import moment from "moment";
 import { checkRtspStatus } from "../../../utils/cameraUtils.js";
 import { cameraDownResponse, cameraUpResponse, internalServerErrorResponse, internalServerErrorResponseForCamera, successResponse } from "../../../utils/response.js";
-import { fetchUnidentifiedPeopleListQuery, fetchUserPresentAttendanceQuery, getUnknownUserAttendanceQuery, getUserAttendanceByUserIdAndDateQuery, getUserAttendanceLogByUserIdAndDateForInTimeQuery, getUserAttendanceSummaryQuery, getUserByEmpIdQuery, getUserByUserNameQuery, insertUnknownUserAttendanceQuery, insertUserAttendanceLogsQuery, updateInTimeUserAttenQuery, updateUnknownAttendance, updateUserAttendanceQuery, getWeeklyPresentCountQuery, getUserAttendanceLogByUserIdAndDateForOutTimeQuery, updateOutTimeUserAttenQuery, fetchAttedancePercentageOfUsersByDateQuery } from "../models/query.js";
+import { fetchUnidentifiedPeopleListQuery, fetchUserPresentAttendanceQuery, getUnknownUserAttendanceQuery, getUserAttendanceByUserIdAndDateQuery, getUserAttendanceLogByUserIdAndDateForInTimeQuery, getUserAttendanceSummaryQuery, getUserByEmpIdQuery, getUserByUserNameQuery, insertUnknownUserAttendanceQuery, insertUserAttendanceLogsQuery, updateInTimeUserAttenQuery, updateUnknownAttendance, updateUserAttendanceQuery, getWeeklyPresentCountQuery, getUserAttendanceLogByUserIdAndDateForOutTimeQuery, updateOutTimeUserAttenQuery, fetchAttedancePercentageOfUsersByDateQuery, fetchMonthlyAllUserAttendanceQuery } from "../models/query.js";
+import ExcelJS from 'exceljs';
+
 export const saveAttendanceLogs = async (uniqueMockData) => {
   try {
     let promises = uniqueMockData.map(async (detection) => {
@@ -411,4 +413,98 @@ const calculatePercentages = (presentDays, workFromHomeDays, absentDays, leaves,
 
   Object.keys(percentages).forEach(key => percentages[key] = percentages[key].toFixed(2));
   return percentages;
+};
+
+export const getAllUserAttendanceSummary = async (req, res, next) => {
+  try {
+
+    const startDate = req.query.startDate;
+    const endDate = req.query.endDate;
+
+    if (!startDate || !endDate) {
+      return res.status(400).json({ error: 'StartDate, EndDate and EmpId is required.' });
+    }
+
+    if (!moment(startDate, 'YYYY-MM-DD', true).isValid() || !moment(endDate, 'YYYY-MM-DD', true).isValid()) {
+      return res.status(400).json({ error: 'Invalid date format. Use YYYY-MM-DD.' });
+    }
+    let [summary] = await fetchMonthlyAllUserAttendanceQuery([startDate, endDate]);
+
+    if (summary.length == 0) {
+      return notFoundResponse(res, "", "Data not found");
+    }
+
+
+    return successResponse(res, summary, 'User attendance summary fetched successfully');
+
+  } catch (error) {
+    return internalServerErrorResponse(res, error);
+  }
+};
+
+export const getAllUserAttendanceSummaryExcelBuffer = async (req, res, next) => {
+  try {
+    const startDate = req.query.startDate;
+    const endDate = req.query.endDate;
+
+    if (!startDate || !endDate) {
+      return res.status(400).json({ error: 'StartDate and EndDate are required.' });
+    }
+
+    if (!moment(startDate, 'YYYY-MM-DD', true).isValid() || !moment(endDate, 'YYYY-MM-DD', true).isValid()) {
+      return res.status(400).json({ error: 'Invalid date format. Use YYYY-MM-DD.' });
+    }
+
+    const [summary] = await fetchMonthlyAllUserAttendanceQuery([startDate, endDate]);
+
+    if (summary.length === 0) {
+      return res.status(404).json({ error: 'No data found' });
+    }
+
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet('Attendance Summary');
+
+    const headers = [
+      { header: 'S.No', key: 'sno', width: 10 },
+      { header: 'Employee ID', key: 'emp_id', width: 15 },
+      { header: 'Employee Name', key: 'emp_name', width: 30 },
+      { header: 'Present Days', key: 'no_present_days', width: 15 },
+      { header: 'Leaves', key: 'no_leaves', width: 15 },
+      { header: 'Absent Days', key: 'no_absent_days', width: 15 },
+      { header: 'Holidays', key: 'no_holidays', width: 15 },
+      { header: 'Total Working Days', key: 'total_working_days', width: 20 },
+    ];
+
+    worksheet.columns = headers;
+
+    worksheet.getRow(1).font = { bold: true };
+    worksheet.getRow(1).alignment = { horizontal: 'center' };
+
+    summary.forEach((item, index) => {
+      worksheet.addRow({
+        sno: index + 1,
+        emp_id: item.emp_id,
+        emp_name: item.emp_name,
+        no_present_days: item.no_present_days,
+        no_leaves: item.no_leaves,
+        no_absent_days: item.no_absent_days,
+        no_holidays: item.no_holidays,
+        total_working_days: item.total_working_days,
+      });
+    });
+
+    worksheet.eachRow((row, rowNumber) => {
+      row.alignment = { horizontal: 'center' };
+    });
+
+    const buffer = await workbook.xlsx.writeBuffer();
+
+    res.setHeader('Content-Disposition', 'attachment; filename=attendance_summary.xlsx');
+    res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+
+    res.end(buffer);
+
+  } catch (error) {
+    return internalServerErrorResponse(res, error);
+  }
 };
