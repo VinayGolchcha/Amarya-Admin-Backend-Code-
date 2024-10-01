@@ -201,7 +201,9 @@ export const getUserDataByUserIdQuery = (array) =>{
                     u.team_id,
                     u.client_report,
                     i.public_id,
-                    1 AS teams
+                    (SELECT COUNT(DISTINCT w.team_id)
+                        FROM worksheets w
+                        WHERE w.emp_id = u.emp_id) AS teams
                 FROM
                     users u
                 LEFT JOIN
