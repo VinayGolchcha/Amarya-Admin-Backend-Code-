@@ -333,7 +333,7 @@ export const fetchAttedancePercentageOfUsersByDateQuery = (array) => {
         userAttendance ua ON u._id = ua.user_id AND ua.date IN (?)`;
         return pool.query(query, array);
     } catch (error) {
-        console.error("Error executing getUserAttendanceLogByUserIdAndDateForOutTimeQuery", error);
+        console.error("Error executing fetchAttedancePercentageOfUsersByDateQuery", error);
     }
 }
 
@@ -436,6 +436,6 @@ export const getUserAttendanceByDateQuery = (array) => {
         inner join users u ON u._id = ua.user_id where date = ?`;
         return pool.query(query, array);
     } catch (error) {
-        console.error("Error executing getUserAttendanceLogByUserIdAndDateForOutTimeQuery", error);
+        console.error("Error executing getUserAttendanceByDateQuery", error);
     }
 }
