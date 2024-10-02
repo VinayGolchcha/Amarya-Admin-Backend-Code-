@@ -339,10 +339,10 @@ export const fetchAttedancePercentageOfUsersByDateQuery = (array) => {
 
 export const fetchMonthlyAllUserAttendanceQuery = (params) => {
     const [startDate, endDate] = params;
-  
+
     const setStartDate = `SET @start_date = ?;`;
     const setEndDate = `SET @end_date = ?;`;
-  
+
     const mainQuery = `
       WITH all_days AS (
           SELECT DATE(@start_date + INTERVAL num DAY) AS day
@@ -380,9 +380,62 @@ export const fetchMonthlyAllUserAttendanceQuery = (params) => {
              no_holidays, total_working_days
       FROM attendance_summary;
     `;
-  
+
     return pool.query(setStartDate, [startDate])
-      .then(() => pool.query(setEndDate, [endDate]))
-      .then(() => pool.query(mainQuery));
-  };
-  
+        .then(() => pool.query(setEndDate, [endDate]))
+        .then(() => pool.query(mainQuery));
+};
+
+export const getDailyUserAttendanceQuery = (params) => {
+    const [startDate, endDate, empId] = params;
+
+    const setStartDate = `SET @start_date = ?;`;
+    const setEndDate = `SET @end_date = ?;`;
+    const setEmpId = `SET @emp_id = ?;`;
+
+    const mainQuery = `
+      WITH RECURSIVE calendar AS (
+        SELECT @start_date AS date
+        UNION ALL
+        SELECT DATE_ADD(date, INTERVAL 1 DAY)
+        FROM calendar
+        WHERE date < @end_date
+      )
+      SELECT 
+          c.date,
+          CASE
+              WHEN DAYOFWEEK(c.date) = 7 THEN 'Saturday'
+              WHEN DAYOFWEEK(c.date) = 1 THEN 'Sunday'
+              WHEN h.date IS NOT NULL THEN 'Holiday'
+              WHEN l.from_date <= c.date AND l.to_date >= c.date AND l.status = 'approved' AND l.leave_type LIKE '%leave%' THEN 'Leave'
+              WHEN l.from_date <= c.date AND l.to_date >= c.date AND l.status = 'approved' AND l.leave_type = 'work from home' THEN 'Work_From_Home'
+              WHEN ua.id IS NOT NULL THEN 'Present'
+              ELSE 'Absent'
+          END AS attendance_status
+      FROM calendar c
+      LEFT JOIN holidays h ON c.date = h.date
+      LEFT JOIN leaveDatesAndReasons l ON l.emp_id COLLATE utf8mb4_0900_ai_ci = @emp_id
+          AND l.from_date <= c.date 
+          AND l.to_date >= c.date 
+          AND l.status = 'approved'
+      LEFT JOIN userAttendance ua ON ua.user_id = (
+          SELECT _id FROM users WHERE emp_id COLLATE utf8mb4_0900_ai_ci = @emp_id
+      ) AND ua.date = c.date
+      ORDER BY c.date;
+    `;
+
+    return pool.query(setStartDate, [startDate])
+        .then(() => pool.query(setEndDate, [endDate]))
+        .then(() => pool.query(setEmpId, [empId]))
+        .then(() => pool.query(mainQuery));
+};
+
+export const getUserAttendanceByDateQuery = (array) => {
+    try {
+        let query = `select date, u.emp_id, in_time, out_time, in_snapshot, out_snapshot from userAttendance ua 
+        inner join users u ON u._id = ua.user_id where date = ?`;
+        return pool.query(query, array);
+    } catch (error) {
+        console.error("Error executing getUserAttendanceLogByUserIdAndDateForOutTimeQuery", error);
+    }
+}

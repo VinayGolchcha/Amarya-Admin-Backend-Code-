@@ -1,7 +1,7 @@
 import moment from "moment";
 import { checkRtspStatus } from "../../../utils/cameraUtils.js";
 import { cameraDownResponse, cameraUpResponse, internalServerErrorResponse, internalServerErrorResponseForCamera, notFoundResponse, successResponse } from "../../../utils/response.js";
-import { deleteUnidentifiedPersonQuery, fetchUnidentifiedPeopleListQuery, fetchUserPresentAttendanceQuery, getUnknownUserAttendanceQuery, getUserAttendanceByUserIdAndDateQuery, getUserAttendanceLogByUserIdAndDateForInTimeQuery, getUserAttendanceSummaryQuery, getUserByEmpIdQuery, getUserByUserNameQuery, insertUnknownUserAttendanceQuery, insertUserAttendanceLogsQuery, updateInTimeUserAttenQuery, updateUnknownAttendance, updateUserAttendanceQuery, getWeeklyPresentCountQuery, getUserAttendanceLogByUserIdAndDateForOutTimeQuery, updateOutTimeUserAttenQuery, fetchAttedancePercentageOfUsersByDateQuery, fetchMonthlyAllUserAttendanceQuery, updateUnidentifiedPersonQuery } from "../models/query.js";
+import { deleteUnidentifiedPersonQuery, fetchUnidentifiedPeopleListQuery, fetchUserPresentAttendanceQuery, getUnknownUserAttendanceQuery, getUserAttendanceByUserIdAndDateQuery, getUserAttendanceLogByUserIdAndDateForInTimeQuery, getUserAttendanceSummaryQuery, getUserByEmpIdQuery, getUserByUserNameQuery, insertUnknownUserAttendanceQuery, insertUserAttendanceLogsQuery, updateInTimeUserAttenQuery, updateUnknownAttendance, updateUserAttendanceQuery, getWeeklyPresentCountQuery, getUserAttendanceLogByUserIdAndDateForOutTimeQuery, updateOutTimeUserAttenQuery, fetchAttedancePercentageOfUsersByDateQuery, fetchMonthlyAllUserAttendanceQuery, updateUnidentifiedPersonQuery, getDailyUserAttendanceQuery, getUserAttendanceByDateQuery } from "../models/query.js";
 import ExcelJS from 'exceljs';
 
 export const saveAttendanceLogs = async (uniqueMockData) => {
@@ -531,6 +531,60 @@ export const getAllUserAttendanceSummaryExcelBuffer = async (req, res, next) => 
     res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
 
     res.end(buffer);
+
+  } catch (error) {
+    return internalServerErrorResponse(res, error);
+  }
+};
+
+export const getDailyUserAttendance = async (req, res, next) => {
+  try {
+
+    const start_date = req.query.startDate;
+    const end_date = req.query.endDate;
+    const emp_id = req.query.empId;
+
+    if (!start_date || !end_date || !emp_id) {
+      return res.status(400).json({ error: 'StartDate, EndDate and EmpId is required.' });
+    }
+
+    if (!moment(start_date, 'YYYY-MM-DD', true).isValid() || !moment(end_date, 'YYYY-MM-DD', true).isValid()) {
+      return res.status(400).json({ error: 'Invalid date format. Use YYYY-MM-DD.' });
+    }
+    let [daily_data] = await getDailyUserAttendanceQuery([start_date, end_date, emp_id]);
+
+    if (daily_data.length == 0) {
+      return notFoundResponse(res, "", "Data not found");
+    }
+
+
+    return successResponse(res, daily_data, 'User attendance fetched successfully');
+
+  } catch (error) {
+    return internalServerErrorResponse(res, error);
+  }
+};
+
+export const getUserAttendanceByDate = async (req, res, next) => {
+  try {
+
+    const date = req.query.date;
+
+
+    if (!date) {
+      return res.status(400).json({ error: 'Date is required.' });
+    }
+
+    if (!moment(date, 'YYYY-MM-DD', true).isValid()) {
+      return res.status(400).json({ error: 'Invalid date format. Use YYYY-MM-DD.' });
+    }
+    let [daily_data] = await getUserAttendanceByDateQuery([date]);
+
+    if (daily_data.length == 0) {
+      return notFoundResponse(res, "", "Data not found");
+    }
+
+    return successResponse(res, daily_data, 'User attendance fetched successfully');
 
   } catch (error) {
     return internalServerErrorResponse(res, error);
