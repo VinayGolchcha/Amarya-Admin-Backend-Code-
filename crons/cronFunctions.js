@@ -3,7 +3,7 @@ import XlsxPopulate from "xlsx-populate"
 import fs from 'fs/promises';
 import { getWorkingDaysCountPreviousMonth } from "../v1/helpers/functions.js"
 import { getCategoryTotalPointsQuery, getUserPointsQuery, updateUserPerformanceQuery, updateUserPointsQuery, insertYearlyDataOfUsersPerformanceQuery } from "../v1/worksheets/models/performanceQuery.js"
-import { checkUserAttendanceQuery, checkUserTimeFromLogs, deleteAttendanceLogsQuery, insertUnknownUserAttendanceQuery, insertUserAttendanceQuery } from "../v1/attendance/models/query.js";
+import { checkUserTimeFromLogs, deleteAttendanceLogsQuery, getUserAttendanceByUserIdAndDateQuery, insertUserAttendanceQuery } from "../v1/attendance/models/query.js";
 import moment from 'moment';
 import ffmpeg from "fluent-ffmpeg";
 import { updateExperienceQuery } from "../v1/users/models/userQuery.js";
@@ -204,9 +204,8 @@ export const saveAttendance = async () => {
       // const dateOnly = `${year}-${month}-${day}`;
 
       const dateOnly = moment(log.date).format('YYYY-MM-DD');
-      console.log(dateOnly);
 
-      let [getUserAttendance] = await checkUserAttendanceQuery([previousDayDt, log.user_id]);
+      let [getUserAttendance] = await getUserAttendanceByUserIdAndDateQuery([previousDayDt, log.user_id]);
 
       if (getUserAttendance.length === 0) {
 
