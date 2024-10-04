@@ -177,6 +177,7 @@ export const fetchUserPresentAttendanceQuery = async (skip) => {
             UA.id AS id,
             U.emp_id AS emp_id,
             U.username AS username,
+            CONCAT(U.first_name, ' ', U.last_name) AS employeeName,
             UA.status AS status,
             UA.in_time AS in_time,
             UA.out_time AS out_time,
