@@ -1,6 +1,7 @@
 import express, { Router } from 'express';
 import { fetchUserPresentAttendance, getCameraStatus, getUserAttendancePercentage, getUserAttendanceSummary, updateMismatchedUserAttendance, updateUnknownAttendanceToKnown, fetchWeeklyPresentCount, fetchUnidentifiedPeopleList, deleteUnidentifiedPerson, updateUnidentifiedPerson, getAllUserAttendanceSummary, getAllUserAttendanceSummaryExcelBuffer, getDailyUserAttendance, getUserAttendanceByDate} from '../controllers/attendanceController.js';
 import {authenticateAdminSession} from "../../../middlewares/adminAuth.js"
+import {unidentifiedPersonVal} from "../../../utils/validation.js"
 const app = express()
 const router = Router();
 
@@ -9,8 +10,8 @@ app.get('/get-attendance-summary',authenticateAdminSession, getUserAttendanceSum
 app.get('/fetch-weekly-present-count',authenticateAdminSession, fetchWeeklyPresentCount);
 app.get('/fetch-user-present-attendance',authenticateAdminSession, fetchUserPresentAttendance);
 app.get('/fetch-unknown-detections',authenticateAdminSession, fetchUnidentifiedPeopleList);
-app.delete('/delete-unknown-detection/:id',authenticateAdminSession, deleteUnidentifiedPerson);
-app.put('/update-unknown-detection/:id',authenticateAdminSession, updateUnidentifiedPerson);
+app.delete('/delete-unknown-detection/:id',authenticateAdminSession,unidentifiedPersonVal, deleteUnidentifiedPerson);
+app.put('/update-unknown-detection/:id',authenticateAdminSession,unidentifiedPersonVal, updateUnidentifiedPerson);
 app.get('/get-user-attendance-percentage',authenticateAdminSession, getUserAttendancePercentage);
 app.put('/update-unknown-attendance',authenticateAdminSession, updateUnknownAttendanceToKnown);
 app.put('/update-missmatched-attendance',authenticateAdminSession, updateMismatchedUserAttendance);

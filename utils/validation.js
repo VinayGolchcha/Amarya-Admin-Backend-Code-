@@ -326,3 +326,7 @@ function isValidMonthYearFormat(dateString) {
     const regex = /^(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) \d{2}$/;
     return regex.test(dateString);
 }
+
+export const unidentifiedPersonVal = [
+    param("id").isInt().withMessage("Invalid id input.").notEmpty().withMessage("id cannot be empty."),
+]
