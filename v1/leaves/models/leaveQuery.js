@@ -316,3 +316,23 @@ export const getallUserLeaveDataQuery = async(array)=>{
         throw error;
     }
 }
+
+export const getUserLeaveDataByIdQuery = async(array)=>{
+    try {
+        let query = `
+        SELECT *
+        FROM leaveDatesAndReasons
+        WHERE emp_id = ? AND _id = ? AND status = 'pending'
+        ORDER BY
+        created_at DESC
+        `
+        return await pool.query(query, array);
+    } catch (error) {
+        console.error("Error executing getUserLeaveDataByIdQuery:", error);
+        throw error;
+    }
+}
+
+export const updateUserLeaveQuery = (query, array)=>{
+    return pool.query(query, array);
+}

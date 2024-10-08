@@ -5,12 +5,15 @@ import {
     getAllUsersLeaveCountQuery, getUserLeaveDataQuery, fetchLeaveTakenOverviewQuery, deleteLeaveTypeAndCountQuery, fetchHolidayListQuery, getHolidayDataQuery, deleteHolidayQuery,
     getallUserLeaveDataQuery,
     fetchAllEmployeesQuery,
-    insertUserLeaveCountQuery
+    insertUserLeaveCountQuery,
+    getUserLeaveDataByIdQuery,
+    updateUserLeaveQuery
 } from "../../leaves/models/leaveQuery.js"
 import { checkIfAlreadyRequestedQuery, getUserGender, leaveTakenCountQuery } from "../../approvals/models/leaveApprovalQuery.js"
 import { successResponse, errorResponse, notFoundResponse, unAuthorizedResponse, internalServerErrorResponse } from "../../../utils/response.js"
 import { incrementId, createDynamicUpdateQuery } from "../../helpers/functions.js"
 import { validationResult } from "express-validator";
+import { updateApprovalLeaveDataQuery } from "../../approvals/models/approvalQuery.js"
 dotenv.config();
 
 export const addHoliday = async (req, res, next) => {
@@ -316,6 +319,73 @@ export const getUserAllLeaveData = async (req, res, next) => {
             return notFoundResponse(res, '', 'Data not found.');
         }
         return successResponse(res, data, "Data fetched successfully");
+    } catch (error) {
+        return internalServerErrorResponse(res, error);
+    }
+}
+
+export const updateUserLeaveData = async (req, res, next) => {
+    try {
+        const leave_id = parseInt(req.params.id);
+        const emp_id = req.params.emp_id;
+        const { from_date, to_date, leave_type } = req.body;
+
+        if (!leave_id || !emp_id || !from_date || !to_date || !leave_type) {
+            return errorResponse(res, "", "Missing required fields");
+        }
+
+        const from = new Date(from_date);
+        const to = new Date(to_date);
+        const current_date = new Date();
+        current_date.setHours(0, 0, 0, 0);
+
+        if (from < current_date) {
+            return errorResponse(res, "", "The 'from' date cannot be in the past.");
+        }
+        if (to < from) {
+            return errorResponse(res, "", "The 'to' date cannot be before the 'from' date.");
+        }
+
+        const total_days = Math.ceil((to - from) / (1000 * 60 * 60 * 24)) + 1;
+        const normalized_leave_type = leave_type.toLowerCase();
+
+        const [
+            leave_date,
+            user_leave_taken,
+            leave_type_admin
+        ] = await Promise.all([
+            getUserLeaveDataByIdQuery([emp_id, leave_id]),
+            leaveTakenCountQuery([emp_id, normalized_leave_type]),
+            getLeaveTypeCountByAdmin([normalized_leave_type])
+        ]);
+
+        if (!leave_date?.[0]?.length) {
+            return notFoundResponse(res, '', 'Leave request not found.');
+        }
+
+        if (!leave_type_admin?.[0]?.length) {
+            return errorResponse(res, "", "Invalid leave type.");
+        }
+
+        const available_leaves = leave_type_admin[0][0].leave_count;
+        const taken_leaves = user_leave_taken[0][0].leave_taken_count;
+        const requested_total_leaves = total_days + taken_leaves;
+
+        if (requested_total_leaves > available_leaves) {
+            return errorResponse(res, "", 
+                `Insufficient leave balance.`
+            );
+        }
+
+        const update_data = {
+            from_date,
+            to_date,
+            leave_type: normalized_leave_type
+        };
+    
+        let query_values = await createDynamicUpdateQuery('leaveDatesAndReasons', { _id: leave_id}, update_data)
+        let [data, approval_data] = await Promise.all([updateUserLeaveQuery(query_values.updateQuery, query_values.updateValues), updateApprovalLeaveDataQuery([normalized_leave_type, String(leave_id), emp_id])])
+        return successResponse(res, data, "Data updated successfully");
     } catch (error) {
         return internalServerErrorResponse(res, error);
     }
