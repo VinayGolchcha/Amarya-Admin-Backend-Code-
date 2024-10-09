@@ -11,7 +11,7 @@ let oauth2Client;
 export const createOAuth2Client = () =>{
   // const credentials = JSON.parse(fs.readFileSync(CREDENTIALS_PATH));
   // const { client_secret, client_id, redirect_uris } = credentials.installed;
-  let client_id = process.env.client_id;
+  let client_id = process.env.CLIENT_ID;
   let client_secret = process.env.CLIENT_SECRET;
   let redirect_uris = process.env.REDIRECT_URL
   oauth2Client = new google.auth.OAuth2(client_id, client_secret, redirect_uris);
