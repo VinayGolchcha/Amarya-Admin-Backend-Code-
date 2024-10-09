@@ -14,7 +14,7 @@ export const createOAuth2Client = () =>{
   let client_id = process.env.client_id;
   let client_secret = process.env.CLIENT_SECRET;
   let redirect_uris = process.env.REDIRECT_URL
-  oauth2Client = new google.auth.OAuth2(client_id, client_secret, redirect_uris[0]);
+  oauth2Client = new google.auth.OAuth2(client_id, client_secret, redirect_uris);
 
   oauth2Client.on('tokens', (tokens) => {
     if (tokens.refresh_token) {
