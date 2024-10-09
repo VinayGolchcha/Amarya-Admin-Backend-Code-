@@ -28,6 +28,7 @@ import { createServer } from 'http';
 import { Server } from 'socket.io';
 import { saveAttendanceLogs } from './v1/attendance/controllers/attendanceController.js';
 import attendanceRoutes from './v1/attendance/routes/attendanceRoutes.js';
+import { authenticate, createOAuth2Client } from './utils/googleDriveUploads.js';
 config();
 
 const app = express();
@@ -155,5 +156,8 @@ try {
 // Start the server
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+  createOAuth2Client();
+  authenticate().then(() => {
+    console.log(`Server running at http://localhost:${PORT}`);
+  });
 });

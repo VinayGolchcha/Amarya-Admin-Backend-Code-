@@ -10,6 +10,9 @@ import {addHolidayVal, updateHolidayVal, addLeaveCountVal, leaveRequestVal, upda
 import {authenticateUserSession} from "../../../middlewares/userAuth.js"
 import {authenticateAdminSession} from "../../../middlewares/adminAuth.js"
 import {authenticateUserAdminSession} from "../../../middlewares/userAdminAuth.js"
+import multer from 'multer';
+const storage = multer.memoryStorage();
+const upload = multer({ storage: storage });
 
 
 app.post('/admin/add-holiday', authenticateAdminSession, addHolidayVal, addHoliday);
@@ -18,7 +21,7 @@ app.post('/admin/add-leave-type-and-count', authenticateAdminSession, addLeaveCo
 app.put('/admin/update-leave-type-and-count/:id/:leave_type_id', authenticateAdminSession, updateLeaveTypeAndCountVal, updateLeaveTypeAndCount);
 app.delete('/admin/delete-leave-type-and-count/:id/:leave_type_id', authenticateAdminSession, deleteLeaveTypeAndCountVal, deleteLeaveTypeAndCount);
 app.get('/fetch-leave-type-and-count', authenticateUserAdminSession, fetchLeaveTypesAndTheirCount);
-app.post('/leave-request', authenticateUserSession, leaveRequestVal, leaveRequest);
+app.post('/leave-request',upload.single('file'), authenticateUserSession,leaveRequestVal, leaveRequest);
 app.get('/get-user-leave-dashboard-data/:id', authenticateUserAdminSession, getUserLeaveDashboardData, getUserLeaveDataForDashboard);
 app.get('/user-leave-data', getUserLeaveData);
 app.post('/user-all-leave-data', authenticateUserAdminSession, getTrnVal, getUserAllLeaveData);

@@ -197,8 +197,9 @@ export const insertUserLeaveDataQuery = (array) => {
             from_date,
             to_date,
             subject,
-            body
-        ) VALUES (?,?,?,?,?,?);`
+            body,
+            document_url
+        ) VALUES (?,?,?,?,?,?,?);`
         return pool.query(query, array);
     } catch (error) {
         console.error("Error executing insertUserLeaveDataQuery:", error);
@@ -305,6 +306,7 @@ export const getallUserLeaveDataQuery = async(array)=>{
         DATEDIFF(to_date,from_date) + 1 AS total_days,
         status,
         'HR' AS manager
+        document_url,
         FROM leaveDatesAndReasons
         WHERE emp_id = ?
         ORDER BY

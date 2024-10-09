@@ -274,7 +274,7 @@ export const updateUserPassword = async (req, res, next) => {
         }
         if (password === confirm_password) {
             const password_hash = await bcrypt.hash(password.toString(), 12);
-            await updateUserPasswordQuery([password_hash, email]);
+            await updateUserPasswordQuery([password_hash, 0, email]);
             // await updateQuery(email, password_hash)
             return successResponse(res, 'User password updated successfully');
         } else {

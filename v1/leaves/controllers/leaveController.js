@@ -14,6 +14,7 @@ import { successResponse, errorResponse, notFoundResponse, unAuthorizedResponse,
 import { incrementId, createDynamicUpdateQuery } from "../../helpers/functions.js"
 import { validationResult } from "express-validator";
 import { updateApprovalLeaveDataQuery } from "../../approvals/models/approvalQuery.js"
+import { uploadFileToDrive } from "../../../utils/googleDriveUploads.js"
 dotenv.config();
 
 export const addHoliday = async (req, res, next) => {
@@ -240,8 +241,8 @@ export const leaveRequest = async (req, res, next) => {
         if(existingData.length > 0){
             return notFoundResponse(res, "", "The requested leave period overlaps with an existing leave request.");
         }
-        // Check if from_date is in the past
-        if (from < new Date()) {
+        let new_from_date =  new Date(from).toISOString().split('T')[0];
+        if (new_from_date < current_date) {
             return notFoundResponse(res, "", "The 'from' date cannot be in the past.");
         }
         
@@ -262,14 +263,20 @@ export const leaveRequest = async (req, res, next) => {
             message = "Please select valid leave type."
             return notFoundResponse(res, "", message);
         }
+        let file=req.file;
+        let file_url;
         if(leaveTypeCountByAdmin[0].leave_count>=(total_days+userLeaveTakenCount[0].leave_taken_count)){
+            if(file){
+                file_url=await uploadFileToDrive(file)
+            }
             await insertUserLeaveDataQuery([
                 emp_id, 
                 leave_type,
                 from_date,
                 to_date,
                 subject,
-                body
+                body,
+                file_url
             ]);
             const [foreign_id] = await getLastLeaveId()
             await insertApprovalForLeaveQuery([emp_id, foreign_id[0]._id, "leave", leave_type, current_date, from_date, to_date, subject, body])

@@ -107,7 +107,7 @@ export const getLastEmployeeIdQuery = () =>{
 
 export const updateUserPasswordQuery = (array) =>{
     try {
-        let query = `UPDATE users SET password = ? WHERE email = ?`
+        let query = `UPDATE users SET password = ?, otp = ? WHERE email = ?`
         return pool.query(query, array);
     } catch (error) {
         console.error("Error executing updateUserPasswordQuery:", error);
