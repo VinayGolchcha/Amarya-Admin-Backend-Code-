@@ -74,15 +74,19 @@ export const deleteAssetQuery = async (array) => {
         DELETE FROM userAssets 
         WHERE asset_id = ? AND emp_id = ?;
     `
-    pool.query(query1, array);
-    pool.query(query2, array);
+    try {
+        await pool.query(query1, array);
+        await pool.query(query2, array);
+    } catch (error) {
+        throw new Error(`Error in deleting asset: ${error.message}`);
+    }
 };
 
 export const checkIfAlreadyAssigned= async(array)=>{
     const query = `SELECT * 
     FROM userAssets 
     WHERE emp_id = ? 
-        AND foreign_id = ? 
+        AND asset_id = ? 
         AND status = ? 
         AND LOWER(requirement_type) = LOWER('new item')
     ;`
@@ -103,5 +107,20 @@ export const checkIfAlreadyAssigned= async(array)=>{
 
 export const fetchAssetDataQuery=(array)=>{
     const query = `SELECT * FROM assets WHERE asset_id = ?`
+    return pool.query(query, array)
+}
+
+export const changeAssetStatusToAvailable = async(array)=>{
+    let query = `
+    UPDATE assets 
+    INNER JOIN userAssets ON assets.item = userAssets.item
+    AND assets.asset_id = userAssets.asset_id
+    SET assets.status = 'unassigned'
+    WHERE assets.item = ?
+    AND assets.asset_id = ?
+    AND userAssets.emp_id = ?
+    AND assets.status = 'assigned'
+    AND userAssets.status = 'approved'
+    ;`
     return pool.query(query, array)
 }

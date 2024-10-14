@@ -18,7 +18,13 @@ export const insertAssetQuery = (array)=> {
 }
 
 export const checkIfAlreadyExistsQuery=(array)=>{
-    const query = `SELECT * FROM userAssets WHERE emp_id = ? AND asset_type = ? AND item = ? AND status = 'pending'`
+    const query = `
+    SELECT * 
+    FROM userAssets 
+    WHERE emp_id = ? 
+    AND asset_type = ? 
+    AND item = ? 
+    AND status IN ('pending', 'approved')`
     return pool.query(query, array)
 }
 

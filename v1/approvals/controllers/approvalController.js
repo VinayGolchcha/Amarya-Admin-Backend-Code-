@@ -1,7 +1,7 @@
 import { validationResult } from "express-validator";
 import dotenv from "dotenv"
 import { successResponse, errorResponse, notFoundResponse, internalServerErrorResponse } from "../../../utils/response.js"
-import {assetApprovalQuery, fetchAssetDataQuery, assetRejectionQuery, deleteAssetQuery, checkIfAlreadyAssigned} from "../models/assetApprovalQuery.js"
+import {assetApprovalQuery, fetchAssetDataQuery, assetRejectionQuery, deleteAssetQuery, checkIfAlreadyAssigned, changeAssetStatusToAvailable} from "../models/assetApprovalQuery.js"
 import {fetchTrainingDataQuery, trainingApprovalQuery, trainingRejectionQuery, deleteTrainingQuery} from "../models/trainingApprovalQuery.js"
 import {leaveApprovalQuery, deleteLeaveQuery, leaveRejectionQuery, getUserLeaveDaysQuery, leaveTakenCountQuery, checkIfLeaveAlreadyApprovedQuery} from "../models/leaveApprovalQuery.js"
 dotenv.config();
@@ -26,12 +26,11 @@ export const approvalByAdmin = async (req, res, next) => {
         const handleInventoryRequest = async () => {
             asset_type = asset_type.toLowerCase();
             const [requestData] = await fetchAssetDataQuery([foreign_id]);
-
             if (requestData.length === 0) {
                 message = 'Asset not found';
                 statusCode = 404
                 return {message, statusCode}
-            }else if(requestData[0].item != item || requestData[0].status == "assigned"){
+            }else if(requestData[0].item != item || (requestData[0].status == "assigned" && status !="delete")){
                 message = 'Inventory id given is not of the requested asset';
                 statusCode = 404
                 return {message, statusCode}
@@ -66,6 +65,7 @@ export const approvalByAdmin = async (req, res, next) => {
                 statusCode = 200
                 return {message, statusCode}
             } else {
+                await changeAssetStatusToAvailable([item, foreign_id, emp_id]);
                 await deleteAssetQuery([foreign_id, emp_id]);
                 message = 'Asset request deleted successfully';
                 statusCode = 200

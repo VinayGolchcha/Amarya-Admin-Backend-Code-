@@ -15,6 +15,7 @@ import { incrementId, createDynamicUpdateQuery } from "../../helpers/functions.j
 import { validationResult } from "express-validator";
 import { updateApprovalLeaveDataQuery } from "../../approvals/models/approvalQuery.js"
 import { uploadFileToDrive } from "../../../utils/googleDriveUploads.js"
+import moment from "moment"
 dotenv.config();
 
 export const addHoliday = async (req, res, next) => {
@@ -341,10 +342,9 @@ export const updateUserLeaveData = async (req, res, next) => {
             return errorResponse(res, "", "Missing required fields");
         }
 
-        const from = new Date(from_date);
-        const to = new Date(to_date);
-        const current_date = new Date();
-        current_date.setHours(0, 0, 0, 0);
+        const from = new Date(from_date).toISOString().split('T')[0];
+        const to = new Date(to_date).toISOString().split('T')[0];
+        const current_date = new Date().toISOString().split('T')[0];
 
         if (from < current_date) {
             return errorResponse(res, "", "The 'from' date cannot be in the past.");
@@ -369,6 +369,12 @@ export const updateUserLeaveData = async (req, res, next) => {
         if (!leave_date?.[0]?.length) {
             return notFoundResponse(res, '', 'Leave request not found.');
         }
+        let leave_request_date = new Date(leave_date[0][0].created_at);
+        leave_request_date=leave_request_date.toISOString().split('T')[0]
+        const previous_days_date = moment().subtract(process.env.MAX_DAYS_TO_UPDATE, 'days').format('YYYY-MM-DD');
+        if(previous_days_date==leave_request_date){
+            return errorResponse(res, "", "You cannot update the leave request.");
+        }
 
         if (!leave_type_admin?.[0]?.length) {
             return errorResponse(res, "", "Invalid leave type.");
@@ -391,7 +397,7 @@ export const updateUserLeaveData = async (req, res, next) => {
         };
     
         let query_values = await createDynamicUpdateQuery('leaveDatesAndReasons', { _id: leave_id}, update_data)
-        let [data, approval_data] = await Promise.all([updateUserLeaveQuery(query_values.updateQuery, query_values.updateValues), updateApprovalLeaveDataQuery([normalized_leave_type, String(leave_id), emp_id])])
+        const [data, approval_data] = await Promise.all([updateUserLeaveQuery(query_values.updateQuery, query_values.updateValues), updateApprovalLeaveDataQuery([normalized_leave_type, from_date, to_date, String(leave_id), emp_id])])
         return successResponse(res, data, "Data updated successfully");
     } catch (error) {
         return internalServerErrorResponse(res, error);
