@@ -306,6 +306,8 @@ export const getallUserLeaveDataQuery = async(array)=>{
         DATEDIFF(to_date,from_date) + 1 AS total_days,
         status,
         'HR' AS manager,
+        subject,
+        body,
         document_url
         FROM leaveDatesAndReasons
         WHERE emp_id = ?
