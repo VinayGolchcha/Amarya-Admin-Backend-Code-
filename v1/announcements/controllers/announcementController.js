@@ -34,7 +34,7 @@ export const createAnnouncement = async(req, res, next) => {
             return errorResponse(res, errors.array(), "Description must be written in less than 200 characters");
         }
         if(event_type != "announcement"){
-            return notFoundResponse(res, '', 'Event type not supported');
+            return successResponse(res, [], 'Event type not supported');
         }
 
         let [data] = await addAnnouncementQuery([
@@ -80,7 +80,7 @@ export const deleteAnnouncements = async(req, res, next) => {
         let [data] = await deleteAnnouncementQuery([id])
 
         if (data.affectedRows == 0){
-            return notFoundResponse(res, '', 'Announcement not found, wrong input.');
+            return successResponse(res, [], 'Announcement not found, wrong input.');
         }
         return successResponse(res, '', 'Announcements Deleted Successfully');
     } catch (error) {
@@ -129,7 +129,7 @@ export const updateAnnouncements = async(req, res, next) => {
         let [data] = await updateAnnouncementQuery(updateQuery, updateValues)
 
         if (data.affectedRows == 0){
-            return notFoundResponse(res, '', 'Announcement not found, wrong input.');
+            return successResponse(res, [], 'Announcement not found, wrong input.');
         }
         return successResponse(res, data, 'Announcement Updated Successfully');
     } catch (error) {
@@ -149,7 +149,7 @@ export const filterAnnouncementByDate = async (req, res, next) => {
       let array = await fetchActivityQuery([event_type]);
       const result = array[0].filter((item) => item.created_at.toISOString().includes(date));
       if (result.length === 0) {
-        return notFoundResponse(res, result, "Announcement not found in specified date");
+        return successResponse(res, result, "Announcement not found in specified date");
       }
       return successResponse(res, result, "Announcement Fetched Successfully");
     } catch (error) {
@@ -173,7 +173,7 @@ export const fetchAnnouncementById = async(req, res, next) => {
         if(is_data_exist.length > 0){
             await updateAnnouncementReadStatusQuery([id, emp_id])
         }else{
-            return notFoundResponse(res, '', 'Announcement not found, wrong input.');
+            return successResponse(res, [], 'Announcement not found, wrong input.');
         }
         return successResponse(res, is_data_exist, 'Announcements Fetched Successfully');
     } catch (error) {

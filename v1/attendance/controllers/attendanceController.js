@@ -113,13 +113,13 @@ export const fetchWeeklyPresentCount = async (req, res, next) => {
 
 export const fetchUserPresentAttendance = async (req, res, next) => {
   try {
-    const page = req.query.page ? parseInt(req.query.page) : 1;
-    if (isNaN(page) || page <= 0) {
-      return res.status(400).json({ error: 'Invalid page number.' });
-    }
+    // const page = req.query.page ? parseInt(req.query.page) : 1;
+    // if (isNaN(page) || page <= 0) {
+    //   return res.status(400).json({ error: 'Invalid page number.' });
+    // }
 
     const skip = (page - 1) * 10;
-    const [data] = await fetchUserPresentAttendanceQuery(skip);
+    const [data] = await fetchUserPresentAttendanceQuery();
 
     if (data.length === 0) {
       return successResponse(res, [], "Data not found");
@@ -133,13 +133,13 @@ export const fetchUserPresentAttendance = async (req, res, next) => {
 
 export const fetchUnidentifiedPeopleList = async (req, res, next) => {
   try {
-    const page = req.query.page ? parseInt(req.query.page) : 1;
-    if (isNaN(page) || page <= 0) {
-      return res.status(400).json({ error: 'Invalid page number.' });
-    }
+    // const page = req.query.page ? parseInt(req.query.page) : 1;
+    // if (isNaN(page) || page <= 0) {
+    //   return res.status(400).json({ error: 'Invalid page number.' });
+    // }
 
-    const skip = (page - 1) * 10;
-    const [data] = await fetchUnidentifiedPeopleListQuery(skip);
+    // const skip = (page - 1) * 10;
+    const [data] = await fetchUnidentifiedPeopleListQuery();
 
     if (data.length === 0) {
       return successResponse(res, [], "Data not found");

@@ -77,7 +77,7 @@ export const approvalByAdmin = async (req, res, next) => {
             const [requestData] = await fetchTrainingDataQuery([emp_id, foreign_id]);
 
             if (requestData.length === 0) {
-                return notFoundResponse(res, '', 'Training not found');
+                return successResponse(res, [], 'Training not found');
             }
 
             if (status === "approved") {
@@ -169,7 +169,7 @@ export const approvalByAdmin = async (req, res, next) => {
         if(data.statusCode==200){
             return successResponse(res, "", data.message);
         }else{
-            return notFoundResponse(res, "", data.message);
+            return successResponse(res, [], data.message);
         }
     } catch (error) {
         console.log(error);

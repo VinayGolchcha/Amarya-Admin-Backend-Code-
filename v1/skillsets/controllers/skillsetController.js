@@ -63,7 +63,7 @@ export const fetchSkillSets = async(req, res, next) =>{
         }
         const [data] = await getAllSkillSetQuery();
         if (data.length == 0) {
-            return notFoundResponse(res, '', 'Data not found.');
+            return successResponse(res, [], 'Data not found.');
         }
         return successResponse(res, data,'Skills fetched successfully.');
     } catch (error) {

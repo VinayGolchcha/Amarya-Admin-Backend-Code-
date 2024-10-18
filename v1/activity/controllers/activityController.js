@@ -33,7 +33,7 @@ export const addActivity = async (req, res, next) => {
         return errorResponse(res, errors.array(), "Description must be written in less than 200 characters");
     }
     if (event_type != "activity") {
-      return notFoundResponse(res, "", "Event type not supported");
+      return successResponse(res, [], "Event type not supported");
     }
 
     let [data] = await addActivityQuery([
@@ -112,7 +112,7 @@ export const updateActivity = async (req, res, next) => {
     let [data] = await updateAnnouncementQuery(updateQuery, updateValues);
 
     if (data.affectedRows == 0) {
-      return notFoundResponse(res, "", "Activity not found, wrong input.");
+      return successResponse(res, [], "Activity not found, wrong input.");
     }
 
     //Upload new image
@@ -181,7 +181,7 @@ export const filterActivityByDate = async (req, res, next) => {
     let [array] = await fetchActivityQuery([event_type]);
     const result = array.filter((item) => item.from_date.includes(date));
     if (result.length === 0) {
-      return notFoundResponse(res, result, "Activity not found in specified date");
+      return successResponse(res, result, "Activity not found in specified date");
     }
     return successResponse(res, result, "Activiy Fetched Successfully");
   } catch (error) {
@@ -199,7 +199,7 @@ export const deleteActivity = async(req,res,next) => {
     const id = req.params.id;
     let [data] = await deleteActivityQuery([id]);
     if (data.affectedRows == 0){
-      return notFoundResponse(res, '', 'Activity not found, wrong input.');
+      return successResponse(res, [], 'Activity not found, wrong input.');
     }
 
     let [array_of_ids] = await fetchImagesForActivityQuery([id])
@@ -224,7 +224,7 @@ export const getActivityById = async(req ,res , next) => {
     const { id } = req.params;
     const [data] = await getActivityByIdQuery([id]);
     if (data.length === 0){
-      return notFoundResponse(res, '', 'Activity not found, wrong input.');
+      return successResponse(res, [], 'Activity not found, wrong input.');
     }
     let [image_data] = await fetchImagesBasedOnIdForActivityQuery([id])
     data.push(image_data);

@@ -212,7 +212,6 @@ export const fetchUserPresentAttendanceQuery = async (skip) => {
         WHERE
             date = DATE_FORMAT(CURDATE() - INTERVAL 1 DAY, '%Y-%m-%d')
         ORDER BY date DESC
-        LIMIT 10 OFFSET ${skip}
         `;
         return pool.query(query);
     } catch (error) {
@@ -227,7 +226,6 @@ export const fetchUnidentifiedPeopleListQuery = async (skip) => {
             * 
         FROM unknownUserAttendance
         ORDER BY date DESC
-        LIMIT 10 OFFSET ${skip}
         `;
         return pool.query(query);
     } catch (error) {

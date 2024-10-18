@@ -46,7 +46,7 @@ export const updateTeam = async(req, res, next) => {
             let [data] = await updateTeamWorksheetQuery(query_values.updateQuery, query_values.updateValues);
             return successResponse(res, data, 'Team updated successfully.');
         }else{
-            return notFoundResponse(res, '', 'Team not found.');
+            return successResponse(res, [], 'Team not found.');
         }
     } catch (error) {
         return internalServerErrorResponse(res, error);
@@ -62,7 +62,7 @@ export const fetchTeams = async(req, res, next) =>{
         }
         const [data] = await getAllTeamQuery();
         if (data.length == 0) {
-            return notFoundResponse(res, '', 'Data not found.');
+            return successResponse(res, [], 'Data not found.');
         }
         return successResponse(res, data,'Teams fetched successfully.');
     } catch (error) {

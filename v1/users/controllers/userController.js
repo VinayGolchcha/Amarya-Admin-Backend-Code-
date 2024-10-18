@@ -183,7 +183,7 @@ export const userLogin = async (req, res, next) => {
         const [user] = await getUserDataByUsernameQuery([username]);
 
         if (user.length === 0) {
-            return notFoundResponse(res, '', 'User not found');
+            return successResponse(res, [], 'User not found');
         }
 
         const isPasswordValid = await bcrypt.compare(password, user[0].password);
@@ -265,7 +265,7 @@ export const updateUserPassword = async (req, res, next) => {
         let { otp, email, password, confirm_password } = req.body;
         let [user_data] = await userDetailQuery([email]);
         if (user_data.length == 0) {
-            return notFoundResponse(res, '', 'User not found');
+            return successResponse(res, [], 'User not found');
         }
         otp = parseInt(otp, 10);
         const [user_otp] = await getOtpQuery([email]);
@@ -294,7 +294,7 @@ export const getUserProfile = async(req,res,next) => {
         const emp_id = req.params.emp_id;
         const [user] = await getUserDataByUserIdQuery([emp_id]);
         if (user.length == 0 ){
-            return notFoundResponse(res, '', 'User not found');
+            return successResponse(res, [], 'User not found');
         }
         else{
             return successResponse(res, [user]);
@@ -351,7 +351,7 @@ export const updateUserProfile = async(req, res, next) => {
             
             return successResponse(res, data, 'User profile updated successfully.');
         }else{
-            return notFoundResponse(res, '', 'User not found.');
+            return successResponse(res, [], 'User not found.');
         }
     }
     catch(error){

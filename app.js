@@ -138,7 +138,7 @@ app.use("/api/v1/policy", policiesRoutes);
 app.use("/api/v1/userDashboard", userDashboardRoutes);
 app.use("/api/v1/attendance", attendanceRoutes);
 app.use('/', (req, res) => {
-  res.send({
+  res.status(403).json({
     statusCode: 403,
     status: 'failure',
     message: 'Invalid API'
@@ -155,7 +155,7 @@ try {
 
 // Start the server
 const PORT = process.env.PORT || 3000;
-createOAuth2Client();
+await createOAuth2Client();
 server.listen(PORT, async () => {
   await authenticate()
   console.log(`Server running at http://localhost:${PORT}`);

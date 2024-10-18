@@ -58,7 +58,7 @@ export const updateHoliday = async (req, res, next) => {
         let [data] = await updateHolidayQuery(query_values.updateQuery, query_values.updateValues)
 
         if (data.affectedRows == 0) {
-            return notFoundResponse(res, '', 'Holiday not found, wrong input.');
+            return successResponse(res, '', 'Holiday not found, wrong input.');
         }
         return successResponse(res, data, 'Holiday Updated Successfully');
     } catch (error) {
@@ -70,7 +70,7 @@ export const fetchHolidayList = async (req,res,next) => {
     try {
         const [data] = await fetchHolidayListQuery();
         if (data.length == 0) {
-            return notFoundResponse(res, "", "Data not found");
+            return successResponse(res, "", "Data not found");
         }
         return successResponse(res, data, 'Holiday List fetched successfully');
     }catch(error) {
@@ -88,7 +88,7 @@ export const deleteHoliday = async(req,res,next) => {
 
         const [data] = await getHolidayDataQuery([id]);
         if (data.length == 0) {
-            return notFoundResponse(res, "", "Data not found");
+            return successResponse(res, "", "Data not found");
         }else{
             await deleteHolidayQuery([id]);
             return successResponse(res, "", 'Data Deleted Successfully');
@@ -154,7 +154,7 @@ export const updateLeaveTypeAndCount = async (req, res, next) => {
         let [data] = await updateLeaveQuery(query_values.updateQuery, query_values.updateValues)
 
         if (data.affectedRows == 0) {
-            return notFoundResponse(res, '', 'Data not found, wrong input.');
+            return successResponse(res, '', 'Data not found, wrong input.');
         }
         return successResponse(res, data, 'Data Updated Successfully');
     } catch (error) {
@@ -173,7 +173,7 @@ export const deleteLeaveTypeAndCount  = async (req, res,next) => {
         const leave_type_id = req.params.leave_type_id;
         const [data] = await getLeavesTypesQuery([leave_type_id]);
         if (data.length == 0) {
-            return notFoundResponse(res, "", "Data not found");
+            return successResponse(res, "", "Data not found");
         }
         await Promise.all([
         await deleteLeaveTypeAndCountQuery([id, leave_type_id]),
@@ -195,7 +195,7 @@ export const fetchLeaveTypesAndTheirCount = async (req, res, next) => {
         }
         const [data] = await fetchLeavesCountQuery()
         if (data.length == 0) {
-            return notFoundResponse(res, '', 'Data not found.');
+            return successResponse(res, '', 'Data not found.');
         }
         return successResponse(res, data, 'Leave data fetched successfully');
     } catch (error) {
@@ -214,7 +214,7 @@ export const fetchLeaveTakenOverview = async (req, res, next) => {
         status = status || "approved";
         const [data] = await fetchLeaveTakenOverviewQuery([emp_id, status], date)
         if (data.length == 0) {
-            return notFoundResponse(res, '', 'Data not found.');
+            return successResponse(res, '', 'Data not found.');
         }
         return successResponse(res, data, 'Leave data fetched successfully');
     } catch (error) {
@@ -298,7 +298,7 @@ export const getUserLeaveDataForDashboard =async (req, res, next) => {
         const [user_data] = await getAllUsersLeaveCountQuery([emp_id]);
         const [holiday_list_data] = await fetchHolidayListQuery();
         if (user_data.length == 0) {
-            return notFoundResponse(res, '', 'Data not found.');
+            return successResponse(res, '', 'Data not found.');
         }
         return successResponse(res, {user_data, holiday_list_data}, "Data fetched successfully");
     } catch (error) {
@@ -311,7 +311,7 @@ export const getUserLeaveData = async (req, res, next) => {
         const {emp_id} = req.body;
         const [data] = await getUserLeaveDataQuery([emp_id]);
         if (data.length == 0) {
-            return notFoundResponse(res, '', 'Data not found.');
+            return successResponse(res, [], 'Data not found.');
         }
         return successResponse(res, data, "Data fetched successfully");
     } catch (error) {
@@ -324,7 +324,7 @@ export const getUserAllLeaveData = async (req, res, next) => {
         const {emp_id} = req.body;
         const [data] = await getallUserLeaveDataQuery([emp_id]);
         if (data.length == 0) {
-            return notFoundResponse(res, '', 'Data not found.');
+            return successResponse(res, [], 'Data not found.');
         }
         return successResponse(res, data, "Data fetched successfully");
     } catch (error) {
@@ -367,7 +367,7 @@ export const updateUserLeaveData = async (req, res, next) => {
         ]);
 
         if (!leave_date?.[0]?.length) {
-            return notFoundResponse(res, '', 'Leave request not found.');
+            return successResponse(res, [], 'Leave request not found.');
         }
         let leave_request_date = new Date(leave_date[0][0].created_at);
         leave_request_date=leave_request_date.toISOString().split('T')[0]
