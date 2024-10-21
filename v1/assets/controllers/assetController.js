@@ -149,7 +149,7 @@ export const fetchUserAssets = async(req, res, next) => {
         if (!errors.isEmpty()) {
             return errorResponse(res, errors.array(), "")
         }
-        const {emp_id} = req.body;
+        const {emp_id} = req.params;
         const [data] = await fetchUserAssetsQuery([emp_id])
         if(data.length == 0){
             return successResponse(res, [], 'Data not found for this user.');

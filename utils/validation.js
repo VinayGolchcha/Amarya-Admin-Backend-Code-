@@ -51,6 +51,9 @@ export const assReqVal = [
 export const fetUserAssVal = [
     body('emp_id').notEmpty().withMessage('emp_id cannot be empty.').isAlphanumeric().withMessage('emp_id must be alphanumeric.'),
 ]
+export const fetUserAdminAssVal = [
+    param('emp_id').notEmpty().withMessage('emp_id cannot be empty.').isAlphanumeric().withMessage('emp_id must be alphanumeric.'),
+]
 
 export const addTrnVal = [
     body('course_name').notEmpty().withMessage('course_name cannot be empty.').isString().withMessage("course_name must be a string."),
