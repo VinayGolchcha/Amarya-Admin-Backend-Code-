@@ -12,7 +12,7 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy your YOLO model and script files into the container
-COPY new_best.pt . 
+COPY best.pt . 
 COPY script.py .
 
 # Expose the port the app runs on (optional, based on your use case)
