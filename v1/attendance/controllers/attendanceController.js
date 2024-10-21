@@ -118,7 +118,7 @@ export const fetchUserPresentAttendance = async (req, res, next) => {
     //   return res.status(400).json({ error: 'Invalid page number.' });
     // }
 
-    const skip = (page - 1) * 10;
+    // const skip = (page - 1) * 10;
     const [data] = await fetchUserPresentAttendanceQuery();
 
     if (data.length === 0) {

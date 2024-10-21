@@ -175,7 +175,7 @@ export const fetchLeavesCountQuery = () => {
 
 export const fetchLeaveTakenOverviewQuery = (array, date) => {
     try {
-        let query = `SELECT leave_type, from_date, to_date, subject FROM leaveDatesAndReasons WHERE emp_id = ? AND status = ?`
+        let query = `SELECT leave_type, from_date, to_date, subject, body, status FROM leaveDatesAndReasons WHERE emp_id = ? AND status = ?`
         if (date) {
             const [month, year] = date.split('-');
             query += ` AND YEAR(from_date) = ? AND MONTH(from_date) = ? `;

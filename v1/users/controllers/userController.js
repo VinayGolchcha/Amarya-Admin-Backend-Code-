@@ -110,13 +110,14 @@ export const userRegistration = async (req, res, next) => {
         }
         await create(user_message_data)
         await insertTeamToUser([emp_id, team_id]);
-    
-        let [leaveTypeAndCount, performanceData] = await Promise.all([getAllLeaveCounts(), insertPerformanceQuery([emp_id])]);
-        for(let i = 0; i < leaveTypeAndCount.length; i++) {
-            let leaveType = leaveTypeAndCount[i].leave_type;
-            let leaveCount = leaveTypeAndCount[i].leave_count;
-            let leaveTypeId = leaveTypeAndCount[i]._id
-            await insertUserLeaveCountQuery([emp_id, leaveType, leaveCount, leaveTypeId])
+        if(role=="user"){
+            let [leaveTypeAndCount, performanceData] = await Promise.all([getAllLeaveCounts(), insertPerformanceQuery([emp_id])]);
+            for(let i = 0; i < leaveTypeAndCount.length; i++) {
+                let leaveType = leaveTypeAndCount[i].leave_type;
+                let leaveCount = leaveTypeAndCount[i].leave_count;
+                let leaveTypeId = leaveTypeAndCount[i]._id
+                await insertUserLeaveCountQuery([emp_id, leaveType, leaveCount, leaveTypeId])
+            }
         }
         return successResponse(res, user_data, 'User successfully registered');
     } catch (error) {
@@ -223,7 +224,8 @@ export const userLogin = async (req, res, next) => {
             user_id: user[0].emp_id,
             profile_picture: user[0].profile_picture,
             user_name: user[0].username,
-            role: user[0].role
+            role: user[0].role,
+            designation: user[0].designation
         }], 'You are successfully logged in');
 
     } catch (error) {
