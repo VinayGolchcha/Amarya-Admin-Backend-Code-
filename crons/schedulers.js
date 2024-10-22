@@ -87,9 +87,13 @@ export const runCronJobs = () => {
         }
     });
 
+
+    
+
     cron.schedule('*/30 * * * *', async () => {
+        // cron.schedule('* * * * *', async () => {
         try {
-            console.log("scheduler called: deleting attendance logs excluding 1st and last 5 entries per user")
+            console.log("Scheduler called: deleting attendance logs excluding 1st and last 5 entries per user");
             await deletingAttendanceLogEveryHourQuery();
         } catch (error) {
             console.error('Error executing cron deletingAttendanceLogEveryHour:', error);

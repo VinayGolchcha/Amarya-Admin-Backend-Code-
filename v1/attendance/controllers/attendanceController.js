@@ -1,7 +1,7 @@
 import moment from "moment";
 import { checkRtspStatus } from "../../../utils/cameraUtils.js";
 import { cameraDownResponse, cameraUpResponse, internalServerErrorResponse, internalServerErrorResponseForCamera, notFoundResponse, successResponse } from "../../../utils/response.js";
-import { deleteUnidentifiedPersonQuery, fetchUnidentifiedPeopleListQuery, fetchUserPresentAttendanceQuery, getUnknownUserAttendanceQuery, getUserAttendanceByUserIdAndDateQuery, getUserAttendanceLogByUserIdAndDateForInTimeQuery, getUserAttendanceSummaryQuery, getUserByEmpIdQuery, getUserByUserNameQuery, insertUnknownUserAttendanceQuery, insertUserAttendanceLogsQuery, updateInTimeUserAttenQuery, updateUnknownAttendance, updateUserAttendanceQuery, getWeeklyPresentCountQuery, getUserAttendanceLogByUserIdAndDateForOutTimeQuery, updateOutTimeUserAttenQuery, fetchAttedancePercentageOfUsersByDateQuery, fetchMonthlyAllUserAttendanceQuery, updateUnidentifiedPersonQuery, getDailyUserAttendanceQuery, getUserAttendanceByDateQuery } from "../models/query.js";
+import { deleteUnidentifiedPersonQuery, fetchUnidentifiedPeopleListQuery, fetchUserPresentAttendanceQuery, getUnknownUserAttendanceQuery, getUserAttendanceByUserIdAndDateQuery, getUserAttendanceLogByUserIdAndDateForInTimeQuery, getUserAttendanceSummaryQuery, getUserByEmpIdQuery, getUserByUserNameQuery, insertUnknownUserAttendanceQuery, insertUserAttendanceLogsQuery, updateInTimeUserAttenQuery, updateUnknownAttendance, updateUserAttendanceQuery, getWeeklyPresentCountQuery, getUserAttendanceLogByUserIdAndDateForOutTimeQuery, updateOutTimeUserAttenQuery, fetchAttedancePercentageOfUsersByDateQuery, fetchMonthlyAllUserAttendanceQuery, updateUnidentifiedPersonQuery, getDailyUserAttendanceQuery, getUserAttendanceByDateQuery, checkUserByEmpIdQuery } from "../models/query.js";
 import ExcelJS from 'exceljs';
 
 export const saveAttendanceLogs = async (uniqueMockData) => {
@@ -70,6 +70,13 @@ export const getUserAttendanceSummary = async (req, res, next) => {
     if (!moment(startDate, 'YYYY-MM-DD', true).isValid() || !moment(endDate, 'YYYY-MM-DD', true).isValid()) {
       return res.status(400).json({ error: 'Invalid date format. Use YYYY-MM-DD.' });
     }
+
+    let [checkUser] = await checkUserByEmpIdQuery([empId]);
+
+    if (checkUser.length === 0) {
+      return notFoundResponse(res, "", "Data not found for the empployee id");
+    }
+
     let [summary] = await getUserAttendanceSummaryQuery([startDate, endDate, empId]);
 
     if (summary.length == 0) {
@@ -152,20 +159,20 @@ export const fetchUnidentifiedPeopleList = async (req, res, next) => {
 
 export const deleteUnidentifiedPerson = async (req, res, next) => {
   try {
-    const {id} = req.params;
+    const { id } = req.params;
     const [data] = await deleteUnidentifiedPersonQuery([id]);
     if(data.affectedRows == 0) {
       return successResponse(res, [], "Data not found");
     }
     return successResponse(res, "", 'Data Deleted Successfully');
-  } catch(error){
+  } catch (error) {
     return internalServerErrorResponse(res, error);
   }
 }
 
 export const updateUnidentifiedPerson = async (req, res, next) => {
   try {
-    const {id} = req.params;
+    const { id } = req.params;
     let tag = req.body.tag;
     tag = tag.toUpperCase();
     const [data] = await updateUnidentifiedPersonQuery([tag, id]);
@@ -173,7 +180,7 @@ export const updateUnidentifiedPerson = async (req, res, next) => {
       return successResponse(res, [], "Data not found");
     }
     return successResponse(res, "", 'Data Updated Successfully');
-  } catch(error){
+  } catch (error) {
     return internalServerErrorResponse(res, error);
   }
 }
