@@ -113,26 +113,26 @@ export const insertUnknownUserAttendanceQuery = async (array) => {
 }
 
 
-export const deletingAttendanceLogEveryHourQuery = async (array) => {
-    try {
-        let query = `
-            WITH RankedLogs AS (
-             SELECT id, 
-            ROW_NUMBER() OVER (PARTITION BY user_id ORDER BY created_at ASC) AS row_asc,
-            ROW_NUMBER() OVER (PARTITION BY user_id ORDER BY created_at DESC) AS row_desc
-            FROM userAttendanceLogs WHERE date = CURRENT_DATE())
-            DELETE FROM userAttendanceLogs
-            WHERE id IN (
-                SELECT id FROM RankedLogs
-                WHERE row_asc > 5 AND row_desc > 5
-            )
-        `;
-        return pool.query(query, array);
-    } catch (error) {
-        console.error("Error executing deletingAttendanceLogEveryHourQuery:", error);
-        throw error;
-    }
-}
+// export const deletingAttendanceLogEveryHourQuery = async (array) => {
+//     try {
+//         let query = `
+//             WITH RankedLogs AS (
+//              SELECT id, 
+//             ROW_NUMBER() OVER (PARTITION BY user_id ORDER BY created_at ASC) AS row_asc,
+//             ROW_NUMBER() OVER (PARTITION BY user_id ORDER BY created_at DESC) AS row_desc
+//             FROM userAttendanceLogs WHERE date = CURRENT_DATE())
+//             DELETE FROM userAttendanceLogs
+//             WHERE id IN (
+//                 SELECT id FROM RankedLogs
+//                 WHERE row_asc > 5 AND row_desc > 5
+//             )
+//         `;
+//         return pool.query(query, array);
+//     } catch (error) {
+//         console.error("Error executing deletingAttendanceLogEveryHourQuery:", error);
+//         throw error;
+//     }
+// }
 
 export const getUserAttendanceSummaryQuery = async (array) => {
     try {
@@ -438,5 +438,53 @@ export const getUserAttendanceByDateQuery = (array) => {
         return pool.query(query, array);
     } catch (error) {
         console.error("Error executing getUserAttendanceByDateQuery", error);
+    }
+}
+
+export const deletingAttendanceLogEveryHourQuery = async (batchSize = 1000, retries = 5) => {
+    try {
+        let rowsDeleted;
+        do {
+            let query = `
+                WITH RankedLogs AS (
+                    SELECT id, 
+                    ROW_NUMBER() OVER (PARTITION BY user_id ORDER BY created_at ASC) AS row_asc,
+                    ROW_NUMBER() OVER (PARTITION BY user_id ORDER BY created_at DESC) AS row_desc
+                    FROM userAttendanceLogs
+                    WHERE date = CURRENT_DATE()
+                )
+                DELETE FROM userAttendanceLogs
+                WHERE id IN (
+                    SELECT id FROM RankedLogs
+                    WHERE row_asc > 5 AND row_desc > 5
+                )
+                LIMIT ?
+            `;
+            const [result] = await pool.query(query, [batchSize]);
+            rowsDeleted = result.affectedRows;
+
+            console.log(`${rowsDeleted} rows deleted`);
+        } while (rowsDeleted > 0);
+
+    } catch (error) {
+    
+        if ((error.code === 'ER_LOCK_DEADLOCK' || error.code === 'ETIMEDOUT') && retries > 0) {
+            console.warn('Retrying due to deadlock or timeout...', error.code);
+            await deletingAttendanceLogEveryHourQuery(batchSize, retries - 1);
+        } else {
+            console.error("Error executing deletingAttendanceLogEveryHourQuery:", error);
+            throw error;
+        }
+    }
+};
+
+export const checkUserByEmpIdQuery = async (array) => {
+    try {
+        let query = `
+        select * From users u where emp_id = ?`;
+        return pool.query(query, array);
+    } catch (error) {
+        console.error("Error executing updateOutTimeUserAttenQuery:", error);
+        throw error;
     }
 }
