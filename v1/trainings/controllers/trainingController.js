@@ -108,7 +108,7 @@ export const trainingCardsData = async (req, res, next) => {
         const [data] = await displayDataForTrainingCardsQuery([])
 
         if(data.length == 0) {
-            return notFoundResponse(res, "", "No Trainings exists.")
+            return successResponse(res, "", "No Trainings exists.")
         }else{ 
             return successResponse(res, data, 'Data Fetched Successfully');
         }
@@ -188,7 +188,7 @@ export const deleteTrainingData = async (req, res, next) =>{
         let [data] = await getTrainingDataQuery([id]);
 
         if (data.length == 0) {
-            return notFoundResponse(res, "", "Data not found")
+            return successResponse(res, [], "Data not found")
         }else{
             await deleteTrainingDataQuery([id]);
             return successResponse(res, "", 'Data Deleted Successfully');

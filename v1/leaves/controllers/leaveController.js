@@ -5,12 +5,17 @@ import {
     getAllUsersLeaveCountQuery, getUserLeaveDataQuery, fetchLeaveTakenOverviewQuery, deleteLeaveTypeAndCountQuery, fetchHolidayListQuery, getHolidayDataQuery, deleteHolidayQuery,
     getallUserLeaveDataQuery,
     fetchAllEmployeesQuery,
-    insertUserLeaveCountQuery
+    insertUserLeaveCountQuery,
+    getUserLeaveDataByIdQuery,
+    updateUserLeaveQuery
 } from "../../leaves/models/leaveQuery.js"
 import { checkIfAlreadyRequestedQuery, getUserGender, leaveTakenCountQuery } from "../../approvals/models/leaveApprovalQuery.js"
 import { successResponse, errorResponse, notFoundResponse, unAuthorizedResponse, internalServerErrorResponse } from "../../../utils/response.js"
 import { incrementId, createDynamicUpdateQuery } from "../../helpers/functions.js"
 import { validationResult } from "express-validator";
+import { updateApprovalLeaveDataQuery } from "../../approvals/models/approvalQuery.js"
+import { uploadFileToDrive } from "../../../utils/googleDriveUploads.js"
+import moment from "moment"
 dotenv.config();
 
 export const addHoliday = async (req, res, next) => {
@@ -53,7 +58,7 @@ export const updateHoliday = async (req, res, next) => {
         let [data] = await updateHolidayQuery(query_values.updateQuery, query_values.updateValues)
 
         if (data.affectedRows == 0) {
-            return notFoundResponse(res, '', 'Holiday not found, wrong input.');
+            return successResponse(res, '', 'Holiday not found, wrong input.');
         }
         return successResponse(res, data, 'Holiday Updated Successfully');
     } catch (error) {
@@ -65,7 +70,7 @@ export const fetchHolidayList = async (req,res,next) => {
     try {
         const [data] = await fetchHolidayListQuery();
         if (data.length == 0) {
-            return notFoundResponse(res, "", "Data not found");
+            return successResponse(res, "", "Data not found");
         }
         return successResponse(res, data, 'Holiday List fetched successfully');
     }catch(error) {
@@ -83,7 +88,7 @@ export const deleteHoliday = async(req,res,next) => {
 
         const [data] = await getHolidayDataQuery([id]);
         if (data.length == 0) {
-            return notFoundResponse(res, "", "Data not found");
+            return successResponse(res, "", "Data not found");
         }else{
             await deleteHolidayQuery([id]);
             return successResponse(res, "", 'Data Deleted Successfully');
@@ -149,7 +154,7 @@ export const updateLeaveTypeAndCount = async (req, res, next) => {
         let [data] = await updateLeaveQuery(query_values.updateQuery, query_values.updateValues)
 
         if (data.affectedRows == 0) {
-            return notFoundResponse(res, '', 'Data not found, wrong input.');
+            return successResponse(res, '', 'Data not found, wrong input.');
         }
         return successResponse(res, data, 'Data Updated Successfully');
     } catch (error) {
@@ -168,7 +173,7 @@ export const deleteLeaveTypeAndCount  = async (req, res,next) => {
         const leave_type_id = req.params.leave_type_id;
         const [data] = await getLeavesTypesQuery([leave_type_id]);
         if (data.length == 0) {
-            return notFoundResponse(res, "", "Data not found");
+            return successResponse(res, "", "Data not found");
         }
         await Promise.all([
         await deleteLeaveTypeAndCountQuery([id, leave_type_id]),
@@ -190,7 +195,7 @@ export const fetchLeaveTypesAndTheirCount = async (req, res, next) => {
         }
         const [data] = await fetchLeavesCountQuery()
         if (data.length == 0) {
-            return notFoundResponse(res, '', 'Data not found.');
+            return successResponse(res, '', 'Data not found.');
         }
         return successResponse(res, data, 'Leave data fetched successfully');
     } catch (error) {
@@ -209,7 +214,7 @@ export const fetchLeaveTakenOverview = async (req, res, next) => {
         status = status || "approved";
         const [data] = await fetchLeaveTakenOverviewQuery([emp_id, status], date)
         if (data.length == 0) {
-            return notFoundResponse(res, '', 'Data not found.');
+            return successResponse(res, '', 'Data not found.');
         }
         return successResponse(res, data, 'Leave data fetched successfully');
     } catch (error) {
@@ -237,8 +242,8 @@ export const leaveRequest = async (req, res, next) => {
         if(existingData.length > 0){
             return notFoundResponse(res, "", "The requested leave period overlaps with an existing leave request.");
         }
-        // Check if from_date is in the past
-        if (from < new Date()) {
+        let new_from_date =  new Date(from).toISOString().split('T')[0];
+        if (new_from_date < current_date) {
             return notFoundResponse(res, "", "The 'from' date cannot be in the past.");
         }
         
@@ -259,14 +264,20 @@ export const leaveRequest = async (req, res, next) => {
             message = "Please select valid leave type."
             return notFoundResponse(res, "", message);
         }
+        let file=req.file;
+        let file_url;
         if(leaveTypeCountByAdmin[0].leave_count>=(total_days+userLeaveTakenCount[0].leave_taken_count)){
+            if(file){
+                file_url=await uploadFileToDrive(file)
+            }
             await insertUserLeaveDataQuery([
                 emp_id, 
                 leave_type,
                 from_date,
                 to_date,
                 subject,
-                body
+                body,
+                file_url
             ]);
             const [foreign_id] = await getLastLeaveId()
             await insertApprovalForLeaveQuery([emp_id, foreign_id[0]._id, "leave", leave_type, current_date, from_date, to_date, subject, body])
@@ -287,7 +298,7 @@ export const getUserLeaveDataForDashboard =async (req, res, next) => {
         const [user_data] = await getAllUsersLeaveCountQuery([emp_id]);
         const [holiday_list_data] = await fetchHolidayListQuery();
         if (user_data.length == 0) {
-            return notFoundResponse(res, '', 'Data not found.');
+            return successResponse(res, '', 'Data not found.');
         }
         return successResponse(res, {user_data, holiday_list_data}, "Data fetched successfully");
     } catch (error) {
@@ -300,7 +311,7 @@ export const getUserLeaveData = async (req, res, next) => {
         const {emp_id} = req.body;
         const [data] = await getUserLeaveDataQuery([emp_id]);
         if (data.length == 0) {
-            return notFoundResponse(res, '', 'Data not found.');
+            return successResponse(res, [], 'Data not found.');
         }
         return successResponse(res, data, "Data fetched successfully");
     } catch (error) {
@@ -313,9 +324,81 @@ export const getUserAllLeaveData = async (req, res, next) => {
         const {emp_id} = req.body;
         const [data] = await getallUserLeaveDataQuery([emp_id]);
         if (data.length == 0) {
-            return notFoundResponse(res, '', 'Data not found.');
+            return successResponse(res, [], 'Data not found.');
         }
         return successResponse(res, data, "Data fetched successfully");
+    } catch (error) {
+        return internalServerErrorResponse(res, error);
+    }
+}
+
+export const updateUserLeaveData = async (req, res, next) => {
+    try {
+        const leave_id = parseInt(req.params.id);
+        const emp_id = req.params.emp_id;
+        const { from_date, to_date, leave_type } = req.body;
+
+        if (!leave_id || !emp_id || !from_date || !to_date || !leave_type) {
+            return errorResponse(res, "", "Missing required fields");
+        }
+
+        const from = new Date(from_date).toISOString().split('T')[0];
+        const to = new Date(to_date).toISOString().split('T')[0];
+        const current_date = new Date().toISOString().split('T')[0];
+
+        if (from < current_date) {
+            return errorResponse(res, "", "The 'from' date cannot be in the past.");
+        }
+        if (to < from) {
+            return errorResponse(res, "", "The 'to' date cannot be before the 'from' date.");
+        }
+
+        const total_days = Math.ceil((to - from) / (1000 * 60 * 60 * 24)) + 1;
+        const normalized_leave_type = leave_type.toLowerCase();
+
+        const [
+            leave_date,
+            user_leave_taken,
+            leave_type_admin
+        ] = await Promise.all([
+            getUserLeaveDataByIdQuery([emp_id, leave_id]),
+            leaveTakenCountQuery([emp_id, normalized_leave_type]),
+            getLeaveTypeCountByAdmin([normalized_leave_type])
+        ]);
+
+        if (!leave_date?.[0]?.length) {
+            return successResponse(res, [], 'Leave request not found.');
+        }
+        let leave_request_date = new Date(leave_date[0][0].created_at);
+        leave_request_date=leave_request_date.toISOString().split('T')[0]
+        const previous_days_date = moment().subtract(process.env.MAX_DAYS_TO_UPDATE, 'days').format('YYYY-MM-DD');
+        if(previous_days_date==leave_request_date){
+            return errorResponse(res, "", "You cannot update the leave request.");
+        }
+
+        if (!leave_type_admin?.[0]?.length) {
+            return errorResponse(res, "", "Invalid leave type.");
+        }
+
+        const available_leaves = leave_type_admin[0][0].leave_count;
+        const taken_leaves = user_leave_taken[0][0].leave_taken_count;
+        const requested_total_leaves = total_days + taken_leaves;
+
+        if (requested_total_leaves > available_leaves) {
+            return errorResponse(res, "", 
+                `Insufficient leave balance.`
+            );
+        }
+
+        const update_data = {
+            from_date,
+            to_date,
+            leave_type: normalized_leave_type
+        };
+    
+        let query_values = await createDynamicUpdateQuery('leaveDatesAndReasons', { _id: leave_id}, update_data)
+        const [data, approval_data] = await Promise.all([updateUserLeaveQuery(query_values.updateQuery, query_values.updateValues), updateApprovalLeaveDataQuery([normalized_leave_type, from_date, to_date, String(leave_id), emp_id])])
+        return successResponse(res, data, "Data updated successfully");
     } catch (error) {
         return internalServerErrorResponse(res, error);
     }

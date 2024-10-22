@@ -147,21 +147,44 @@ export const getUserAttendanceSummaryQuery = async (array) => {
 export const getWeeklyPresentCountQuery = async () => {
     try {
         let query = `
-        SELECT 
-            DATE_FORMAT(date, '%Y-%m-%d') AS attendance_date,
-            DAYNAME(date) AS day_name,
-            COUNT(*) AS present_count
-        FROM 
-            userAttendance
-        WHERE 
-            YEARWEEK(date, 1) BETWEEN YEARWEEK(CURDATE() - INTERVAL 1 WEEK, 1) 
-                                AND YEARWEEK(CURDATE(), 1)
-            AND status = 'PRESENT'
-            AND DAYOFWEEK(date) BETWEEN 2 AND 6
-        GROUP BY 
-            attendance_date, day_name
-        ORDER BY 
-            attendance_date;
+        WITH Last5Days AS (
+    SELECT 
+        DATE_FORMAT(ua.date, '%Y-%m-%d') AS attendance_date,
+        SUBSTRING(DAYNAME(ua.date), 1, 3) AS day_name,
+        COUNT(*) AS present_count
+    FROM 
+        userAttendance ua
+    LEFT JOIN 
+        holidays h ON DATE(ua.date) = h.date
+    WHERE 
+        ua.status = 'PRESENT'
+        AND DAYOFWEEK(ua.date) BETWEEN 2 AND 6
+        AND ua.date < CURDATE()
+        AND h.date IS NULL
+    GROUP BY 
+        attendance_date, day_name
+    ORDER BY 
+        attendance_date DESC
+    LIMIT 5
+)
+SELECT 
+    L.attendance_date,
+    L.day_name,
+    L.present_count,
+    CASE WHEN ROW_NUMBER() OVER() = 1 THEN T.start_date ELSE NULL END AS start_date,
+    CASE WHEN ROW_NUMBER() OVER() = 1 THEN T.end_date ELSE NULL END AS end_date
+FROM 
+    Last5Days L
+CROSS JOIN (
+    SELECT 
+        MIN(attendance_date) AS start_date,
+        MAX(attendance_date) AS end_date
+    FROM 
+        Last5Days
+) T
+ORDER BY 
+    L.attendance_date DESC;
+;
         `;
         return pool.query(query);
     } catch (error) {
@@ -189,7 +212,6 @@ export const fetchUserPresentAttendanceQuery = async (skip) => {
         WHERE
             date = DATE_FORMAT(CURDATE() - INTERVAL 1 DAY, '%Y-%m-%d')
         ORDER BY date DESC
-        LIMIT 10 OFFSET ${skip}
         `;
         return pool.query(query);
     } catch (error) {
@@ -204,7 +226,6 @@ export const fetchUnidentifiedPeopleListQuery = async (skip) => {
             * 
         FROM unknownUserAttendance
         ORDER BY date DESC
-        LIMIT 10 OFFSET ${skip}
         `;
         return pool.query(query);
     } catch (error) {

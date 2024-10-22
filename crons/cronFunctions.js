@@ -162,7 +162,7 @@ export const sendEmailNotificationForApproval = async () => {
         current_date.setMinutes(current_date.getMinutes() - 5);
         let date = current_date.toISOString().slice(0, 19).replace('T', ' ');
         const [rows] = await checkRowsLengthForNotificationQuery([date]);
-        const email = 'tamanna.suhane@amaryaconsultancy.com';
+        const email = process.env.EMAIL_NOTIFICATION;
 
       if (rows.length > 0) {
           for (let i = 0; i < rows.length; i++) {

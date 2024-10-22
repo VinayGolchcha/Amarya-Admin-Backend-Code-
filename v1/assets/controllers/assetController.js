@@ -96,7 +96,7 @@ export const updateAsset = async(req, res, next) => {
         }
 
         if (data.affectedRows == 0){
-            return notFoundResponse(res, '', 'Asset not found, wrong input.');
+            return successResponse(res, [], 'Asset not found, wrong input.');
         }
         return successResponse(res, data, 'Asset Updated Successfully');
     } catch (error) {
@@ -119,12 +119,12 @@ export const assetRequest = async (req, res, next) => {
         const current_date = new Date().toISOString().split('T')[0];
 
         if (asset_type == 'hardware' && (item == "" || item == null)){
-            return notFoundResponse(res, '', 'Request is wrong');
+            return successResponse(res, [], 'Request is wrong');
         }else{
             item = item.toLowerCase();
             const [existingData] = await checkIfAlreadyExistsQuery([emp_id, asset_type, item])
             if(existingData.length > 0){
-                return notFoundResponse(res, '', 'Request with the same item already exists under your name, please wait till that request is either approved or declined, to send a new request');
+                return notFoundResponse(res, [], 'Request with the same item already exists under your name, please wait till that request is either approved or declined, to send a new request');
             }
         }
         await insertApprovalQuery([emp_id, request_type, item, current_date, primary_purpose, details, asset_type ])
@@ -149,10 +149,10 @@ export const fetchUserAssets = async(req, res, next) => {
         if (!errors.isEmpty()) {
             return errorResponse(res, errors.array(), "")
         }
-        const {emp_id} = req.body;
+        const emp_id = req.params.emp_id || req.body.emp_id;
         const [data] = await fetchUserAssetsQuery([emp_id])
         if(data.length == 0){
-            return notFoundResponse(res, '', 'Data not found for this user.');
+            return successResponse(res, [], 'Data not found for this user.');
         }
         return successResponse(res, data, 'Asset data fetched successfully');
     } catch (error) {
@@ -169,7 +169,7 @@ export const fetchAssets = async(req, res, next) => {
         }
         const [data] = await fetchAssetsQuery()
         if(data.length == 0){
-            return notFoundResponse(res, '', 'Data not found.');
+            return successResponse(res, [], 'Data not found.');
         }
         return successResponse(res, data, 'Asset data fetched successfully');
     } catch (error) {

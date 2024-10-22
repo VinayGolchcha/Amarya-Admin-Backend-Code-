@@ -110,13 +110,14 @@ export const userRegistration = async (req, res, next) => {
         }
         await create(user_message_data)
         await insertTeamToUser([emp_id, team_id]);
-    
-        let [leaveTypeAndCount, performanceData] = await Promise.all([getAllLeaveCounts(), insertPerformanceQuery([emp_id])]);
-        for(let i = 0; i < leaveTypeAndCount.length; i++) {
-            let leaveType = leaveTypeAndCount[i].leave_type;
-            let leaveCount = leaveTypeAndCount[i].leave_count;
-            let leaveTypeId = leaveTypeAndCount[i]._id
-            await insertUserLeaveCountQuery([emp_id, leaveType, leaveCount, leaveTypeId])
+        if(role=="user"){
+            let [leaveTypeAndCount, performanceData] = await Promise.all([getAllLeaveCounts(), insertPerformanceQuery([emp_id])]);
+            for(let i = 0; i < leaveTypeAndCount.length; i++) {
+                let leaveType = leaveTypeAndCount[i].leave_type;
+                let leaveCount = leaveTypeAndCount[i].leave_count;
+                let leaveTypeId = leaveTypeAndCount[i]._id
+                await insertUserLeaveCountQuery([emp_id, leaveType, leaveCount, leaveTypeId])
+            }
         }
         return successResponse(res, user_data, 'User successfully registered');
     } catch (error) {
@@ -183,7 +184,7 @@ export const userLogin = async (req, res, next) => {
         const [user] = await getUserDataByUsernameQuery([username]);
 
         if (user.length === 0) {
-            return notFoundResponse(res, '', 'User not found');
+            return successResponse(res, [], 'User not found');
         }
 
         const isPasswordValid = await bcrypt.compare(password, user[0].password);
@@ -223,7 +224,8 @@ export const userLogin = async (req, res, next) => {
             user_id: user[0].emp_id,
             profile_picture: user[0].profile_picture,
             user_name: user[0].username,
-            role: user[0].role
+            role: user[0].role,
+            designation: user[0].designation
         }], 'You are successfully logged in');
 
     } catch (error) {
@@ -265,7 +267,7 @@ export const updateUserPassword = async (req, res, next) => {
         let { otp, email, password, confirm_password } = req.body;
         let [user_data] = await userDetailQuery([email]);
         if (user_data.length == 0) {
-            return notFoundResponse(res, '', 'User not found');
+            return successResponse(res, [], 'User not found');
         }
         otp = parseInt(otp, 10);
         const [user_otp] = await getOtpQuery([email]);
@@ -274,7 +276,7 @@ export const updateUserPassword = async (req, res, next) => {
         }
         if (password === confirm_password) {
             const password_hash = await bcrypt.hash(password.toString(), 12);
-            await updateUserPasswordQuery([password_hash, email]);
+            await updateUserPasswordQuery([password_hash, 0, email]);
             // await updateQuery(email, password_hash)
             return successResponse(res, 'User password updated successfully');
         } else {
@@ -294,7 +296,7 @@ export const getUserProfile = async(req,res,next) => {
         const emp_id = req.params.emp_id;
         const [user] = await getUserDataByUserIdQuery([emp_id]);
         if (user.length == 0 ){
-            return notFoundResponse(res, '', 'User not found');
+            return successResponse(res, [], 'User not found');
         }
         else{
             return successResponse(res, [user]);
@@ -351,7 +353,7 @@ export const updateUserProfile = async(req, res, next) => {
             
             return successResponse(res, data, 'User profile updated successfully.');
         }else{
-            return notFoundResponse(res, '', 'User not found.');
+            return successResponse(res, [], 'User not found.');
         }
     }
     catch(error){

@@ -23,7 +23,7 @@ export const userDashboard = async (req, res, next) => {
     let [emp_data] = await userDashboardProfileQuery([emp_id])
 
     if(emp_data.length == 0) {
-      return notFoundResponse(res, '', 'Data not found.');
+      return successResponse(res, [], 'Data not found.');
     }
     let [announcement_data] = await fetchActivityORAnnouncementQuery(["announcement"]);
     let [activity_data] = await fetchActivityORAnnouncementQuery(["activity"]);
@@ -58,7 +58,7 @@ export const feedbackForm = async (req, res, next) => {
     date = date.format("YYYY-MM-DD")
     const [user] = await getUserDataByUserIdQuery([emp_id]);
     if (user.length == 0 ){
-        return notFoundResponse(res, '', 'User not found');
+        return successResponse(res, [], 'User not found');
     }
 
     await feedbackFormQuery([
@@ -68,7 +68,7 @@ export const feedbackForm = async (req, res, next) => {
       description
     ]);
 
-    return successResponse(res, '', 'Feedback sent successfully.');
+    return successResponse(res, [], 'Feedback sent successfully.');
   } catch (error) {
     return internalServerErrorResponse(res, error);
   }
@@ -85,7 +85,7 @@ export const fetchFeedbackData = async (req, res, next) => {
     const [data] = await fetchFeebackQuery();
     
     if(data.length == 0) {
-      return notFoundResponse(res, '', 'Data not found.');
+      return successResponse(res, [], 'Data not found.');
     }
 
     return successResponse(res, data, 'Feedback send successfully.');
@@ -105,7 +105,7 @@ export const getDashboardImages = async (req, res, next) => {
     const [data] = await fetchImagesForDashboardQuery();
     
     if(data.length == 0) {
-      return notFoundResponse(res, '', 'Data not found.');
+      return successResponse(res, [], 'Data not found.');
     }
 
     return successResponse(res, data, 'Images fetched successfully.');
@@ -127,10 +127,10 @@ export const fetchUserPointsMonthlyAndYearly = async (req, res, next) => {
         const [year_data] = await fetchPointsYearWiseQuery([emp_id]);
 
         if (month_data.length == 0) {
-          return notFoundResponse(res, '', 'Month data not found.');
+          return successResponse(res, [], 'Month data not found.');
         }
         else if (year_data.length == 0){
-          return notFoundResponse(res, '', 'Year data not found.');
+          return successResponse(res, [], 'Year data not found.');
         }
 
         const graph_data = {

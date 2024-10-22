@@ -63,7 +63,7 @@ export const fetchCategoryForWorkSheet = async(req, res, next) =>{
         }
         const [data] = await getAllCategoryQuery();
         if (data.length == 0) {
-            return notFoundResponse(res, '', 'Data not found.');
+            return successResponse(res, [], 'Data not found.');
         }
         return successResponse(res, data,'Categories fetched successfully.');
     } catch (error) {

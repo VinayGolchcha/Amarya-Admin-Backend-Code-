@@ -175,7 +175,7 @@ export const fetchLeavesCountQuery = () => {
 
 export const fetchLeaveTakenOverviewQuery = (array, date) => {
     try {
-        let query = `SELECT leave_type, from_date, to_date, subject FROM leaveDatesAndReasons WHERE emp_id = ? AND status = ?`
+        let query = `SELECT leave_type, from_date, to_date, subject, body, status FROM leaveDatesAndReasons WHERE emp_id = ? AND status = ?`
         if (date) {
             const [month, year] = date.split('-');
             query += ` AND YEAR(from_date) = ? AND MONTH(from_date) = ? `;
@@ -197,8 +197,9 @@ export const insertUserLeaveDataQuery = (array) => {
             from_date,
             to_date,
             subject,
-            body
-        ) VALUES (?,?,?,?,?,?);`
+            body,
+            document_url
+        ) VALUES (?,?,?,?,?,?,?);`
         return pool.query(query, array);
     } catch (error) {
         console.error("Error executing insertUserLeaveDataQuery:", error);
@@ -304,7 +305,10 @@ export const getallUserLeaveDataQuery = async(array)=>{
         leave_type,
         DATEDIFF(to_date,from_date) + 1 AS total_days,
         status,
-        'HR' AS manager
+        'HR' AS manager,
+        subject,
+        body,
+        document_url
         FROM leaveDatesAndReasons
         WHERE emp_id = ?
         ORDER BY
@@ -315,4 +319,24 @@ export const getallUserLeaveDataQuery = async(array)=>{
         console.error("Error executing allGetUserLeaveDataQuery:", error);
         throw error;
     }
+}
+
+export const getUserLeaveDataByIdQuery = async(array)=>{
+    try {
+        let query = `
+        SELECT *
+        FROM leaveDatesAndReasons
+        WHERE emp_id = ? AND _id = ? AND status = 'pending'
+        ORDER BY
+        created_at DESC
+        `
+        return await pool.query(query, array);
+    } catch (error) {
+        console.error("Error executing getUserLeaveDataByIdQuery:", error);
+        throw error;
+    }
+}
+
+export const updateUserLeaveQuery = (query, array)=>{
+    return pool.query(query, array);
 }

@@ -67,12 +67,36 @@ export const authenticateUserSession = async (req, res, next) => {
                 req.decoded = decoded;
                 next();
             } else {
+                res.clearCookie('jwt', {
+                    httpOnly: true,
+                    sameSite: 'None',
+                    secure: true,
+                    path: '/',
+                  });
+                res.clearCookie('user_id', {
+                    httpOnly: true,
+                    sameSite: 'None',
+                    secure: true,
+                    path: '/',
+                  });
                 return res.status(440).json({
                     status: 'failure',
                     message: 'Invalid session.'
                 });
             }
         } else {
+            res.clearCookie('jwt', {
+                httpOnly: true,
+                sameSite: 'None',
+                secure: true,
+                path: '/',
+              });
+            res.clearCookie('user_id', {
+                httpOnly: true,
+                sameSite: 'None',
+                secure: true,
+                path: '/',
+              });
             return res.status(440).json({
                 status: 'failure',
                 message: 'Invalid token'

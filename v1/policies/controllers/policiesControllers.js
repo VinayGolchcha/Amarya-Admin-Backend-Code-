@@ -77,7 +77,7 @@ export const fetchPolicy = async (req, res, next) => {
         }
         let [data] = await fetchPolicyQuery();
         if (data.length === 0) {
-            return notFoundResponse(res, "", "No policies found.");
+            return successResponse(res, [], "No policies found.");
         }
         const policy = data[0];
         const file_name = encodeURIComponent(policy.file_data);

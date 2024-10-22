@@ -111,7 +111,7 @@ export const fetchUserWorksheet = async (req, res, next) => {
             }
         }
         if (worksheets.length == 0) {
-            return notFoundResponse(res, '', 'worksheets not found.');
+            return successResponse(res, [], 'worksheets not found.');
         }
         return successResponse(res, worksheets, 'worksheet fetched successfully.');
     } catch (error) {

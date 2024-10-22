@@ -18,7 +18,13 @@ export const insertAssetQuery = (array)=> {
 }
 
 export const checkIfAlreadyExistsQuery=(array)=>{
-    const query = `SELECT * FROM userAssets WHERE emp_id = ? AND asset_type = ? AND item = ? AND status = 'pending'`
+    const query = `
+    SELECT * 
+    FROM userAssets 
+    WHERE emp_id = ? 
+    AND asset_type = ? 
+    AND item = ? 
+    AND status IN ('pending', 'approved')`
     return pool.query(query, array)
 }
 
@@ -46,7 +52,7 @@ export const insertUserAssetDataQuery = (array)=> {
 export const fetchUserAssetsQuery = (array) => {
     let query = `
     SELECT CONCAT(u.first_name, ' ', u.last_name) AS name,u.emp_id, ua.asset_type, ua.asset_id, ua.item, ua.requirement_type,
-    ua.status, ua.issued_from, ua.issued_till, COALESCE(a.warranty_period, NULL) AS warranty_period, 'HR' AS manager
+    ua.status, ua.issued_from, ua.issued_till, COALESCE(a.warranty_period, NULL) AS warranty_period, 'HR' AS manager, ua.created_at AS created_at
     FROM userAssets as ua
     JOIN users as u ON ua.emp_id = u.emp_id
     LEFT JOIN assets as a ON ua.asset_id = a.asset_id

@@ -59,6 +59,18 @@ export const authenticateUserAdminSession  = async (req, res, next) => {
                     req.decoded = decoded;
                     next();
                 }else {
+                    res.clearCookie('jwt', {
+                        httpOnly: true,
+                        sameSite: 'None',
+                        secure: true,
+                        path: '/',
+                      });
+                    res.clearCookie('user_id', {
+                        httpOnly: true,
+                        sameSite: 'None',
+                        secure: true,
+                        path: '/',
+                      });
                     return res.send({
                         statusCode: 440,
                         status: 'failure',
@@ -66,6 +78,18 @@ export const authenticateUserAdminSession  = async (req, res, next) => {
                     });
                 }
             }else {
+                res.clearCookie('jwt', {
+                    httpOnly: true,
+                    sameSite: 'None',
+                    secure: true,
+                    path: '/',
+                  });
+                res.clearCookie('user_id', {
+                    httpOnly: true,
+                    sameSite: 'None',
+                    secure: true,
+                    path: '/',
+                  });
                 return res.send({
                     statusCode: 440,
                     status: 'failure',

@@ -11,8 +11,7 @@ export const saveAttendanceLogs = async (uniqueMockData) => {
       let [getUsers] = await getUserByUserNameQuery(detection.class_name);
 
       if (getUsers.length !== 0) {
-        await insertUserAttendanceLogsQuery([new Date(), detection.image, getUsers[0]._id]);
-        console.log("Attendance marked successfully for user: ", getUsers[0].username);
+        await insertUserAttendanceLogsQuery([ new Date(), detection.image, getUsers[0]._id]);
       } else {
         await insertUnknownUserAttendanceQuery(
           [
@@ -81,7 +80,7 @@ export const getUserAttendanceSummary = async (req, res, next) => {
     let [summary] = await getUserAttendanceSummaryQuery([startDate, endDate, empId]);
 
     if (summary.length == 0) {
-      return notFoundResponse(res, "", "Data not found");
+      return successResponse(res, [], "Data not found");
     }
 
     const percentages = calculatePercentages(
@@ -109,7 +108,7 @@ export const fetchWeeklyPresentCount = async (req, res, next) => {
   try {
     const [empWeeklyData] = await getWeeklyPresentCountQuery()
     if (empWeeklyData.length == 0) {
-      return notFoundResponse(res, "", "Data not found");
+      return successResponse(res, [], "Data not found");
     }
     return successResponse(res, empWeeklyData, 'Employee weekly present count fetched successfully');
 
@@ -120,16 +119,16 @@ export const fetchWeeklyPresentCount = async (req, res, next) => {
 
 export const fetchUserPresentAttendance = async (req, res, next) => {
   try {
-    const page = req.query.page ? parseInt(req.query.page) : 1;
-    if (isNaN(page) || page <= 0) {
-      return res.status(400).json({ error: 'Invalid page number.' });
-    }
+    // const page = req.query.page ? parseInt(req.query.page) : 1;
+    // if (isNaN(page) || page <= 0) {
+    //   return res.status(400).json({ error: 'Invalid page number.' });
+    // }
 
-    const skip = (page - 1) * 10;
-    const [data] = await fetchUserPresentAttendanceQuery(skip);
+    // const skip = (page - 1) * 10;
+    const [data] = await fetchUserPresentAttendanceQuery();
 
     if (data.length === 0) {
-      return notFoundResponse(res, "", "Data not found");
+      return successResponse(res, [], "Data not found");
     }
 
     return successResponse(res, data, 'Attendance fetched successfully');
@@ -140,16 +139,16 @@ export const fetchUserPresentAttendance = async (req, res, next) => {
 
 export const fetchUnidentifiedPeopleList = async (req, res, next) => {
   try {
-    const page = req.query.page ? parseInt(req.query.page) : 1;
-    if (isNaN(page) || page <= 0) {
-      return res.status(400).json({ error: 'Invalid page number.' });
-    }
+    // const page = req.query.page ? parseInt(req.query.page) : 1;
+    // if (isNaN(page) || page <= 0) {
+    //   return res.status(400).json({ error: 'Invalid page number.' });
+    // }
 
-    const skip = (page - 1) * 10;
-    const [data] = await fetchUnidentifiedPeopleListQuery(skip);
+    // const skip = (page - 1) * 10;
+    const [data] = await fetchUnidentifiedPeopleListQuery();
 
     if (data.length === 0) {
-      return notFoundResponse(res, "", "Data not found");
+      return successResponse(res, [], "Data not found");
     }
 
     return successResponse(res, data, 'Unknown detections fetched successfully');
@@ -162,8 +161,8 @@ export const deleteUnidentifiedPerson = async (req, res, next) => {
   try {
     const { id } = req.params;
     const [data] = await deleteUnidentifiedPersonQuery([id]);
-    if (data.affectedRows == 0) {
-      return notFoundResponse(res, "", "Data not found");
+    if(data.affectedRows == 0) {
+      return successResponse(res, [], "Data not found");
     }
     return successResponse(res, "", 'Data Deleted Successfully');
   } catch (error) {
@@ -177,8 +176,8 @@ export const updateUnidentifiedPerson = async (req, res, next) => {
     let tag = req.body.tag;
     tag = tag.toUpperCase();
     const [data] = await updateUnidentifiedPersonQuery([tag, id]);
-    if (data.affectedRows == 0) {
-      return notFoundResponse(res, "", "Data not found");
+    if(data.affectedRows == 0) {
+      return successResponse(res, [], "Data not found");
     }
     return successResponse(res, "", 'Data Updated Successfully');
   } catch (error) {
@@ -202,7 +201,7 @@ export const getUserAttendancePercentage = async (req, res, next) => {
     let [summary] = await fetchAttedancePercentageOfUsersByDateQuery([date]);
 
     if (summary.length == 0) {
-      return notFoundResponse(res, "", "Data not found");
+      return successResponse(res, [], "Data not found");
     }
 
     return successResponse(res, summary[0], 'User attendance percentage fetched successfully');
@@ -466,7 +465,7 @@ export const getAllUserAttendanceSummary = async (req, res, next) => {
     let [summary] = await fetchMonthlyAllUserAttendanceQuery([startDate, endDate]);
 
     if (summary.length == 0) {
-      return notFoundResponse(res, "", "Data not found");
+      return successResponse(res, [], "Data not found");
     }
 
 
@@ -561,7 +560,7 @@ export const getDailyUserAttendance = async (req, res, next) => {
     let [daily_data] = await getDailyUserAttendanceQuery([start_date, end_date, emp_id]);
 
     if (daily_data.length == 0) {
-      return notFoundResponse(res, "", "Data not found");
+      return successResponse(res, [], "Data not found");
     }
 
 
@@ -588,7 +587,7 @@ export const getUserAttendanceByDate = async (req, res, next) => {
     let [daily_data] = await getUserAttendanceByDateQuery([date]);
 
     if (daily_data.length == 0) {
-      return notFoundResponse(res, "", "Data not found");
+      return successResponse(res, [], "Data not found");
     }
 
     return successResponse(res, daily_data, 'User attendance fetched successfully');

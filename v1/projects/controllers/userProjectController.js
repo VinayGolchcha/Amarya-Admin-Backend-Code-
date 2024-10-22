@@ -60,7 +60,7 @@ export const fetchUserProjects = async(req, res, next) =>{
         const emp_id = req.params.emp_id;
         const [user] = await getUserProjectQuery([emp_id]);
         if (user.length == 0 ){
-            return notFoundResponse(res, '', 'User project not found');
+            return successResponse(res, [], 'User project not found');
         }
         return successResponse(res, user, 'User project data fetched successfully');
     } catch (error) {
@@ -91,7 +91,7 @@ export const userUpdateProject = async(req, res, next) => {
             let [data] = await userUpdateProjectQuery(query_values.updateQuery, query_values.updateValues);
             return successResponse(res, data, 'User project updated successfully.');
         }else{
-            return notFoundResponse(res, '', 'User project not found.');
+            return successResponse(res, [], 'User project not found.');
         }
     }
     catch(error){
@@ -109,7 +109,7 @@ export const getUserProjectTimeline = async(req, res, next)=> {
         const emp_id = req.params.emp_id;
         const [user] = await getUserProjectTimelineQuery([emp_id]);
         if (user.length == 0 ){
-            return notFoundResponse(res, '', 'User project not found');
+            return successResponse(res, [], 'User project not found');
         }
         return successResponse(res, user, 'User project data fetched successfully');
     } catch (error) {

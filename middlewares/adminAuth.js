@@ -59,14 +59,38 @@ export const authenticateAdminSession = async (req, res, next) => {
                     req.decoded = decoded;
                     next();
                 }else {
-                    return res.send({
+                    res.clearCookie('jwt', {
+                        httpOnly: true,
+                        sameSite: 'None',
+                        secure: true,
+                        path: '/',
+                      });
+                    res.clearCookie('user_id', {
+                        httpOnly: true,
+                        sameSite: 'None',
+                        secure: true,
+                        path: '/',
+                      });
+                    return res.status(440).json({
                         statusCode: 440,
                         status: 'failure',
                         message: 'Invalid session.'
                     });
                 }
             }else {
-                return res.send({
+                res.clearCookie('jwt', {
+                    httpOnly: true,
+                    sameSite: 'None',
+                    secure: true,
+                    path: '/',
+                  });
+                res.clearCookie('user_id', {
+                    httpOnly: true,
+                    sameSite: 'None',
+                    secure: true,
+                    path: '/',
+                  });
+                return res.status(440).json({
                     statusCode: 440,
                     status: 'failure',
                     message: 'Invalid token'

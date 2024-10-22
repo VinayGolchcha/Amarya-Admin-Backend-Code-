@@ -28,6 +28,7 @@ import { createServer } from 'http';
 import { Server } from 'socket.io';
 import { saveAttendanceLogs } from './v1/attendance/controllers/attendanceController.js';
 import attendanceRoutes from './v1/attendance/routes/attendanceRoutes.js';
+import { authenticate, createOAuth2Client } from './utils/googleDriveUploads.js';
 config();
 
 const app = express();
@@ -137,7 +138,7 @@ app.use("/api/v1/policy", policiesRoutes);
 app.use("/api/v1/userDashboard", userDashboardRoutes);
 app.use("/api/v1/attendance", attendanceRoutes);
 app.use('/', (req, res) => {
-  res.send({
+  res.status(403).json({
     statusCode: 403,
     status: 'failure',
     message: 'Invalid API'
@@ -154,6 +155,8 @@ try {
 
 // Start the server
 const PORT = process.env.PORT || 3000;
-server.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+await createOAuth2Client();
+server.listen(PORT, async () => {
+  await authenticate()
+  console.log(`Server running at http://localhost:${PORT}`);
 });

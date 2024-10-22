@@ -8,6 +8,7 @@ CREATE TABLE IF NOT EXISTS leaveDatesAndReasons (
     to_date date NOT NULL,
     subject varchar(255) NOT NULL,
     body varchar(255) NOT NULL,
+    document_url LONGTEXT NOT NULL,
     created_at datetime DEFAULT CURRENT_TIMESTAMP,
     updated_at datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY (_id),
