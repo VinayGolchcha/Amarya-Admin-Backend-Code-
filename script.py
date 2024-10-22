@@ -48,16 +48,27 @@ def reconnect_attempt(attempt_number):
     print(f"Attempting to reconnect... Attempt number: {attempt_number}")
 
 # List of RTSP streams
-rtsp_streams = [
-    "rtsp://amarya.ddns.net:5543/c09aa8be6a70054108fb66336c2b82c9/live/channel0"
-]
+rtsp_streams = ["rtsp://amarya.ddns.net:5543/c09aa8be6a70054108fb66336c2b82c9/live/channel0"]
 
 # Load the YOLO model
 model = YOLO("./best.pt")
 
 classNames = [
-'ankit_koshta01','anuj.prajapati01','deepanshu_kushwaha01','divij_sahu01','eish_nigam01','iteesh_dubey01','kishan_chaurasia01','lucky_soni01','prabal_namdev01','prashant_pandey01','pujita_rao01',
-'tamanna_suhane01','sanjana_jain01','shubham_kushwaha01','shubham_soni01','surya_pratap01','vishwabhushan_dubey01', 'Yogesh'
+'ahana_sarkhel01',
+'ankit_koshta01',
+'ankit_soni01',
+'deepanshu_kushwaha01',
+'eish_nigam01',
+'kishan_chaurasia01',
+'lucky_soni01',
+'prabal_namdev01',
+'prashant_pandey01',
+'shubham_kushwaha01',
+'shubham_soni01',
+'surya_pratap01',
+'tamanna_suhane01',
+'ujjwal_upadhyay01',
+'Yogesh',
 ]
 
 def object_detection(img):

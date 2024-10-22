@@ -12,7 +12,6 @@ export const saveAttendanceLogs = async (uniqueMockData) => {
 
       if (getUsers.length !== 0) {
         await insertUserAttendanceLogsQuery([ new Date(), detection.image, getUsers[0]._id]);
-        console.log("Attendance marked successfully for user: ", getUsers[0].username);
       } else {
         await insertUnknownUserAttendanceQuery(
           [
