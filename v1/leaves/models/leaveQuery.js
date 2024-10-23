@@ -188,6 +188,21 @@ export const fetchLeaveTakenOverviewQuery = (array, date) => {
         throw error; 
     }
 }
+export const fetchUserLeaveTakenOverviewQuery = (array, date) => {
+    try {
+        let query = `SELECT leave_type, from_date, to_date, subject, body, status FROM leaveDatesAndReasons WHERE emp_id = ?`
+        if (date) {
+            const [month, year] = date.split('-');
+            query += ` AND YEAR(from_date) = ? AND MONTH(from_date) = ? `;
+            array.push(month, year);
+        }
+        query += ` ORDER BY created_at DESC`
+        return pool.query(query, array);
+    } catch (error) {
+        console.error("Error executing fetchUserLeaveTakenOverviewQuery:", error);
+        throw error; 
+    }
+}
 
 export const insertUserLeaveDataQuery = (array) => {
     try {
