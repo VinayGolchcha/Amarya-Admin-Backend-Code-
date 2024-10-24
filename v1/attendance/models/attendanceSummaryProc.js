@@ -37,6 +37,7 @@ BEGIN
     CREATE TEMPORARY TABLE attendance_summary (
         id INT AUTO_INCREMENT PRIMARY KEY,
         emp_id VARCHAR(50),
+        emp_name VARCHAR(50),
         no_present_days INT,
         no_leaves INT,
         no_absent_days INT,
@@ -45,6 +46,7 @@ BEGIN
     ) AS
     SELECT 
         u.emp_id,
+        CONCAT(u.first_name,' ',u.last_name) as emp_name,
         COUNT(DISTINCT CASE WHEN ua.status = 'PRESENT' THEN ua.date END) AS no_present_days,
         (SELECT COUNT(*) FROM leaveDatesAndReasons ldar1 WHERE u.emp_id = ldar1.emp_id AND ((from_date BETWEEN start_date AND end_date) OR (to_date BETWEEN start_date AND end_date)) AND status = 'approved' AND leave_type != 'work from home') AS no_leaves,
         COUNT(DISTINCT CASE WHEN ua.status = 'ABSENT' AND ua.date BETWEEN start_date AND end_date THEN ua.date END) AS no_absent_days,
@@ -62,6 +64,7 @@ BEGIN
 
     SELECT 
         emp_id,
+        emp_name,
         (no_present_days + work_from_home) as no_present_days,
         no_leaves,
         ((total_working_days - no_present_days) - no_leaves) - work_from_home AS no_absent_days,
