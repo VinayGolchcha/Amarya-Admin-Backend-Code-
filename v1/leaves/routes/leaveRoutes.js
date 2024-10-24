@@ -5,7 +5,8 @@ import { addHoliday, updateHoliday, addLeaveTypeAndCount,
     fetchLeaveTypesAndTheirCount, leaveRequest, getUserLeaveDataForDashboard, 
     getUserLeaveData, fetchLeaveTakenOverview, updateLeaveTypeAndCount, deleteLeaveTypeAndCount,fetchHolidayList, deleteHoliday, 
     getUserAllLeaveData,
-    updateUserLeaveData} from '../controllers/leaveController.js';
+    updateUserLeaveData,
+    fetchUserLeaveTakenOverview} from '../controllers/leaveController.js';
 import {addHolidayVal, updateHolidayVal, addLeaveCountVal, leaveRequestVal, updateLeaveTypeAndCountVal, deleteLeaveTypeAndCountVal, getUserLeaveDashboardData, fetchLeaveOverviewVal, getTrnVal} from '../../../utils/validation.js';
 import {authenticateUserSession} from "../../../middlewares/userAuth.js"
 import {authenticateAdminSession} from "../../../middlewares/adminAuth.js"
@@ -26,6 +27,7 @@ app.get('/get-user-leave-dashboard-data/:id', authenticateUserAdminSession, getU
 app.get('/user-leave-data', getUserLeaveData);
 app.post('/user-all-leave-data', authenticateUserAdminSession, getTrnVal, getUserAllLeaveData);
 app.post('/fetch-leave-overview', authenticateUserSession, fetchLeaveOverviewVal, fetchLeaveTakenOverview);
+app.post('/fetch-user-leave-overview', authenticateUserSession, fetchLeaveOverviewVal, fetchUserLeaveTakenOverview);
 app.get('/fetch-holiday-list', authenticateUserAdminSession, fetchHolidayList);
 app.delete('/admin/delete-holiday/:id', authenticateAdminSession, deleteHoliday);
 app.put('/update-leave-request/:id/:emp_id', authenticateUserSession, updateUserLeaveData);

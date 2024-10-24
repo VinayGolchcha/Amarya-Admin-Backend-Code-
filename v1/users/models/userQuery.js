@@ -236,3 +236,35 @@ export const fetchAllEmployeeIdsQuery = async () => {
         throw error;
     }
 }
+export const fetchAllEmployeeListQuery = async () => {
+    try {
+        let query = `
+        SELECT 
+            users.emp_id, 
+            CONCAT(users.first_name, ' ', users.last_name) AS full_name, 
+            users.username,
+            users.experience, 
+            users.designation, 
+            users.joining_date,
+            CASE 
+                WHEN MAX(CASE 
+                        WHEN categories.category = 'Client Project' 
+                             AND CURDATE() BETWEEN STR_TO_DATE(CONCAT('01/', userProjects.start_month), '%d/%m/%y') 
+                             AND LAST_DAY(STR_TO_DATE(CONCAT('01/', userProjects.end_month), '%d/%m/%y'))
+                        THEN 1 ELSE 0 
+                    END) = 1
+                THEN 'allocated'
+                ELSE 'not yet allocated'
+            END AS project_status
+        FROM users
+        LEFT JOIN userProjects ON users.emp_id = userProjects.emp_id
+        LEFT JOIN projects ON userProjects.project_id = projects._id
+        LEFT JOIN categories ON projects.category_id = categories._id
+        WHERE users.role = 'user'
+        GROUP BY users.emp_id, users.first_name, users.last_name, users.username, users.experience, users.designation, users.joining_date`;
+        return pool.query(query);
+    } catch (error) {
+        console.error("Error executing fetchAllEmployeeListQuery:", error);
+        throw error;
+    }
+}

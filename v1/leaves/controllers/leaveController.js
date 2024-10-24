@@ -7,7 +7,8 @@ import {
     fetchAllEmployeesQuery,
     insertUserLeaveCountQuery,
     getUserLeaveDataByIdQuery,
-    updateUserLeaveQuery
+    updateUserLeaveQuery,
+    fetchUserLeaveTakenOverviewQuery
 } from "../../leaves/models/leaveQuery.js"
 import { checkIfAlreadyRequestedQuery, getUserGender, leaveTakenCountQuery } from "../../approvals/models/leaveApprovalQuery.js"
 import { successResponse, errorResponse, notFoundResponse, unAuthorizedResponse, internalServerErrorResponse } from "../../../utils/response.js"
@@ -213,6 +214,23 @@ export const fetchLeaveTakenOverview = async (req, res, next) => {
         let {emp_id, status, date} = req.body;
         status = status || "approved";
         const [data] = await fetchLeaveTakenOverviewQuery([emp_id, status], date)
+        if (data.length == 0) {
+            return successResponse(res, '', 'Data not found.');
+        }
+        return successResponse(res, data, 'Leave data fetched successfully');
+    } catch (error) {
+        return internalServerErrorResponse(res, error);
+    }
+}
+export const fetchUserLeaveTakenOverview = async (req, res, next) => {
+    try {
+        const errors = validationResult(req);
+
+        if (!errors.isEmpty()) {
+            return errorResponse(res, errors.array(), "")
+        }
+        let {emp_id, date} = req.body;
+        const [data] = await fetchUserLeaveTakenOverviewQuery([emp_id], date)
         if (data.length == 0) {
             return successResponse(res, '', 'Data not found.');
         }

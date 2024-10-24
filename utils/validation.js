@@ -182,7 +182,7 @@ export const getUserLeaveDashboardData= [
 export const fetchLeaveOverviewVal=[
     body('emp_id').notEmpty().withMessage('emp_id cannot be empty.').isAlphanumeric().withMessage('emp_id must be alphanumeric.'),
     body('status').optional().notEmpty().withMessage('status cannot be empty.').isString().withMessage('status must be a string.'),
-    body('from_date').optional().notEmpty().withMessage('from_date cannot be empty.').isDate().withMessage("from_date must be a date.")
+    body('date').optional().notEmpty().withMessage('from_date cannot be empty.').isDate().withMessage("from_date must be a date.")
 ]
 export const createWorksheetVal = [
     body('emp_id').notEmpty().withMessage('emp_id cannot be empty.').isAlphanumeric().withMessage('emp_id must be alphanumeric.'),
@@ -332,4 +332,8 @@ function isValidMonthYearFormat(dateString) {
 
 export const unidentifiedPersonVal = [
     param("id").isInt().withMessage("Invalid id input.").notEmpty().withMessage("id cannot be empty."),
+]
+export const fetchUnassignedAssetItemVal = [
+    query("item").isString().withMessage("Invalid item input.").notEmpty().withMessage("item cannot be empty."),
+    query("asset_type").isString().withMessage("Invalid asset_type input.").notEmpty().withMessage("asset_type cannot be empty."),
 ]

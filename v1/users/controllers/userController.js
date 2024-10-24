@@ -17,7 +17,8 @@ import {userRegistrationQuery, getUserDataByUsernameQuery, userDetailQuery, upda
         getLastEmployeeIdQuery, updateUserPasswordQuery, getAllLeaveCounts, insertUserLeaveCountQuery, checkUserNameAvailabilityQuery, insertOtpQuery, getOtpQuery,getUserDataByUserIdQuery
         ,checkUserDataByUserIdQuery, updateUserProfilePictureQuery, fetchAllEmployeeIdsQuery,
         getAllUserData,
-        updateExperienceQuery} from "../models/userQuery.js";
+        updateExperienceQuery,
+        fetchAllEmployeeListQuery} from "../models/userQuery.js";
 import { insertPerformanceQuery } from "../../worksheets/models/performanceQuery.js";
 
 export const userRegistration = async (req, res, next) => {
@@ -225,7 +226,8 @@ export const userLogin = async (req, res, next) => {
             profile_picture: user[0].profile_picture,
             user_name: user[0].username,
             role: user[0].role,
-            designation: user[0].designation
+            designation: user[0].designation,
+            full_name: user[0].first_name + ' ' + user[0].last_name
         }], 'You are successfully logged in');
 
     } catch (error) {
@@ -444,6 +446,18 @@ export const updateExperience = async (req, res, next) => {
             await updateExperienceQuery([exp, userData[i].emp_id])
         }
         return successResponse(res, '', 'All experience updated successfully');
+    } catch (error) {
+        return internalServerErrorResponse(res, error);
+    }
+}
+
+export const fetchAllEmployeeList = async (req, res, next) => {
+    try{
+        let [users_list] = await fetchAllEmployeeListQuery()
+        if (users_list.length == 0 ){
+            return successResponse(res, [], 'User not found');
+        }
+        return successResponse(res, users_list, 'All employee list fetched successfully');
     } catch (error) {
         return internalServerErrorResponse(res, error);
     }
