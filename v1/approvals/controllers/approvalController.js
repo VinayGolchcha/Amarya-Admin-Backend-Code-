@@ -4,6 +4,7 @@ import { successResponse, errorResponse, notFoundResponse, internalServerErrorRe
 import {assetApprovalQuery, fetchAssetDataQuery, assetRejectionQuery, deleteAssetQuery, checkIfAlreadyAssigned, changeAssetStatusToAvailable} from "../models/assetApprovalQuery.js"
 import {fetchTrainingDataQuery, trainingApprovalQuery, trainingRejectionQuery, deleteTrainingQuery} from "../models/trainingApprovalQuery.js"
 import {leaveApprovalQuery, deleteLeaveQuery, leaveRejectionQuery, getUserLeaveDaysQuery, leaveTakenCountQuery, checkIfLeaveAlreadyApprovedQuery} from "../models/leaveApprovalQuery.js"
+import { fetchUnassignedAssetItemQuery } from "../models/approvalQuery.js";
 dotenv.config();
 
 
@@ -176,3 +177,17 @@ export const approvalByAdmin = async (req, res, next) => {
         return internalServerErrorResponse(res, error);
     }
 };
+
+export const fetchUnassignedAssetItem = async(req, res, next) => {
+    try {
+        const {item, asset_type} = req.query
+        let [asset_data] = await fetchUnassignedAssetItemQuery([item, asset_type])
+        if(asset_data.length == 0) {
+            return successResponse(res, [], 'Asset not found')
+        }
+        return successResponse(res, asset_data, "Asset fetched successfully");
+    } catch (error) {
+        console.log(error);
+        return internalServerErrorResponse(res, error);
+    }
+}

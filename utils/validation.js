@@ -333,3 +333,7 @@ function isValidMonthYearFormat(dateString) {
 export const unidentifiedPersonVal = [
     param("id").isInt().withMessage("Invalid id input.").notEmpty().withMessage("id cannot be empty."),
 ]
+export const fetchUnassignedAssetItemVal = [
+    query("item").isString().withMessage("Invalid item input.").notEmpty().withMessage("item cannot be empty."),
+    query("asset_type").isString().withMessage("Invalid asset_type input.").notEmpty().withMessage("asset_type cannot be empty."),
+]

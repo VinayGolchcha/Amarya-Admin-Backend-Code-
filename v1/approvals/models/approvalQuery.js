@@ -29,3 +29,21 @@ export const updateApprovalLeaveDataQuery = (array) => {
         throw error;
     }
 }
+
+export const fetchUnassignedAssetItemQuery = async(array) =>{
+    try {
+        let query = `
+        SELECT 
+            asset_id, 
+            item 
+        FROM assets 
+        WHERE 
+            status = 'unassigned' 
+        AND item = ? 
+        AND asset_type = ?`
+        return pool.query(query, array);
+    } catch (error) {
+        console.error("Error executing fetchUnassignedAssetItemQuery:", error);
+        throw error;
+    }
+}
