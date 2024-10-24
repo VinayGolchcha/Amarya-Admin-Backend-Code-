@@ -1,5 +1,5 @@
 import express, { Router } from 'express';
-import { fetchUserPresentAttendance, getCameraStatus, getUserAttendancePercentage, getUserAttendanceSummary, updateMismatchedUserAttendance, updateUnknownAttendanceToKnown, fetchWeeklyPresentCount, fetchUnidentifiedPeopleList, deleteUnidentifiedPerson, updateUnidentifiedPerson, getAllUserAttendanceSummary, getAllUserAttendanceSummaryExcelBuffer, getDailyUserAttendance, getUserAttendanceByDate} from '../controllers/attendanceController.js';
+import { fetchUserPresentAttendance, getCameraStatus, getUserAttendancePercentage, getUserAttendanceSummary, updateMismatchedUserAttendance, updateUnknownAttendanceToKnown, fetchWeeklyPresentCount, fetchUnidentifiedPeopleList, deleteUnidentifiedPerson, updateUnidentifiedPerson, getAllUserAttendanceSummary, getAllUserAttendanceSummaryExcelBuffer, getDailyUserAttendance, getUserAttendanceByDate, generateAttendanceExcel} from '../controllers/attendanceController.js';
 import {authenticateAdminSession} from "../../../middlewares/adminAuth.js"
 import {unidentifiedPersonVal} from "../../../utils/validation.js"
 const app = express()
@@ -19,6 +19,7 @@ app.get('/get-all-attendance-summary',authenticateAdminSession, getAllUserAttend
 app.get('/get-all-attendance-summary-excel',authenticateAdminSession, getAllUserAttendanceSummaryExcelBuffer);
 app.get('/get-user-daily-attendance',authenticateAdminSession, getDailyUserAttendance);
 app.get('/get-user-attendance-date',authenticateAdminSession, getUserAttendanceByDate);
+app.get('/get-user-daily-attendance-excel', authenticateAdminSession, generateAttendanceExcel);
 
 
 

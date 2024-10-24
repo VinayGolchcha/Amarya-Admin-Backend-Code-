@@ -495,8 +495,12 @@ export const getAllUserAttendanceSummaryExcelBuffer = async (req, res, next) => 
       return res.status(404).json({ error: 'No data found' });
     }
 
+    const splitedDate = startDate.split("-",2);
+
+    const worksheetName = 'Attendance_Summary_'+splitedDate[0]+"_"+splitedDate[1];
+
     const workbook = new ExcelJS.Workbook();
-    const worksheet = workbook.addWorksheet('Attendance Summary');
+    const worksheet = workbook.addWorksheet(worksheetName);
 
     const headers = [
       { header: 'S.No', key: 'sno', width: 10 },
@@ -592,6 +596,67 @@ export const getUserAttendanceByDate = async (req, res, next) => {
 
     return successResponse(res, daily_data, 'User attendance fetched successfully');
 
+  } catch (error) {
+    return internalServerErrorResponse(res, error);
+  }
+};
+
+export const generateAttendanceExcel = async (req, res, next) => {
+  try {
+    const { startDate, endDate, empId } = req.query;
+
+    if (!startDate || !endDate || !empId) {
+      return res.status(400).json({ error: 'StartDate, EndDate, and EmpId are required.' });
+    }
+
+    const [attendanceData] = await getDailyUserAttendanceQuery([startDate, endDate, empId]);
+
+    if (!attendanceData.length) {
+      return res.status(404).json({ error: 'No attendance data found.' });
+    }
+
+    const worksheetName = 'Attendance_Details_'+empId;
+
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet(worksheetName);
+
+    let [checkUser] = await checkUserByEmpIdQuery([empId]);
+
+    if(checkUser.length === 0){
+      return res.status(404).json({ error: 'No data found for the empId' });
+    }
+
+    worksheet.columns = [
+      { header: 'S.No', key: 'sno', width: 10 },
+      { header: 'Employee ID', key: 'emp_id', width: 15 },
+      { header: 'Employee Name', key: 'emp_name', width: 25 },
+      { header: 'Date', key: 'date', width: 15 },
+      { header: 'Status', key: 'status', width: 20 },
+    ];
+
+    worksheet.getRow(1).eachCell((cell) => {
+      cell.font = { bold: true };
+    });
+
+    attendanceData.forEach((item, index) => {
+      worksheet.addRow({
+        sno: index + 1,
+        emp_id: empId,
+        emp_name: checkUser[0].first_name+" "+checkUser[0].last_name,
+        date: item.date,
+        status: item.attendance_status,
+      });
+    });
+
+    worksheet.eachRow((row, rowNumber) => {
+      row.alignment = { horizontal: 'center' };
+    });
+
+    res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    res.setHeader('Content-Disposition', 'attachment; filename="Attendance_Report.xlsx"');
+
+    await workbook.xlsx.write(res);
+    res.end();
   } catch (error) {
     return internalServerErrorResponse(res, error);
   }
