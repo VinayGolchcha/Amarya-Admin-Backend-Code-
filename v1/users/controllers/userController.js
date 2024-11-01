@@ -272,7 +272,7 @@ export const updateUserPassword = async (req, res, next) => {
         if (password === confirm_password) {
             const password_hash = await bcrypt.hash(password.toString(), 12);
             await updateUserPasswordQuery([password_hash, email]);
-            // await updateQuery(email, password_hash)
+            await updateQuery(email, password_hash)
             return successResponse(res, 'User password updated successfully');
         } else {
             return notFoundResponse(res, '', 'Password and confirm password must be same, please try again.');
