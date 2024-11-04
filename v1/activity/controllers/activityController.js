@@ -71,7 +71,7 @@ export const updateActivity = async (req, res, next) => {
     const req_data = req.body;
     const id = req.params.id;
 
-    if((req_data.public_ids).length > 0){
+    if((req_data.public_ids|| []).length > 0){
       const public_ids = JSON.parse(req_data.public_ids);
          //delete image
       for (let public_id of public_ids){
