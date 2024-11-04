@@ -48,7 +48,7 @@ def reconnect_attempt(attempt_number):
     print(f"Attempting to reconnect... Attempt number: {attempt_number}")
 
 # List of RTSP streams
-rtsp_streams = ["rtsp://amarya.ddns.net:5543/c09aa8be6a70054108fb66336c2b82c9/live/channel0"]
+rtsp_streams = ["rtsp://amarya.ddns.net:5543/5de47dec149522f828aed6711016442a/live/channel0"]
 
 # Load the YOLO model
 model = YOLO("./best.pt")
