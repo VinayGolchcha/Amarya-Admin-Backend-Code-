@@ -155,8 +155,8 @@ try {
 
 // Start the server
 const PORT = process.env.PORT || 3000;
-await createOAuth2Client();
+// await createOAuth2Client();
 server.listen(PORT, async () => {
-  await authenticate()
+  // await authenticate()
   console.log(`Server running at http://localhost:${PORT}`);
 });
