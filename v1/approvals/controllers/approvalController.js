@@ -110,54 +110,72 @@ export const approvalByAdmin = async (req, res, next) => {
         };
 
         const handleLeaveRequest = async () => {
-            let [userLeaveData] = await getUserLeaveDaysQuery([foreign_id])
-            if(userLeaveData.length===0) {
-                message = "Leave data not found."
-            }else{
-                let leave_taken_count = userLeaveData[0].days_count + 1;
-            let leave_type = userLeaveData[0].leave_type
-            let leave_type_count_by_admin = userLeaveData[0].leave_count
-
-            let [current_status] = await checkIfLeaveAlreadyApprovedQuery([emp_id, foreign_id, request_type])
+            let message = "";
+            let statusCode = 200; // Default success code
+        
+            // Fetch user leave data
+            let [userLeaveData] = await getUserLeaveDaysQuery([foreign_id]);
+            if (userLeaveData.length === 0) {
+                message = "Leave data not found.";
+                statusCode = 404;
+                return { message, statusCode };
+            }
+        
+            // Extract leave data
+            const leave_taken_count = userLeaveData[0].days_count + 1;
+            const leave_type = userLeaveData[0].leave_type;
+            const leave_type_count_by_admin = userLeaveData[0].leave_count;
+        
+            // Check current leave status
+            let [current_status] = await checkIfLeaveAlreadyApprovedQuery([emp_id, foreign_id, request_type]);
+            if (!current_status || current_status.length === 0) {
+                message = "Leave request status not found.";
+                statusCode = 404;
+                return { message, statusCode };
+            }
+        
             if (status === "approved") {
-                if (current_status[0].status==="approved") {
-                    message = 'Leave already approved.';
-                    statusCode = 400
-                    return {message, statusCode}
+                if (current_status[0].status === "approved") {
+                    message = "Leave already approved.";
+                    statusCode = 400;
+                    return { message, statusCode };
                 }
-                let [userLeaveTakenCount] = await leaveTakenCountQuery([emp_id, leave_type])
-                if(leave_type_count_by_admin >= (userLeaveTakenCount[0].leave_taken_count + leave_taken_count)){
+                if (current_status[0].status === "rejected") {
+                    message = "Leave already rejected, approval not possible.";
+                    statusCode = 400;
+                    return { message, statusCode };
+                }
+        
+                let [userLeaveTakenCount] = await leaveTakenCountQuery([emp_id, leave_type]);
+                const total_leave_taken = userLeaveTakenCount ? userLeaveTakenCount[0].leave_taken_count + leave_taken_count : leave_taken_count;
+        
+                if (leave_type_count_by_admin >= total_leave_taken) {
                     await leaveApprovalQuery([leave_taken_count, emp_id, leave_type], [status, current_date, emp_id, foreign_id], [status, foreign_id, leave_type]);
-                    message = 'Leave approved successfully.';
-                    statusCode = 200
-                    return {message, statusCode}
-                }else{
-                    message = `User exceeded the leave count by ${(userLeaveTakenCount[0].leave_taken_count + leave_taken_count) - leave_type_count_by_admin}.`;
-                    statusCode = 200
-                    return {message, statusCode}
+                    message = "Leave approved successfully.";
+                } else {
+                    message = `User exceeded the leave count by ${total_leave_taken - leave_type_count_by_admin}.`;
                 }
+        
             } else if (status === "rejected") {
-                if (current_status[0].status==="rejected") {
-                    message = 'Leave already approved.';
-                    statusCode = 400
-                    return {message, statusCode}
+                if (current_status[0].status === "approved") {
+                    message = "Leave already approved, rejection not possible.";
+                } else {
+                    await leaveRejectionQuery([status, emp_id, foreign_id], [status, foreign_id, leave_type]);
+                    message = "Leave rejected successfully.";
                 }
-                await leaveRejectionQuery([status, emp_id, foreign_id], [status, foreign_id, leave_type]);
-                message = 'Leave rejected successfully.';
-                statusCode = 200
-                return {message, statusCode}
-            } else if(status === "deleted"){
+        
+            } else if (status === "deleted") {
                 await deleteLeaveQuery([emp_id, foreign_id], [foreign_id, leave_type]);
-                message = 'Leave deleted successfully';
-                statusCode = 200
-                return {message, statusCode}
-            }else{
-                message = "Leave data not found."
-                statusCode = 404
-                return {message, statusCode}
+                message = "Leave deleted successfully.";
+        
+            } else {
+                message = "Invalid leave status provided.";
+                statusCode = 400;
             }
-            }
+        
+            return { message, statusCode };
         };
+        
         let data;
         if (request_type === "inventory") {
              data=await handleInventoryRequest();

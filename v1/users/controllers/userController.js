@@ -324,6 +324,7 @@ export const updateUserProfile = async(req, res, next) => {
             emp_id: id
         };
         const req_data = req.body;
+        delete req_data.password;
 
         let [exist_id] = await checkUserDataByUserIdQuery([id])
 
@@ -341,8 +342,9 @@ export const updateUserProfile = async(req, res, next) => {
                 await insertEmpImageQuery(["profile", uploaded_data.secure_url, uploaded_data.public_id, id, file.originalname])
                 await updateUserProfilePictureQuery([uploaded_data.secure_url, id])
             }
+            if(Object.keys(req_data).length !== 0){
             let query_values = await createDynamicUpdateQuery(table, condition, req_data)
-            let [data] = await updateUserProfileQuery(query_values.updateQuery, query_values.updateValues);
+            await updateUserProfileQuery(query_values.updateQuery, query_values.updateValues);
             if(req_data.first_name){
                 if(req_data.last_name){
                         usersname = req_data.first_name + " " + req_data.last_name
@@ -352,8 +354,8 @@ export const updateUserProfile = async(req, res, next) => {
                 usersname = exist_id[0].first_name + " " + req_data.last_name
             }
                 await updateUserDataInMessengerQuery(exist_id[0].email, usersname)
-            
-            return successResponse(res, data, 'User profile updated successfully.');
+            }
+            return successResponse(res, [], 'User profile updated successfully.');
         }else{
             return successResponse(res, [], 'User not found.');
         }
