@@ -111,3 +111,40 @@ export const insertPerformanceQuery = (array)=> {
         throw error;
     }
 }
+export const getWeightedAverage = (array)=> {
+    try {
+        let query = `
+            SELECT 
+                emp_id,
+                DATE_FORMAT(date, '%Y-%m') AS month,
+                CONCAT(ROUND(
+                    (SUM(c.points * daily.hours) / NULLIF(SUM(daily.hours), 0)) 
+                    / (SELECT MAX(points) FROM categories) * 100, 2
+                ), '%') AS weighted_average_percentage
+            FROM 
+                (
+                    SELECT 
+                        emp_id,
+                        category_id,
+                        date,
+                        SUM(hours) AS hours
+                    FROM 
+                        worksheets
+                    GROUP BY 
+                        emp_id, category_id, date
+                ) AS daily
+            JOIN 
+                categories c ON daily.category_id = c._id
+            WHERE 
+                DATE_FORMAT(date, '%Y-%m') = ?
+            AND
+                emp_id = ?
+            GROUP BY 
+                emp_id, month;
+            `
+        return pool.query(query, array);
+    } catch (error) {
+        console.error("Error executing getWeightedAverage:", error);
+        throw error;
+    }
+}

@@ -2,7 +2,8 @@ import { validationResult } from "express-validator";
 import dotenv from "dotenv"
 import { successResponse, errorResponse, notFoundResponse, unAuthorizedResponse, internalServerErrorResponse } from "../../../utils/response.js"
 import { getCategoryTotalPointsQuery, getTeamPointsQuery, fetchTeamCountQuery, 
-    fetchTeamNameQuery,} from "../models/performanceQuery.js"
+    fetchTeamNameQuery,
+    getWeightedAverage,} from "../models/performanceQuery.js"
 import { getWorkingDaysCountPreviousMonth } from "../../helpers/functions.js"
 dotenv.config();
 
@@ -49,6 +50,24 @@ export const calculatePerformanceForTeam = async (req, res, next) => {
         const filtered_team_performance = team_performance.filter(performance => performance !== null);
 
         return successResponse(res, filtered_team_performance, 'Team Performance calculated successfully.');
+    } catch (error) {
+        return internalServerErrorResponse(res, error);
+    }
+};
+
+export const employeeMonthlyPerformanceBasedOnWorksheetHours = async (req, res, next) => {
+    try {
+        const errors = validationResult(req);
+
+        if (!errors.isEmpty()) {
+            return errorResponse(res, errors.array(), "");
+        }
+        const {date, emp_id} = req.params;
+        const [weighted_average_data] = await getWeightedAverage([date, emp_id]);
+        if (weighted_average_data.length == 0) {
+            return successResponse(res, [], 'Data not found');
+        }
+        return successResponse(res, weighted_average_data, 'Employee Monthly Performance calculated successfully.');
     } catch (error) {
         return internalServerErrorResponse(res, error);
     }

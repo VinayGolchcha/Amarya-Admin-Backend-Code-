@@ -8,7 +8,8 @@ import {
     insertUserLeaveCountQuery,
     getUserLeaveDataByIdQuery,
     updateUserLeaveQuery,
-    fetchUserLeaveTakenOverviewQuery
+    fetchUserLeaveTakenOverviewQuery,
+    deleteUserLeaveCountsByLeaveTypeId
 } from "../../leaves/models/leaveQuery.js"
 import { checkIfAlreadyRequestedQuery, getUserGender, leaveTakenCountQuery } from "../../approvals/models/leaveApprovalQuery.js"
 import { successResponse, errorResponse, notFoundResponse, unAuthorizedResponse, internalServerErrorResponse } from "../../../utils/response.js"
@@ -177,9 +178,10 @@ export const deleteLeaveTypeAndCount  = async (req, res,next) => {
             return successResponse(res, "", "Data not found");
         }
         await Promise.all([
-        await deleteLeaveTypeAndCountQuery([id, leave_type_id]),
-        await deleteLeaveTypeQuery([leave_type_id])
-    ])
+            await deleteUserLeaveCountsByLeaveTypeId([leave_type_id]),
+            await deleteLeaveTypeQuery([leave_type_id]),
+            await deleteLeaveTypeAndCountQuery([id, leave_type_id])
+        ])
         
         return successResponse(res, "",'Data deleted Successfully');
     } catch (error) {

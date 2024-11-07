@@ -131,6 +131,16 @@ export const deleteLeaveTypeQuery = async (array) => {
     }
 }
 
+export const deleteUserLeaveCountsByLeaveTypeId = async (array) => {
+    try{
+        let query = `DELETE FROM userLeaveCounts WHERE leave_type_id = ? `
+        return await pool.query(query, array); 
+    }catch(error){
+        console.error("Error executing deleteUserLeaveCountsByLeaveTypeId:", error);
+        throw error;
+    }
+}
+
 export const updateLeaveQuery = (query, array) => {
     try {
         return pool.query(query, array);

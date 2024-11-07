@@ -176,7 +176,7 @@ export const filterActivityByDate = async (req, res, next) => {
     if (!errors.isEmpty()) {
       return errorResponse(res, errors.array(), "");
     }
-    const date = req.body.date;
+    const date = req.params.date;
     let event_type = "activity";
     let [array] = await fetchActivityQuery([event_type]);
     const result = array.filter((item) => item.from_date.includes(date));
