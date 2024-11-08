@@ -84,7 +84,7 @@ export const deleteProject = async (req, res, next) => {
         const [check_ids] = await checkProjectIdAndCategoryIdQuery([projecy_id, category_id])
 
         if (check_ids.length == 0) {
-            return errorResponse(res, "" ,"No project found. Pls recheck the ids.")
+            return errorResponse(res, "" ,"No project found. Please recheck the ids.")
         }
         
         await deleteProjectQuery([projecy_id, category_id]);

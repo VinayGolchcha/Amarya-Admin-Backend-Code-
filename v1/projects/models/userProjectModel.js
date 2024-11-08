@@ -11,7 +11,7 @@ CREATE TABLE IF NOT EXISTS userProjects (
     created_at datetime DEFAULT CURRENT_TIMESTAMP,
     updated_at datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY (_id),
-    FOREIGN KEY (project_id) REFERENCES projects(_id)
+    FOREIGN KEY (project_id) REFERENCES projects(_id) ON UPDATE CASCADE ON DELETE CASCADE
 ) AUTO_INCREMENT = 1111`;
 
 export default userProjectTable;
