@@ -149,6 +149,15 @@ export const updateLeaveQuery = (query, array) => {
         throw error;
     }
 }
+export const updateLeaveTypeDescriptionQuery = (array) => {
+    try {
+        let query = `UPDATE leaveTypes SET description = ? WHERE _id = ?`
+        return pool.query(query, array);
+    } catch (error) {
+        console.error("Error executing updateLeaveQuery:", error);
+        throw error;
+    }
+}
 
 export const createLeaveCount = (array) => {
     try {

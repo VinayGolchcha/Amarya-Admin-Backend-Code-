@@ -113,6 +113,7 @@ export const userRegistration = async (req, res, next) => {
         await insertTeamToUser([emp_id, team_id]);
         if(role=="user"){
             let [leaveTypeAndCount, performanceData] = await Promise.all([getAllLeaveCounts(), insertPerformanceQuery([emp_id])]);
+            leaveTypeAndCount = leaveTypeAndCount[0];
             for(let i = 0; i < leaveTypeAndCount.length; i++) {
                 let leaveType = leaveTypeAndCount[i].leave_type;
                 let leaveCount = leaveTypeAndCount[i].leave_count;

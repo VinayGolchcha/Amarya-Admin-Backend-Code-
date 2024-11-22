@@ -21,7 +21,7 @@ export const delAnnVal = [
 
 export const allAppVal = [
     body('emp_id').notEmpty().withMessage('emp_id cannot be empty.').isAlphanumeric().withMessage('emp_id must be alphanumeric.'),
-    body('foreign_id').notEmpty().withMessage('foreign_id cannot be empty.').isAlphanumeric().withMessage('foreign_id must be alphanumeric.'),
+    body('foreign_id').optional().notEmpty().withMessage('foreign_id cannot be empty.').isAlphanumeric().withMessage('foreign_id must be alphanumeric.'),
     body('status').notEmpty().withMessage('status cannot be empty.').isString().withMessage("status must be a string."),
     body('item').optional().isString().withMessage("item must be a string."),
     body('request_type').notEmpty().withMessage('request_type cannot be empty.').isString().withMessage("request_type must be a string."),

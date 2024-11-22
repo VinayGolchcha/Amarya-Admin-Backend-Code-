@@ -11,13 +11,13 @@ export const assetApprovalQuery = async (array1, array2, array3) => {
     const query2 = `
         UPDATE approvals
         SET status = ?, approval_date = ?, issued_from = ?, foreign_id = ?
-        WHERE emp_id = ? AND item = ? AND asset_type = ?;
+        WHERE emp_id = ? AND item = ? AND asset_type = ? AND status = 'pending;
     `;
     
     const query3 = `
         UPDATE assets
         SET status = 'assigned'
-        WHERE item = ? AND asset_id = ?;
+        WHERE item = ? AND asset_id = ? AND status = 'unassigned';
     `;
     
     const connection = await pool.getConnection();
@@ -92,7 +92,7 @@ export const checkIfAlreadyAssigned= async(array)=>{
     ;`
     try {
         const [results] = await pool.query(query, array);
-        return results;
+        return results ?? [];
     } catch (error) {
         if (error.code === 'ER_BAD_FIELD_ERROR') {
             // Error due to unknown column 'foreign_id'

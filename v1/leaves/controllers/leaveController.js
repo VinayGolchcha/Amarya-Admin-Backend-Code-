@@ -9,7 +9,8 @@ import {
     getUserLeaveDataByIdQuery,
     updateUserLeaveQuery,
     fetchUserLeaveTakenOverviewQuery,
-    deleteUserLeaveCountsByLeaveTypeId
+    deleteUserLeaveCountsByLeaveTypeId,
+    updateLeaveTypeDescriptionQuery
 } from "../../leaves/models/leaveQuery.js"
 import { checkIfAlreadyRequestedQuery, getUserGender, leaveTakenCountQuery } from "../../approvals/models/leaveApprovalQuery.js"
 import { successResponse, errorResponse, notFoundResponse, unAuthorizedResponse, internalServerErrorResponse } from "../../../utils/response.js"
@@ -151,7 +152,10 @@ export const updateLeaveTypeAndCount = async (req, res, next) => {
             _id: id,
             leave_type_id:leave_type_id
         };
-
+        if(req_data.description){
+            await updateLeaveTypeDescriptionQuery([req_data.description, leave_type_id]);
+            delete req_data.description
+        }
         let query_values = await createDynamicUpdateQuery(table, condition, req_data)
         let [data] = await updateLeaveQuery(query_values.updateQuery, query_values.updateValues)
 

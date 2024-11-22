@@ -26,24 +26,19 @@ export const approvalByAdmin = async (req, res, next) => {
         
         const handleInventoryRequest = async () => {
             asset_type = asset_type.toLowerCase();
-            const [requestData] = await fetchAssetDataQuery([foreign_id]);
-            if (requestData.length === 0) {
-                message = 'Asset not found';
-                statusCode = 404
-                return {message, statusCode}
-            }else if(requestData[0].item != item || (requestData[0].status == "assigned" && status !="delete")){
-                message = 'Inventory id given is not of the requested asset';
-                statusCode = 404
-                return {message, statusCode}
-            }
-
-            if (status === "approved") {
-                const [assetData] = await checkIfAlreadyAssigned([emp_id, foreign_id, status])
-                if (assetData.length > 0) {
-                    message = 'Asset already assigned to this user';
-                    statusCode = 400
+            if(foreign_id){
+                const [requestData] = await fetchAssetDataQuery([foreign_id]);
+                if (requestData.length === 0) {
+                    message = 'Asset not found';
+                    statusCode = 404
+                    return {message, statusCode}
+                }else if(requestData[0].item != item || (requestData[0].status == "assigned" && status !="delete")){
+                    message = 'Inventory id given is not of the requested asset or asset is already assigned';
+                    statusCode = 404
                     return {message, statusCode}
                 }
+            }
+            if (status === "approved") {
                 try {
                     await assetApprovalQuery([foreign_id, current_date, status, emp_id, item, asset_type], [status, current_date, current_date, foreign_id, emp_id, item, asset_type], [item,foreign_id]);
                     message = 'Asset approved successfully';
@@ -55,22 +50,30 @@ export const approvalByAdmin = async (req, res, next) => {
                     return {message, statusCode}
                 }
             } else if (status === "rejected") {
-                const [assetData] = await checkIfAlreadyAssigned([emp_id, foreign_id, "approved"])
+                if(foreign_id){
+                    const assetData = await checkIfAlreadyAssigned([emp_id, foreign_id, "approved"])
                 if (assetData.length > 0) {
                     message = 'Asset already assigned to this user';
                     statusCode = 400
                     return {message, statusCode}
+                }
                 }
                 await assetRejectionQuery([status, emp_id, item], [status, emp_id, item]);
                 message = 'Asset rejected successfully';
                 statusCode = 200
                 return {message, statusCode}
             } else {
-                await changeAssetStatusToAvailable([item, foreign_id, emp_id]);
-                await deleteAssetQuery([foreign_id, emp_id]);
-                message = 'Asset request deleted successfully';
-                statusCode = 200
-                return {message, statusCode}
+                if(foreign_id){
+                    await changeAssetStatusToAvailable([item, foreign_id, emp_id]);
+                    await deleteAssetQuery([foreign_id, emp_id]);
+                    message = 'Asset request deleted successfully';
+                    statusCode = 200
+                    return {message, statusCode}
+                }else{
+                    message = 'Either assign the asset or reject the request before deleting the asset request.';
+                    statusCode = 200
+                    return {message, statusCode}
+                }
             }
         };
 
