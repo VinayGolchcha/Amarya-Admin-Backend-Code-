@@ -29,13 +29,26 @@ import { Server } from 'socket.io';
 import { saveAttendanceLogs } from './v1/attendance/controllers/attendanceController.js';
 import attendanceRoutes from './v1/attendance/routes/attendanceRoutes.js';
 import { authenticate, createOAuth2Client } from './utils/googleDriveUploads.js';
+import { spawn } from 'child_process';
+import path from 'path';
+import fs from 'fs';
+import { fileURLToPath } from 'url';
 config();
+
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const hlsDirectory = path.join(__dirname, 'hls');
 
 const app = express();
 app.use(helmet());
 app.use(json());
 app.use(cookieParser());
 
+app.use('/hls', express.static(hlsDirectory));
+if (!fs.existsSync(hlsDirectory)) {
+  fs.mkdirSync(hlsDirectory);
+}
 // CORS setup
 const corsOptions = {
   origin: ['http://localhost:3000',  'https://amarya-admin-code-dev-fe.vercel.app', 'https://amarya-admin-code.vercel.app', 'https://messenger-app-amarya-fe.vercel.app'],
@@ -112,6 +125,46 @@ io.on('reconnect_error', (error) => {
 io.on('reconnect_failed', () => {
   console.error('Failed to reconnect to WebSocket server');
 });
+
+
+const startStream = () => {
+  const rtspUrl = 'rtsp://amarya.ddns.net:5543/5de47dec149522f828aed6711016442a/live/channel0'; // RTSP feed URL
+
+  // Spawn an FFmpeg process to convert RTSP stream to HLS
+  const ffmpeg = spawn('ffmpeg', [
+    '-rtsp_transport', 'tcp',
+    '-i', rtspUrl, // The RTSP URL
+    '-c:v', 'libx264', // Video codec (H.264)
+    '-preset', 'veryfast',
+    '-crf', '24', // Compression quality (0 = lossless)
+    '-f', 'hls',
+    '-hls_time', '20', // Segment duration in seconds
+    '-hls_list_size', '10', // Number of playlist entries
+    path.join(hlsDirectory, 'stream.m3u8') // Output path for the HLS manifest
+  ]);
+
+  ffmpeg.stderr.on('data', (data) => {
+    // console.error(`FFmpeg stderr: ${data.toString()}`);
+  });
+
+  ffmpeg.on('close', (code) => {
+    console.log(`FFmpeg process exited with code ${code}`);
+  });
+};
+
+setInterval(() => {
+  const files = fs.readdirSync(hlsDirectory)
+    .filter(file => file.endsWith('.ts')) // Only segment files
+    .sort((a, b) => fs.statSync(path.join(hlsDirectory, a)).mtime - fs.statSync(path.join(hlsDirectory, b)).mtime);
+  let maxSegments = 10
+  if (files.length > maxSegments) {
+    const filesToDelete = files.slice(0, files.length - maxSegments);
+    filesToDelete.forEach(file => fs.unlinkSync(path.join(hlsDirectory, file)));
+  }
+}, 10000); // Check every 10 seconds
+// Start the stream
+// startStream();
+
 
 // Start the cron jobs
 runCronJobs();

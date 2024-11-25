@@ -11,7 +11,8 @@ export const assetApprovalQuery = async (array1, array2, array3) => {
     const query2 = `
         UPDATE approvals
         SET status = ?, approval_date = ?, issued_from = ?, foreign_id = ?
-        WHERE emp_id = ? AND item = ? AND asset_type = ? AND status = 'pending;
+        WHERE emp_id = ? AND item = ? AND asset_type = ? AND status = 'pending'
+        ;
     `;
     
     const query3 = `
