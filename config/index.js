@@ -32,7 +32,7 @@ import readAnnouncementTable from "../v1/announcements/models/readAnnouncementMo
 import oAuthTable from "../utils/oauthTokenModel.js";
 
 export default [userTable,oAuthTable, assetTable, trainingTable, usertrainingTable, assetRequestTable, approvalTable, announcementTable, readAnnouncementTable,
-    holidayTable, leaveDatesAndReasonTable,leaveTypeTable, leaveTypeCountTable, userLeaveCountTable, categoryTable, teamTable,
+    holidayTable, leaveTypeTable, leaveDatesAndReasonTable, leaveTypeCountTable, userLeaveCountTable, categoryTable, teamTable,
     projectTable, worksheetTable, skillSetTable , temporaryNotesTable , policiesTable, userTeamsTable,
     userYearlyPerformanceTable, userPerformanceTable, imagesTable, feedbackFormTable, userProjectTable, attendanceLogsTable, unknownUserAttendanceTable,
     attendanceTable, devicesTable, attendanceSummaryProc

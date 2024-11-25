@@ -12,7 +12,8 @@ CREATE TABLE IF NOT EXISTS leaveDatesAndReasons (
     created_at datetime DEFAULT CURRENT_TIMESTAMP,
     updated_at datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY (_id),
-    FOREIGN KEY (emp_id) REFERENCES users(emp_id) ON DELETE CASCADE
+    FOREIGN KEY (emp_id) REFERENCES users(emp_id) ON DELETE CASCADE,
+    FOREIGN KEY (leave_type) REFERENCES leaveTypes(leave_type) ON UPDATE CASCADE ON DELETE CASCADE
 ) AUTO_INCREMENT = 1111;
 `
 export default leaveDatesAndReasonTable
