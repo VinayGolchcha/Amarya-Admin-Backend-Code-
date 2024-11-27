@@ -189,7 +189,7 @@ export const approvalByAdmin = async (req, res, next) => {
         }
 
         if(data.statusCode==200){
-            return successResponse(res, "", data.message);
+            return successResponse(res, [], data.message);
         }else{
             return successResponse(res, [], data.message);
         }

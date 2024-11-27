@@ -45,7 +45,7 @@ app.use(helmet());
 app.use(json());
 app.use(cookieParser());
 
-app.use('/hls', express.static(hlsDirectory));
+
 if (!fs.existsSync(hlsDirectory)) {
   fs.mkdirSync(hlsDirectory);
 }
@@ -60,6 +60,7 @@ const corsOptions = {
 };
 app.use(cors(corsOptions));
 app.options('*', cors(corsOptions));
+app.use('/hls', cors(corsOptions), express.static(hlsDirectory));
 
 // Create server and socket.io instance
 const server = createServer(app);
@@ -138,8 +139,8 @@ const startStream = () => {
     '-preset', 'veryfast',
     '-crf', '24', // Compression quality (0 = lossless)
     '-f', 'hls',
-    '-hls_time', '20', // Segment duration in seconds
-    '-hls_list_size', '10', // Number of playlist entries
+    '-hls_time', '10', // Segment duration in seconds
+    '-hls_list_size', '6', // Number of playlist entries
     path.join(hlsDirectory, 'stream.m3u8') // Output path for the HLS manifest
   ]);
 
@@ -156,14 +157,14 @@ setInterval(() => {
   const files = fs.readdirSync(hlsDirectory)
     .filter(file => file.endsWith('.ts')) // Only segment files
     .sort((a, b) => fs.statSync(path.join(hlsDirectory, a)).mtime - fs.statSync(path.join(hlsDirectory, b)).mtime);
-  let maxSegments = 10
+  let maxSegments = 6
   if (files.length > maxSegments) {
     const filesToDelete = files.slice(0, files.length - maxSegments);
     filesToDelete.forEach(file => fs.unlinkSync(path.join(hlsDirectory, file)));
   }
 }, 10000); // Check every 10 seconds
 // Start the stream
-// startStream();
+startStream();
 
 
 // Start the cron jobs

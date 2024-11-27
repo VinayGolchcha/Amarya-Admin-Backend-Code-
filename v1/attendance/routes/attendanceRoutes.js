@@ -1,12 +1,13 @@
 import express, { Router } from 'express';
 import { fetchUserPresentAttendance, getCameraStatus, getUserAttendancePercentage, getUserAttendanceSummary, updateMismatchedUserAttendance, updateUnknownAttendanceToKnown, fetchWeeklyPresentCount, fetchUnidentifiedPeopleList, deleteUnidentifiedPerson, updateUnidentifiedPerson, getAllUserAttendanceSummary, getAllUserAttendanceSummaryExcelBuffer, getDailyUserAttendance, getUserAttendanceByDate, generateAttendanceExcel} from '../controllers/attendanceController.js';
 import {authenticateAdminSession} from "../../../middlewares/adminAuth.js"
+import { authenticateUserAdminSession } from '../../../middlewares/userAdminAuth.js';
 import {unidentifiedPersonVal} from "../../../utils/validation.js"
 const app = express()
 const router = Router();
 
 app.get('/check-camera-status',authenticateAdminSession, getCameraStatus);
-app.get('/get-attendance-summary',authenticateAdminSession, getUserAttendanceSummary);
+app.get('/get-attendance-summary',authenticateUserAdminSession, getUserAttendanceSummary);
 app.get('/fetch-weekly-present-count',authenticateAdminSession, fetchWeeklyPresentCount);
 app.get('/fetch-user-present-attendance',authenticateAdminSession, fetchUserPresentAttendance);
 app.get('/fetch-unknown-detections',authenticateAdminSession, fetchUnidentifiedPeopleList);
@@ -17,7 +18,7 @@ app.put('/update-unknown-attendance',authenticateAdminSession, updateUnknownAtte
 app.put('/update-missmatched-attendance',authenticateAdminSession, updateMismatchedUserAttendance);
 app.get('/get-all-attendance-summary',authenticateAdminSession, getAllUserAttendanceSummary);
 app.get('/get-all-attendance-summary-excel',authenticateAdminSession, getAllUserAttendanceSummaryExcelBuffer);
-app.get('/get-user-daily-attendance',authenticateAdminSession, getDailyUserAttendance);
+app.get('/get-user-daily-attendance',authenticateUserAdminSession, getDailyUserAttendance);
 app.get('/get-user-attendance-date',authenticateAdminSession, getUserAttendanceByDate);
 app.get('/get-user-daily-attendance-excel', authenticateAdminSession, generateAttendanceExcel);
 
