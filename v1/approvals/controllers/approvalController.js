@@ -70,7 +70,7 @@ export const approvalByAdmin = async (req, res, next) => {
                     statusCode = 200
                     return {message, statusCode}
                 }else{
-                    message = 'Either assign the asset or reject the request before deleting the asset request.';
+                    message = 'Assign the asset before deleting it.';
                     statusCode = 200
                     return {message, statusCode}
                 }
