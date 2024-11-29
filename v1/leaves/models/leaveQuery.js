@@ -61,44 +61,25 @@ export const updateHolidayQuery = (query, array) => {
     }
 }
 
-export const checkSameLeaveTypeNameQuery = (array) => {
-    try {
+export const checkSameLeaveTypeNameQuery = (array, connection = pool) => {
         let query = `SELECT * FROM leaveTypes WHERE leave_type = ?`
-        return pool.query(query, array);
-    } catch (error) {
-        console.error("Error executing checkSameLeaveTypeNameQuery:", error);
-        throw error; 
-    }
+        return connection.query(query, array);
 }
 
-export const fetchAllEmployeesQuery = () => {
-    try {
+export const fetchAllEmployeesQuery = (connection=pool) => {
         let query = `SELECT emp_id FROM users WHERE role = 'user'`
-        return pool.query(query);
-    } catch (error) {
-        console.error("Error executing fetchAllEmployeesQuery:", error);
-        throw error; 
-    }
+        return connection.query(query);
 }
 
-export const insertUserLeaveCountQuery = (array) => {
-    try {
-        let query = `INSERT INTO userLeaveCounts (emp_id, leave_type_id, leave_type, leave_count) VALUES (?, ?, ?, ?)`
-        return pool.query(query, array);
-    } catch (error) {
-        console.error("Error executing insertUserLeaveCountQuery:", error);
-        throw error; 
-    }
+export const insertUserLeaveCountBatch = (data, connection = pool) => {
+        let query = `INSERT INTO userLeaveCounts (emp_id, leave_type_id, leave_type, leave_count) VALUES ?`
+        return connection.query(query, [data]);
 }
 
-export const createLeaveType = (array) => {
-    try {
+export const createLeaveType = (array, connection = pool) => {
         let query = `INSERT INTO leaveTypes SET leave_type = ?, description = ?`
-        return pool.query(query, array);
-    } catch (error) {
-        console.error("Error executing createLeaveType:", error);
-        throw error; 
-    }
+        return connection.query(query, array);
+
 }
 
 export const fetchLeavesTypesQuery = () => {
@@ -159,14 +140,9 @@ export const updateLeaveTypeDescriptionQuery = (array) => {
     }
 }
 
-export const createLeaveCount = (array) => {
-    try {
+export const createLeaveCount = (array, connection = pool) => {
         let query = `INSERT INTO leaveTypeCounts SET leave_type_id = ?, leave_type = ?, leave_count = ?, gender = ?`
-        return pool.query(query, array);
-    } catch (error) {
-        console.error("Error executing createLeaveCount:", error);
-        throw error;   
-    }
+        return connection.query(query, array);
 }
 
 export const deleteLeaveTypeAndCountQuery = async (array) => {

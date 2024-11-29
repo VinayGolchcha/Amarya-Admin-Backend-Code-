@@ -5,7 +5,7 @@ import {
     getAllUsersLeaveCountQuery, getUserLeaveDataQuery, fetchLeaveTakenOverviewQuery, deleteLeaveTypeAndCountQuery, fetchHolidayListQuery, getHolidayDataQuery, deleteHolidayQuery,
     getallUserLeaveDataQuery,
     fetchAllEmployeesQuery,
-    insertUserLeaveCountQuery,
+    insertUserLeaveCountBatch,
     getUserLeaveDataByIdQuery,
     updateUserLeaveQuery,
     fetchUserLeaveTakenOverviewQuery,
@@ -19,6 +19,8 @@ import { validationResult } from "express-validator";
 import { updateApprovalLeaveDataQuery } from "../../approvals/models/approvalQuery.js"
 import { uploadFileToDrive } from "../../../utils/googleDriveUploads.js"
 import moment from "moment"
+import pool from "../../../config/db.js"
+
 dotenv.config();
 
 export const addHoliday = async (req, res, next) => {
@@ -101,37 +103,56 @@ export const deleteHoliday = async(req,res,next) => {
     }
 }
 
-export const addLeaveTypeAndCount = async (req, res, next) => {
+export const addLeaveTypeAndCount = async (req, res) => {
+    let connection;
     try {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
-            return errorResponse(res, errors.array(), "");
+            return errorResponse(res, errors.array(), "Validation error");
         }
 
         const { leave_type, description, leave_count, gender } = req.body;
 
+        // Get a connection from the pool
+        connection = await pool.getConnection();
+        await connection.beginTransaction();
+
         // Check if leave type already exists
-        const [existingLeaveTypes] = await checkSameLeaveTypeNameQuery([leave_type]);
+        const [existingLeaveTypes] = await checkSameLeaveTypeNameQuery([leave_type], connection);
         if (existingLeaveTypes.length > 0) {
+            await connection.rollback();
             return errorResponse(res, '', 'Sorry, Leave Type already exists.');
         }
 
         // Create leave type
-        const [data]= await createLeaveType([leave_type, description]);
-        const leave_type_id = data.insertId;
-        // Create leave count
-        await createLeaveCount([leave_type_id, leave_type, leave_count, gender]);
+        const [leaveTypeData] = await createLeaveType([leave_type, description], connection);
+        const leave_type_id = leaveTypeData.insertId;
 
-        const [employees] = await fetchAllEmployeesQuery();
-        if(employees.length!=0){
-            for (const employee of employees) {
-                const { emp_id } = employee;
-                await insertUserLeaveCountQuery([emp_id, leave_type_id, leave_type, leave_count]);
-            }
+        // Create leave count
+        await createLeaveCount([leave_type_id, leave_type, leave_count, gender], connection);
+
+        // Fetch employees
+        const [employees] = await fetchAllEmployeesQuery(connection);
+        if (employees.length > 0) {
+            const userLeaveCountData = employees.map(({ emp_id }) => [
+                emp_id,
+                leave_type_id,
+                leave_type,
+                leave_count
+            ]);
+
+            // Batch insert leave counts
+            await insertUserLeaveCountBatch(userLeaveCountData, connection);
         }
-        return successResponse(res, '', `Leave type and count added successfully.`);
+
+        // Commit transaction
+        await connection.commit();
+        return successResponse(res, '', 'Leave type and count added successfully.');
     } catch (error) {
+        if (connection) await connection.rollback(); // Rollback transaction on error
         return internalServerErrorResponse(res, error);
+    } finally {
+        if (connection) connection.release(); // Release the connection back to the pool
     }
 };
 

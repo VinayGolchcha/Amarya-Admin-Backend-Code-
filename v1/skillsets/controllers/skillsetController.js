@@ -13,7 +13,7 @@ export const createSkillSet = async (req, res, next) => {
         if (!errors.isEmpty()) {
             return errorResponse(res, errors.array(), "")
         }
-        const {skill} = req.body;
+        let {skill} = req.body;
         const [exist_skill] = await checkSameSkillQuery([skill])
 
         if (exist_skill.length > 0){
