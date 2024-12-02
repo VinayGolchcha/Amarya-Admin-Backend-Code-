@@ -13,7 +13,7 @@ import path from 'path';
 import fs from 'fs';
 import { fileURLToPath } from 'url';
 import { setupRoutes } from './routes.js';
-import { startStream, cleanupSegments } from './utils/hls.js';
+import {startStreamInWorker, startCleanupInWorker} from './workers/streamWorker.js'
 import { runCronJobs } from './crons/schedulers.js';
 import { socketEvents } from './utils/socket.js';
 config();
@@ -56,8 +56,12 @@ const io = new Server(server, {
 });
 socketEvents(io)
 
-// startStream(process.env.RTSP_URL, hlsDirectory);
-// cleanupSegments(hlsDirectory);
+startStreamInWorker(process.env.RTSP_URL, hlsDirectory)
+  .then((message) => console.log(message))
+  .catch((err) => console.error('Stream Error:', err));
+
+// Start the cleanup in a worker thread
+startCleanupInWorker(hlsDirectory);
 
 // Start the cron jobs
 runCronJobs();
