@@ -13,8 +13,8 @@ export const createUserWorksheet = async (req, res, next) => {
         if (!errors.isEmpty()) {
             return errorResponse(res, errors.array(), "")
         }
-        const { emp_id, team_id, project_id, category_id, hours, skill_set_id, description, date } = req.body;  // date format should be YYYY-MM-DD
-
+        let { emp_id, team_id, project_id, category_id, hours, skill_set_id, description, date } = req.body;  // date format should be YYYY-MM-DD
+        hours = parseFloat(hours);
         const current_date = new Date();
         const seven_days_ago = new Date(); // Initialize a new date object
         seven_days_ago.setDate(current_date.getDate() - 7);
@@ -22,7 +22,7 @@ export const createUserWorksheet = async (req, res, next) => {
         if(check_date.toISOString().split('T')[0] < seven_days_ago.toISOString().split('T')[0] ){
             return errorResponse(res, '', "Date should be greater than or equal to last seven days");
         }
-        if(hours > 10 || hours < 5){
+        if(hours > 8 || hours < 5){
             return errorResponse(res, '', "Hour input cannot be greater than 10 and less than 5");
         }
         if(description.length >200){
