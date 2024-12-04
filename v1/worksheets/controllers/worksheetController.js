@@ -22,8 +22,8 @@ export const createUserWorksheet = async (req, res, next) => {
         if(check_date.toISOString().split('T')[0] < seven_days_ago.toISOString().split('T')[0] ){
             return errorResponse(res, '', "Date should be greater than or equal to last seven days");
         }
-        if(hours > 10){
-            return errorResponse(res, '', "Hour input cannot be greater than 10");
+        if(hours > 10 || hours < 5){
+            return errorResponse(res, '', "Hour input cannot be greater than 10 and less than 5");
         }
         if(description.length >200){
             return errorResponse(res, '', "Description must be written in less than 200 characters");

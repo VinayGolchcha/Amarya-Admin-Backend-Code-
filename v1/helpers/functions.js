@@ -95,3 +95,65 @@ export const calculateTotalExperienceInFloat = async (dateOfJoining, previousExp
 
     return parseFloat(totalExperienceInFloat.toFixed(2));
 }
+
+
+export const getWorkingDaysCount = async (array) => {
+    const [year, month, emp_id] = array;
+    let query = `WITH all_days AS (
+        SELECT 
+            DATE_ADD(DATE(CONCAT(${year}, '-', ${month}, '-01')), INTERVAL daynum DAY) AS date
+        FROM (
+            SELECT 
+                t.n + (10 * t2.n) AS daynum
+            FROM
+                (SELECT 0 AS n UNION ALL SELECT 1 UNION ALL SELECT 2 UNION ALL SELECT 3 UNION ALL SELECT 4 UNION ALL SELECT 5 UNION ALL SELECT 6 UNION ALL SELECT 7 UNION ALL SELECT 8 UNION ALL SELECT 9) t
+                CROSS JOIN 
+                (SELECT 0 AS n UNION ALL SELECT 1 UNION ALL SELECT 2 UNION ALL SELECT 3) t2
+        ) AS numbers
+        WHERE DATE_ADD(DATE(CONCAT(${year}, '-', ${month}, '-01')), INTERVAL daynum DAY) 
+            <= LAST_DAY(DATE(CONCAT(${year}, '-', ${month}, '-01')))
+    ),
+    working_days AS (
+        SELECT 
+            date
+        FROM 
+            all_days
+        WHERE DAYOFWEEK(date) NOT IN (1, 7)
+    ),
+    holidays_in_month AS (
+        SELECT 
+            date
+        FROM 
+            holidays
+        WHERE 
+            MONTH(date) = ${month}
+            AND YEAR(date) = ${year}
+    ),
+    leaves_for_emp AS (
+        SELECT 
+            DATE_ADD(ld.from_date, INTERVAL n DAY) AS date
+        FROM leaveDatesAndReasons ld
+        JOIN (SELECT 0 AS n UNION ALL SELECT 1 UNION ALL SELECT 2 UNION ALL SELECT 3 UNION ALL SELECT 4 UNION ALL SELECT 5 UNION ALL SELECT 6 UNION ALL SELECT 7 UNION ALL SELECT 8 UNION ALL SELECT 9) t
+        WHERE 
+            ld.emp_id = '${emp_id}'
+            AND ld.leave_type != 'Leave without pay'
+            AND ld.status = 'approved'
+            AND MONTH(ld.from_date) = ${month}
+            AND YEAR(ld.from_date) = ${year}
+            AND DATE_ADD(ld.from_date, INTERVAL n DAY) <= ld.to_date
+    ),
+    all_excluded_days AS (
+        SELECT date FROM holidays_in_month
+        UNION
+        SELECT date FROM leaves_for_emp
+    )
+    SELECT 
+        COUNT(wd.date) AS working_days_count
+    FROM 
+        working_days wd
+    LEFT JOIN all_excluded_days ed ON wd.date = ed.date
+    WHERE 
+        ed.date IS NULL
+`
+    return pool.query(query)
+}

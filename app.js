@@ -16,6 +16,7 @@ import { setupRoutes } from './routes.js';
 import {startStreamInWorker, startCleanupInWorker} from './workers/streamWorker.js'
 import { runCronJobs } from './crons/schedulers.js';
 import { socketEvents } from './utils/socket.js';
+import { terminateWorkers } from './workers/streamWorker.js';
 config();
 
 
@@ -77,11 +78,49 @@ try {
 } catch (error) {
   console.error("Mongo Database connection failed:", error);
 }
-setupRoutes(app);
+setupRoutes(app) 
 // Start the server
 const PORT = process.env.PORT || 3000;
 // await createOAuth2Client();
-server.listen(PORT, async () => {
-  // await authenticate()
+server.listen(PORT, () => {
   console.log(`Server running at http://localhost:${PORT}`);
+}).on('error', (err) => {
+  if (err.code === 'EADDRINUSE') {
+    console.error(`Port ${PORT} is already in use.`);
+    process.exit(1);
+  } else {
+    throw err;
+  }
+});
+
+
+process.on('uncaughtException', (err) => {
+  console.error('Unhandled Exception:', err);
+  process.exit(1);
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('Unhandled Rejection:', reason);
+  process.exit(1);
+});
+
+// Signal handling for proper cleanup
+process.on('SIGINT', () => {
+  console.log('Received SIGINT. Cleaning up workers...');
+  terminateWorkers();
+  io.close(() => console.log('Socket.IO server closed.'));
+  server.close(() => {
+    console.log('HTTP server closed.');
+    process.exit(0);
+  });
+});
+
+process.on('SIGTERM', () => {
+  console.log('Received SIGTERM. Cleaning up workers...');
+  terminateWorkers();
+  io.close(() => console.log('Socket.IO server closed.'));
+  server.close(() => {
+    console.log('HTTP server closed.');
+    process.exit(0);
+  });
 });

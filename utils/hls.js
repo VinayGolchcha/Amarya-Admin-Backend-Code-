@@ -2,11 +2,17 @@ import { spawn } from 'child_process';
 import path from 'path';
 import fs from 'fs';
 import { parentPort } from 'worker_threads';
-export const startStream = (rtspUrl, hlsDirectory) => {
+
+export const startStream = (id, rtspUrl, hlsDirectory) => {
   return new Promise((resolve, reject) => {
+    // Create HLS directory if it doesn't exist
+    if (!fs.existsSync(hlsDirectory)) {
+      fs.mkdirSync(hlsDirectory, { recursive: true });
+    }
+
     const ffmpeg = spawn('ffmpeg', [
       '-rtsp_transport', 'tcp',
-      '-i', rtspUrl, 
+      '-i', rtspUrl,
       '-c:v', 'libx264',
       '-preset', 'veryfast',
       '-crf', '24',
@@ -17,22 +23,22 @@ export const startStream = (rtspUrl, hlsDirectory) => {
     ]);
 
     ffmpeg.on('error', (err) => {
-      parentPort.postMessage({ type: 'error', message: `FFmpeg error: ${err.message}` });
+      parentPort.postMessage({ type: 'error', message: `Stream FFmpeg error: ${err.message}` });
       reject(err);
     });
 
     ffmpeg.on('close', (code) => {
       if (code === 0) {
-        parentPort.postMessage({ type: 'success', message: 'Stream started successfully' });
+        parentPort.postMessage({ type: 'success', message: `Stream started successfully` });
         resolve();
       } else {
-        parentPort.postMessage({ type: 'error', message: `FFmpeg exited with code ${code}` });
-        reject(new Error(`FFmpeg process exited with code ${code}`));
+        parentPort.postMessage({ type: 'error', message: `Stream FFmpeg exited with code ${code}` });
+        reject(new Error(`Stream FFmpeg process exited with code ${code}`));
       }
     });
   });
 };
-  
+
 export const cleanupSegments = (hlsDirectory, maxSegments = 6) => {
   setInterval(() => {
     const files = fs.readdirSync(hlsDirectory)
@@ -46,10 +52,14 @@ export const cleanupSegments = (hlsDirectory, maxSegments = 6) => {
   }, 10000);
 };
 
+
 parentPort.on('message', (msg) => {
-    if (msg.type === 'startStream') {
-      startStream(msg.rtspUrl, msg.hlsDirectory);
-    } else if (msg.type === 'cleanup') {
-      cleanupSegments(msg.hlsDirectory);
-    }
+  if (msg.type === 'startStream') {
+    const { id, rtspUrl, hlsDirectory } = msg;
+    startStream(id, rtspUrl, hlsDirectory).catch(err => {
+      parentPort.postMessage({ type: 'error', message: `Stream ${err.message}` });
+    });
+  } else if (msg.type === 'cleanup') {
+    cleanupSegments(msg.hlsDirectory);
+  }
 });

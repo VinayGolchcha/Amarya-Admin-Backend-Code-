@@ -111,14 +111,15 @@ export const insertPerformanceQuery = (array)=> {
         throw error;
     }
 }
-export const getWeightedAverage = (array)=> {
+export const getWeightedAverage = (array, number_of_working_days)=> {
     try {
         let query = `
             SELECT 
                 emp_id,
                 DATE_FORMAT(date, '%Y-%m') AS month,
-                CONCAT(ROUND(
-                    (SUM(c.points * daily.hours) / NULLIF(SUM(daily.hours), 0)) 
+                CONCAT(
+                ROUND(
+                    (SUM(c.points * daily.hours) / 8*${number_of_working_days}) 
                     / (SELECT MAX(points) FROM categories) * 100, 2
                 ), '%') AS weighted_average_percentage
             FROM 

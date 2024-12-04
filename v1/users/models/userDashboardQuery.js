@@ -13,7 +13,7 @@ export const fetchActivityORAnnouncementQuery = (array) => {
             FROM
                 announcements 
             WHERE 
-                event_type = ? and is_new = 1
+                event_type = ?
             ORDER BY
                 created_at DESC
             LIMIT 5;`

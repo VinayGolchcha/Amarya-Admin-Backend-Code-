@@ -4,7 +4,7 @@ import { successResponse, errorResponse, notFoundResponse, unAuthorizedResponse,
 import { getCategoryTotalPointsQuery, getTeamPointsQuery, fetchTeamCountQuery, 
     fetchTeamNameQuery,
     getWeightedAverage,} from "../models/performanceQuery.js"
-import { getWorkingDaysCountPreviousMonth } from "../../helpers/functions.js"
+import { getWorkingDaysCount, getWorkingDaysCountPreviousMonth } from "../../helpers/functions.js"
 dotenv.config();
 
 export const calculatePerformanceForTeam = async (req, res, next) => {
@@ -63,7 +63,10 @@ export const employeeMonthlyPerformanceBasedOnWorksheetHours = async (req, res, 
             return errorResponse(res, errors.array(), "");
         }
         const {date, emp_id} = req.params;
-        const [weighted_average_data] = await getWeightedAverage([date, emp_id]);
+        const [year, month] = date.split('-');
+        console.log(month, year);
+        const [number_of_working_days] = await getWorkingDaysCount([year, month, emp_id]);
+        const [weighted_average_data] = await getWeightedAverage([date, emp_id], number_of_working_days[0].working_days_count);
         if (weighted_average_data.length == 0) {
             return successResponse(res, [], 'Data not found');
         }
