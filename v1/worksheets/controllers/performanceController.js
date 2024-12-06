@@ -64,7 +64,6 @@ export const employeeMonthlyPerformanceBasedOnWorksheetHours = async (req, res, 
         }
         const {date, emp_id} = req.params;
         const [year, month] = date.split('-');
-        console.log(month, year);
         const [number_of_working_days] = await getWorkingDaysCount([year, month, emp_id]);
         const [weighted_average_data] = await getWeightedAverage([date, emp_id], number_of_working_days[0].working_days_count);
         if (weighted_average_data.length == 0) {

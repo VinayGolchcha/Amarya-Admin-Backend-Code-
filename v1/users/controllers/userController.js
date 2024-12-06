@@ -4,7 +4,7 @@ import bcrypt from "bcryptjs"
 import dotenv from "dotenv"
 import crypto from 'crypto-js';
 import { successResponse, errorResponse, notFoundResponse, unAuthorizedResponse, internalServerErrorResponse } from "../../../utils/response.js"
-import { incrementId, createDynamicUpdateQuery, calculateTotalExperienceInFloat } from "../../helpers/functions.js"
+import { incrementId, createDynamicUpdateQuery, calculateTotalExperienceInFloat, getWorkingDaysCount } from "../../helpers/functions.js"
 import {sendMail} from "../../../config/nodemailer.js"
 import {getTeamQuery} from "../../teams/models/query.js"
 import {insertTeamToUser} from "../models/userTeamsQuery.js"
@@ -19,7 +19,7 @@ import {userRegistrationQuery, getUserDataByUsernameQuery, userDetailQuery, upda
         getAllUserData,
         updateExperienceQuery,
         fetchAllEmployeeListQuery} from "../models/userQuery.js";
-import { insertPerformanceQuery } from "../../worksheets/models/performanceQuery.js";
+import { getWeightedAverage, insertPerformanceQuery } from "../../worksheets/models/performanceQuery.js";
 
 export const userRegistration = async (req, res, next) => {
     try {
@@ -296,17 +296,23 @@ export const getUserProfile = async(req,res,next) => {
         if (!errors.isEmpty()) {
             return errorResponse(res, errors.array(), "")
         }
-        const emp_id = req.params.emp_id;
+        let {date, emp_id} = req.params;
         const [user] = await getUserDataByUserIdQuery([emp_id]);
         if (user.length == 0 ){
             return successResponse(res, [], 'User not found');
         }
         else{
-            return successResponse(res, [user]);
+            let weighted_average_data;
+            if(date){
+                const [year, month] = date.split('-');
+                const [number_of_working_days] = await getWorkingDaysCount([year, month, emp_id]);
+                [weighted_average_data] = await getWeightedAverage([date, emp_id], number_of_working_days[0].working_days_count);
+            }
+            return successResponse(res, [user, weighted_average_data || []], 'User profile fetched successfully.');
         }
     }
     catch(error){
-        return internalServerErrorResponse(res, error);;
+        return internalServerErrorResponse(res, error);
     }
 }
 

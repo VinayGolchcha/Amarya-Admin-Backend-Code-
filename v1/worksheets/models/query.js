@@ -9,6 +9,19 @@ export const insertUserWorksheetQuery = async (array) => {
     }
 }
 
+export const getWorksheetTotalHoursQuery = async (array) => {
+    try {
+        let query = `
+        SELECT COALESCE(SUM(hours), 0) AS total_hours
+        FROM worksheets
+        WHERE emp_id = ? AND date = ?`
+        return pool.query(query, array);
+    } catch (error) {
+        console.error("Error executing getWorksheetTotalHoursQuery:", error);
+        throw error;
+    }
+}
+
 export const updateUserWorksheetQuery = async (query,array) => {
     try {
         return pool.query(query, array);
