@@ -72,7 +72,7 @@ export const userRegistration = async (req, res, next) => {
 
         if(file){
             const imageBuffer = file.buffer;
-            let uploaded_data = await uploadImageToCloud(imageBuffer);
+            let uploaded_data = await uploadImageToCloud('image',imageBuffer, 'ad_uploads');
             await insertEmpImageQuery(["profile", uploaded_data.secure_url, uploaded_data.public_id, emp_id, file.originalname])
             image_url = uploaded_data.secure_url
         }
@@ -345,7 +345,7 @@ export const updateUserProfile = async(req, res, next) => {
 
             if(file){
                 const imageBuffer = file.buffer;
-                let uploaded_data = await uploadImageToCloud(imageBuffer);
+                let uploaded_data = await uploadImageToCloud('image',imageBuffer, 'ad_uploads');
                 await insertEmpImageQuery(["profile", uploaded_data.secure_url, uploaded_data.public_id, id, file.originalname])
                 await updateUserProfilePictureQuery([uploaded_data.secure_url, id])
             }
