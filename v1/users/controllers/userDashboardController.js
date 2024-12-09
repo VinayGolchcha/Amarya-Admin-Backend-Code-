@@ -125,14 +125,7 @@ export const fetchUserPointsMonthlyAndYearly = async (req, res, next) => {
         const emp_id = req.params.emp_id
         const [month_data] = await fetchPointsMonthWiseQuery([emp_id]);
         const [year_data] = await fetchPointsYearWiseQuery([emp_id]);
-
-        if (month_data.length == 0) {
-          return successResponse(res, [], 'Month data not found.');
-        }
-        else if (year_data.length == 0){
-          return successResponse(res, [], 'Year data not found.');
-        }
-
+        
         const graph_data = {
           month_data: month_data,
           year_data: year_data
