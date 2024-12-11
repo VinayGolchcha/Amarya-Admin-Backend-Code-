@@ -58,8 +58,8 @@ with open(model_path, 'rb') as f:
 detector = MTCNN()
 embedder = FaceNet()
 
-rtsp_streams = [0]
-
+# rtsp_streams = [0]
+rtsp_streams = ["rtsp://amarya.ddns.net:5543/5de47dec149522f828aed6711016442a/live/channel0"]
 def get_embedding(face_img):
     face_img = face_img.astype('float32')
     face_img = np.expand_dims(face_img, axis=0)
