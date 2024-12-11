@@ -178,38 +178,41 @@ export const updateUserProfileQuery = async (query,array) => {
 export const getUserDataByUserIdQuery = (array) =>{
     try {
         let query = `SELECT
-                    u._id,
-                    u.emp_id,
-                    u.username,
-                    u.first_name,
-                    u.last_name,
-                    u.email,
-                    u.gender,
-                    u.profile_picture,
-                    u.blood_group,
-                    u.mobile_number,
-                    u.emergency_contact_number,
-                    u.emergency_contact_person_info,
-                    u.address,
-                    u.dob,
-                    u.designation,
-                    u.designation_type,
-                    u.joining_date,
-                    ROUND(u.experience, 2) AS experience,
-                    u.completed_projects,
-                    u.performance,
-                    u.team_id,
-                    u.client_report,
-                    i.public_id,
-                    (SELECT COUNT(DISTINCT w.team_id)
-                        FROM worksheets w
-                        WHERE w.emp_id = u.emp_id) AS teams
-                FROM
-                    users u
-                LEFT JOIN
-                    images i ON i.emp_id = u.emp_id
-                WHERE
-                    u.emp_id = ?;`
+                        u._id,
+                        u.emp_id,
+                        u.username,
+                        u.first_name,
+                        u.last_name,
+                        u.email,
+                        u.gender,
+                        u.profile_picture,
+                        u.blood_group,
+                        u.mobile_number,
+                        u.emergency_contact_number,
+                        u.emergency_contact_person_info,
+                        u.address,
+                        u.dob,
+                        u.designation,
+                        u.designation_type,
+                        u.joining_date,
+                        ROUND(u.experience, 2) AS experience,
+                        u.completed_projects,
+                        u.performance,
+                        u.team_id,
+                        u.client_report,
+                        (SELECT i.public_id
+                            FROM images i
+                            WHERE i.emp_id = u.emp_id
+                            ORDER BY i.created_at DESC
+                            LIMIT 1) AS public_id,
+                        (SELECT COUNT(DISTINCT w.team_id)
+                            FROM worksheets w
+                            WHERE w.emp_id = u.emp_id) AS teams
+                    FROM
+                        users u
+                    WHERE
+                        u.emp_id = ?;
+`
         return pool.query(query, array);
     } catch (error) {
         console.error("Error executing getUserDataByUserIdQuery:", error);

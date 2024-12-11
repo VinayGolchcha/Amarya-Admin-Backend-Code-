@@ -7,10 +7,10 @@ cloudinary.config({
     api_secret:  process.env.CLOUDINARY_API_SECRET 
   });
 
-export const uploadImageToCloud = (imageBuffer) => {
+export const uploadImageToCloud = (resource_type,buffer, folder_name) => {
     return new Promise((resolve, reject) => {
         cloudinary.uploader.upload_stream(
-            { resource_type: "image", folder: "ad_uploads" }, 
+            { resource_type: resource_type, folder: folder_name }, 
             (error, result) => {
                 if (error) {
                     console.error('Error uploading image to Cloudinary:', error);
@@ -21,7 +21,7 @@ export const uploadImageToCloud = (imageBuffer) => {
 
                 resolve({ secure_url, public_id });
             }
-        ).end(imageBuffer);
+        ).end(buffer);
     });
 };
 

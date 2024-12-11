@@ -36,7 +36,7 @@ export const createAsset = async (req, res, next) => {
 
         if(file){
             const imageBuffer = file.buffer;
-            let uploaded_data = await uploadImageToCloud(imageBuffer);
+            let uploaded_data = await uploadImageToCloud('image', imageBuffer, 'ad_uploads');
             await insertAssetImageQuery(["asset", uploaded_data.secure_url, uploaded_data.public_id, asset_id, file.originalname])
             image_url = uploaded_data.secure_url
         }
@@ -91,7 +91,7 @@ export const updateAsset = async(req, res, next) => {
 
         if(file){
             const imageBuffer = file.buffer;
-            let uploaded_data = await uploadImageToCloud(imageBuffer);
+            let uploaded_data = await uploadImageToCloud('image',imageBuffer, 'ad_uploads');
             await insertAssetImageQuery(["asset", uploaded_data.secure_url, uploaded_data.public_id, id, file.originalname])
         }
 

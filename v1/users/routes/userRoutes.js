@@ -17,7 +17,7 @@ app.get('/logout/:id', authenticateUserAdminSession, logOutVal, userLogout);
 app.post('/send-otp-password-verification', sendOtpVal, sendOtpForPasswordUpdate);
 app.post('/verify-email-for-password-update', verifyOtpVal, verifyEmailForPasswordUpdate);
 app.post('/update-password', upPassVal, updateUserPassword);
-app.post('/get-user-profile/:emp_id', authenticateUserAdminSession, getUserVal, getUserProfile);
+app.post('/get-user-profile/:emp_id/:date', authenticateUserAdminSession, getUserVal, getUserProfile);
 app.put('/update-user-profile/:id' , authenticateUserAdminSession, upload.single('file'), updateUserProfile);
 app.get('/fetch-all-employee-ids',authenticateUserAdminSession, fetchAllEmployeeIds);
 app.post('/ghost-login', loginVal, userGhostLogin);

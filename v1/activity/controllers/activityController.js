@@ -49,7 +49,7 @@ export const addActivity = async (req, res, next) => {
 
     for (let image of files){
       const imageBuffer = image.buffer;
-      let uploaded_data = await uploadImageToCloud(imageBuffer);
+      let uploaded_data = await uploadImageToCloud('image',imageBuffer, 'ad_uploads');
       await insertActivityImageQuery([event_type, uploaded_data.secure_url, uploaded_data.public_id, last_id[0]._id, image.originalname])
     }
 
@@ -118,7 +118,7 @@ export const updateActivity = async (req, res, next) => {
     //Upload new image
     for (let image of files){
       const imageBuffer = image.buffer;
-      let uploaded_data = await uploadImageToCloud(imageBuffer);
+      let uploaded_data = await uploadImageToCloud('image',imageBuffer, 'ad_uploads');
       await insertActivityImageQuery(["activity", uploaded_data.secure_url, uploaded_data.public_id, id, image.originalname])
     }
 

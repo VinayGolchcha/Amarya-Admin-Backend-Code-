@@ -20,6 +20,7 @@ import { updateApprovalLeaveDataQuery } from "../../approvals/models/approvalQue
 import { uploadFileToDrive } from "../../../utils/googleDriveUploads.js"
 import moment from "moment"
 import pool from "../../../config/db.js"
+import { uploadImageToCloud } from "../../helpers/cloudinary.js"
 
 dotenv.config();
 
@@ -310,10 +311,11 @@ export const leaveRequest = async (req, res, next) => {
             return notFoundResponse(res, "", message);
         }
         let file=req.file;
-        let file_url;
+        let file_response;
         if(leaveTypeCountByAdmin[0].leave_count>=(total_days+userLeaveTakenCount[0].leave_taken_count)){
             if(file){
-                file_url=await uploadFileToDrive(file)
+                // file_response=await uploadFileToDrive(file)
+                file_response=await uploadImageToCloud('raw',file.buffer,'leave_documents')
             }
             await insertUserLeaveDataQuery([
                 emp_id, 
@@ -322,7 +324,7 @@ export const leaveRequest = async (req, res, next) => {
                 to_date,
                 subject,
                 body,
-                file_url
+                file_response.secure_url
             ]);
             const [foreign_id] = await getLastLeaveId()
             await insertApprovalForLeaveQuery([emp_id, foreign_id[0]._id, "leave", leave_type, current_date, from_date, to_date, subject, body])

@@ -12,7 +12,7 @@ app.post('/user-dashboard-feedback',authenticateUserAdminSession, feedbackVal,fe
 app.get('/admin/fetch-user-feedback',authenticateAdminSession, fetchFeedbackData);
 app.get('/user-dashboard/:emp_id',authenticateUserSession, userDashboard);
 app.get('/get-dashboard-images',authenticateUserAdminSession, getDashboardImages);
-app.get('/get-user-points-data-for-graph/:emp_id',authenticateUserSession, fetchUserPointsMonthlyAndYearly);
+app.get('/get-user-points-data-for-graph/:emp_id',authenticateUserAdminSession, fetchUserPointsMonthlyAndYearly);
 
 app.use("/", router);
 export default app;

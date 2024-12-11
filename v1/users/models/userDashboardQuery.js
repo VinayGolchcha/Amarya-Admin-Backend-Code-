@@ -147,6 +147,6 @@ export const fetchPointsMonthWiseQuery = (array) => {
 };
 
 export const fetchPointsYearWiseQuery = (array) => {
-    let query = `SELECT emp_id, year, points FROM  userYearlyPerformance WHERE emp_id = ?;`
+    let query = `SELECT emp_id, year, SUM(points) AS points FROM  userYearlyPerformance WHERE emp_id = ? GROUP BY emp_id, year;`
     return pool.query(query, array);
 };

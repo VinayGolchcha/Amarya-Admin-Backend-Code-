@@ -1,7 +1,7 @@
 import { validationResult } from "express-validator";
 import dotenv from "dotenv"
 import { successResponse, errorResponse, notFoundResponse, unAuthorizedResponse, internalServerErrorResponse } from "../../../utils/response.js"
-import { insertUserWorksheetQuery, updateUserWorksheetQuery, deleteUserWorksheetQuery, fetchUserWorksheetQuery } from "../models/query.js"
+import { insertUserWorksheetQuery, updateUserWorksheetQuery, deleteUserWorksheetQuery, fetchUserWorksheetQuery, getWorksheetTotalHoursQuery } from "../models/query.js"
 import { incrementId, createDynamicUpdateQuery } from "../../helpers/functions.js"
 import pool from "../../../config/db.js"
 dotenv.config();
@@ -15,15 +15,21 @@ export const createUserWorksheet = async (req, res, next) => {
         }
         let { emp_id, team_id, project_id, category_id, hours, skill_set_id, description, date } = req.body;  // date format should be YYYY-MM-DD
         hours = parseFloat(hours);
+        const [total_hours] = await getWorksheetTotalHoursQuery([emp_id, date]);
+        let MAX_WORKING_HOURS = parseFloat(process.env.MAX_WORKING_HOURS) || 8;
+        let MIN_WORKING_HOURS = parseFloat(process.env.MIN_WORKING_HOURS) || 0;
+        if(total_hours[0].total_hours > MAX_WORKING_HOURS){
+            return errorResponse(res, '', "You have exceeded the maximum working hours for the day.");
+        } 
         const current_date = new Date();
-        const seven_days_ago = new Date(); // Initialize a new date object
+        let seven_days_ago = new Date(); // Initialize a new date object
         seven_days_ago.setDate(current_date.getDate() - 7);
-        const check_date = new Date(date);
+        let check_date = new Date(date);
         if(check_date.toISOString().split('T')[0] < seven_days_ago.toISOString().split('T')[0] ){
             return errorResponse(res, '', "Date should be greater than or equal to last seven days");
         }
-        if(hours > 8 || hours < 5){
-            return errorResponse(res, '', "Hour input cannot be greater than 10 and less than 5");
+        if(hours < MIN_WORKING_HOURS || hours > MAX_WORKING_HOURS){
+            return errorResponse(res, '', `Hour input cannot be less than ${MIN_WORKING_HOURS} or greater than ${MAX_WORKING_HOURS}`);
         }
         if(description.length >200){
             return errorResponse(res, '', "Description must be written in less than 200 characters");
