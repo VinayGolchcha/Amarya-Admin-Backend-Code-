@@ -314,6 +314,14 @@ export const leaveRequest = async (req, res, next) => {
         let file_response;
         if(leaveTypeCountByAdmin[0].leave_count>=(total_days+userLeaveTakenCount[0].leave_taken_count)){
             if(file){
+                const max_size = 1 * 1024 * 1024;
+                const allowedFileType = 'application/pdf';
+                if (file.mimetype !== allowedFileType) {
+                    return errorResponse(res, `File ${file.originalname} must be a PDF.`, "");
+                }
+                if (file.size > max_size) {
+                    return errorResponse(res, `File ${file.originalname} exceeds the limit.`, "");
+                }
                 // file_response=await uploadFileToDrive(file)
                 file_response=await uploadImageToCloud('raw',file.buffer,'leave_documents')
             }
