@@ -151,11 +151,18 @@ export const fetchApprovalDataQuery = () =>{
                         approvals.status,
                         approvals.subject,
                         approvals.body,
-                        approvals.request_date
+                        approvals.request_date,
+                        CASE 
+                            WHEN approvals.request_type = 'leave' THEN leaveDatesAndReasons.document_url
+                            ELSE NULL
+                        END AS document_url
                     FROM
                         approvals
                     JOIN
                         users ON users.emp_id = approvals.emp_id
+                    LEFT JOIN
+                        leaveDatesAndReasons ON leaveDatesAndReasons.emp_id = approvals.emp_id 
+                        AND leaveDatesAndReasons._id = approvals.foreign_id
                     ORDER BY
                         approvals.created_at DESC;
 
