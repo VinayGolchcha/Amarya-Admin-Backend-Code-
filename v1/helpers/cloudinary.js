@@ -7,10 +7,10 @@ cloudinary.config({
     api_secret:  process.env.CLOUDINARY_API_SECRET 
   });
 
-export const uploadImageToCloud = (resource_type,buffer, folder_name) => {
+export const uploadImageToCloud = (resource_type,buffer, folder_name, format='jpg') => {
     return new Promise((resolve, reject) => {
         cloudinary.uploader.upload_stream(
-            { resource_type: resource_type, folder: folder_name }, 
+            { resource_type: resource_type, folder: folder_name, format: format }, 
             (error, result) => {
                 if (error) {
                     console.error('Error uploading image to Cloudinary:', error);

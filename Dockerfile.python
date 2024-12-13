@@ -12,11 +12,11 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy your YOLO model and script files into the container
-COPY best.pt . 
-COPY script.py .
+COPY svm_model_160x160.pkl . 
+COPY facenet_script.py .
 
 # Expose the port the app runs on (optional, based on your use case)
 EXPOSE 5000
 
 # Command to run the Python script
-CMD ["python", "script.py"]
+CMD ["python", "facenet_script.py"]

@@ -323,7 +323,7 @@ export const leaveRequest = async (req, res, next) => {
                     return errorResponse(res, `File ${file.originalname} exceeds the limit.`, "");
                 }
                 // file_response=await uploadFileToDrive(file)
-                file_response=await uploadImageToCloud('raw',file.buffer,'leave_documents')
+                file_response=await uploadImageToCloud('raw',file.buffer,'leave_documents', 'pdf')
             }
             await insertUserLeaveDataQuery([
                 emp_id, 
