@@ -172,7 +172,7 @@ def process_detections(frame, frame_rgb, stream_id, rtsp_url):
         
         ## new
         # print(confidence)
-        # print(encoder.inverse_transform(y_preds))
+        print(encoder.inverse_transform(y_preds))
 
         predicted_label = encoder.inverse_transform(y_preds)[0]
         confidence_score = confidence[0]
