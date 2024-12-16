@@ -76,7 +76,7 @@ export const employeeMonthlyPerformanceBasedOnWorksheetHours = async (req, res, 
     }
 };
 
-export const get_all_month_weighted_average_data = async (req, res, next) => {
+export const getAllMonthWeightedAverageData = async (req, res, next) => {
     try {
         const errors = validationResult(req);
 
@@ -100,9 +100,32 @@ export const get_all_month_weighted_average_data = async (req, res, next) => {
     }
 }
 
-export const getEmployeeYearlyWeightedAverage = (req, res, next) => {
+export const getEmployeeYearlyWeightedAverage = async(req, res, next) => {
     try {
-        
+        const {year, emp_id} = req.params;
+        let MAX_WORKING_HOURS = process.env.MAX_WORKING_HOURS || 8
+        let working_days = await calculateEmpWorkingDaysForEachMonth(year, emp_id);
+        let all_months_weighted_average = {}
+        for (const key in working_days) {
+            if (Object.prototype.hasOwnProperty.call(working_days, key)) {
+                const element = working_days[key];
+                const [weighted_average_data] = await getWeightedAverage([`${year+'-'+key}`, emp_id], element, MAX_WORKING_HOURS);
+                all_months_weighted_average[key] = weighted_average_data.weighted_average_percentage
+            }
+        }
+        let total_sum = 0;
+        let total_elements =  []
+        for(const key in all_months_weighted_average) {
+            let element = all_months_weighted_average[key]
+            if(element != 0){
+                total_elements.push(element)
+            }
+            total_sum += element
+        }
+        let yearly_weighted_average_percentage = total_sum / total_elements.length
+        let data  = {}
+        data[year] = yearly_weighted_average_percentage
+        return successResponse(res, data, 'Employee yearly performance till date.');
     } catch (error) {
         return internalServerErrorResponse(res, error);
     }

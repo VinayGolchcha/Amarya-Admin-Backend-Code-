@@ -164,7 +164,6 @@ export const calculateEmpWorkingDaysForEachMonth = async(year, emp_id) =>{
         for(let i = 0; i < monthArray.length; i++) {
             let month = monthArray[i];
             let [data] = await getWorkingDaysCount([year,month, emp_id]);
-            console.log(data);
             workingDays[month] = data[0].working_days_count.toString();
         }
         return workingDays

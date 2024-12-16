@@ -113,7 +113,6 @@ export const insertPerformanceQuery = (array)=> {
 }
 export const getWeightedAverage = async (array, number_of_working_days, MAX_WORKING_HOURS) => {
     try {
-        console.log(array, number_of_working_days);
         let query = `
             SELECT 
                 ROUND(
