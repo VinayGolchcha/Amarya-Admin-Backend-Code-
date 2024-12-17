@@ -339,6 +339,6 @@ export const fetchUnassignedAssetItemVal = [
 ]
 
 export const allMonthVal = [
-    param('year').isInt().isLength(4).withMessage("Invalid year input.").notEmpty().withMessage("item cannot be empty."),
+    param('year').optional().isInt().isLength(4).withMessage("Invalid year input.").notEmpty().withMessage("item cannot be empty."),
     param('emp_id').notEmpty().withMessage('emp_id cannot be empty.').isAlphanumeric().withMessage('emp_id must be alphanumeric.'),
 ]
