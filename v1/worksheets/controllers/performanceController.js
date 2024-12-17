@@ -102,30 +102,38 @@ export const getAllMonthWeightedAverageData = async (req, res, next) => {
 
 export const getEmployeeYearlyWeightedAverage = async(req, res, next) => {
     try {
-        const {year, emp_id} = req.params;
-        let MAX_WORKING_HOURS = process.env.MAX_WORKING_HOURS || 8
-        let working_days = await calculateEmpWorkingDaysForEachMonth(year, emp_id);
-        let all_months_weighted_average = {}
-        for (const key in working_days) {
-            if (Object.prototype.hasOwnProperty.call(working_days, key)) {
-                const element = working_days[key];
-                const [weighted_average_data] = await getWeightedAverage([`${year+'-'+key}`, emp_id], element, MAX_WORKING_HOURS);
-                all_months_weighted_average[key] = weighted_average_data.weighted_average_percentage
+        const { emp_id } = req.params;
+        let MAX_WORKING_HOURS = process.env.MAX_WORKING_HOURS || 8;
+        const currentYear = new Date().getFullYear();
+        const years = [currentYear, currentYear - 1, currentYear - 2, currentYear - 3, currentYear - 4];
+
+        let all_years_weighted_averages = {};
+
+        for (const year of years) {
+            let working_days = await calculateEmpWorkingDaysForEachMonth(year, emp_id);
+            let all_months_weighted_average = {};
+            for (const key in working_days) {
+                if (Object.prototype.hasOwnProperty.call(working_days, key)) {
+                    const element = working_days[key];
+                    const [weighted_average_data] = await getWeightedAverage([`${year + '-' + key}`, emp_id], element, MAX_WORKING_HOURS);
+                    all_months_weighted_average[key] = weighted_average_data.weighted_average_percentage;
+                }
             }
-        }
-        let total_sum = 0;
-        let total_elements =  []
-        for(const key in all_months_weighted_average) {
-            let element = all_months_weighted_average[key]
-            if(element != 0){
-                total_elements.push(element)
+            let total_sum = 0;
+            let total_elements = [];
+            for (const key in all_months_weighted_average) {
+                let element = all_months_weighted_average[key];
+                if (element != 0) {
+                    total_elements.push(element);
+                }
+                total_sum += element;
             }
-            total_sum += element
+
+            let yearly_weighted_average_percentage = total_sum / total_elements.length;
+
+            all_years_weighted_averages[year] = yearly_weighted_average_percentage;
         }
-        let yearly_weighted_average_percentage = total_sum / total_elements.length
-        let data  = {}
-        data[year] = yearly_weighted_average_percentage
-        return successResponse(res, data, 'Employee yearly performance till date.');
+        return successResponse(res, all_years_weighted_averages, 'Employee yearly performance for the current year and last 4 years.');
     } catch (error) {
         return internalServerErrorResponse(res, error);
     }

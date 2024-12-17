@@ -18,7 +18,7 @@ app.get("/fetch-user-worksheet/:emp_id", authenticateUserAdminSession, fetchUser
 app.get("/admin/calculate-team-performance", authenticateAdminSession, calculatePerformanceForTeam);
 app.get('/admin/get-all-employee-weighted-average/:date/:emp_id', employeeMonthlyPerformanceBasedOnWorksheetHours);
 app.get('/all-month-weighted-average/:year/:emp_id',authenticateUserAdminSession,allMonthVal, getAllMonthWeightedAverageData);
-app.get('/get-all-year-weighted-average/:year/:emp_id',authenticateUserAdminSession,allMonthVal, getEmployeeYearlyWeightedAverage);
+app.get('/get-all-year-weighted-average/:emp_id',authenticateUserAdminSession,allMonthVal, getEmployeeYearlyWeightedAverage);
 app.post("/upload-worksheet",generateUserWorksheetExcel)
 
 // ##currently commented, as this is converted to a cron, but needs to be here for testing or any change. DO NOT DELETE OR REMOVE THIS API.
