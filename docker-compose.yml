@@ -43,7 +43,7 @@ services:
     restart: always
     env_file:
       - .env
-    command: ["python", "script.py"]  # Replace 'your_script.py' with the actual script name
+    command: ["python", "facenet_script.py"]  # Replace 'your_script.py' with the actual script name
     environment:
       # Add any necessary environment variables here
       LOCAL_SERVER_URL: ${LOCAL_SERVER_URL} # Use the service name and port

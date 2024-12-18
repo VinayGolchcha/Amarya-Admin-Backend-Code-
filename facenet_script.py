@@ -7,7 +7,7 @@ import socketio
 import pickle
 from datetime import datetime
 from threading import Thread
-from mtcnn.mtcnn import MTCNN
+from mtcnn import MTCNN
 from keras_facenet import FaceNet
 from dotenv import load_dotenv
 from scipy.special import softmax

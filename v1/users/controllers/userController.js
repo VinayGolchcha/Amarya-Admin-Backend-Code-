@@ -297,6 +297,7 @@ export const getUserProfile = async(req,res,next) => {
             return errorResponse(res, errors.array(), "")
         }
         let {date, emp_id} = req.params;
+        let MAX_WORKING_HOURS = process.env.MAX_WORKING_HOURS || 8
         const [user] = await getUserDataByUserIdQuery([emp_id]);
         if (user.length == 0 ){
             return successResponse(res, [], 'User not found');
@@ -306,7 +307,7 @@ export const getUserProfile = async(req,res,next) => {
             if(date){
                 const [year, month] = date.split('-');
                 const [number_of_working_days] = await getWorkingDaysCount([year, month, emp_id]);
-                [weighted_average_data] = await getWeightedAverage([date, emp_id], number_of_working_days[0].working_days_count);
+                [weighted_average_data] = await getWeightedAverage([date, emp_id], number_of_working_days[0].working_days_count, MAX_WORKING_HOURS);
             }
             return successResponse(res, [user, weighted_average_data || []], 'User profile fetched successfully.');
         }

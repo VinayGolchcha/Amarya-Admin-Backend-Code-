@@ -157,3 +157,14 @@ export const getWorkingDaysCount = async (array) => {
 `
     return pool.query(query)
 }
+
+export const calculateEmpWorkingDaysForEachMonth = async(year, emp_id) =>{
+        let monthArray = ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12'];
+        let workingDays = {}
+        for(let i = 0; i < monthArray.length; i++) {
+            let month = monthArray[i];
+            let [data] = await getWorkingDaysCount([year,month, emp_id]);
+            workingDays[month] = data[0].working_days_count.toString();
+        }
+        return workingDays
+}

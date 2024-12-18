@@ -57,12 +57,12 @@ const io = new Server(server, {
 });
 socketEvents(io)
 
-startStreamInWorker(process.env.RTSP_URL, hlsDirectory)
-  .then((message) => console.log(message))
-  .catch((err) => console.error('Stream Error:', err));
+// startStreamInWorker(process.env.RTSP_URL, hlsDirectory)
+//   .then((message) => console.log(message))
+//   .catch((err) => console.error('Stream Error:', err));
 
-// Start the cleanup in a worker thread
-startCleanupInWorker(hlsDirectory);
+// // Start the cleanup in a worker thread
+// startCleanupInWorker(hlsDirectory);
 
 // Start the cron jobs
 runCronJobs();
