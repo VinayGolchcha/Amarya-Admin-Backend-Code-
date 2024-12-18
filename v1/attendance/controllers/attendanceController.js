@@ -11,11 +11,11 @@ export const saveAttendanceLogs = async (uniqueMockData) => {
       let [getUsers] = await getUserByUserNameQuery(detection.class_name);
 
       if (getUsers.length !== 0) {
-        await insertUserAttendanceLogsQuery([ new Date(), detection.image, getUsers[0]._id]);
+        await insertUserAttendanceLogsQuery([new Date(), detection.image, getUsers[0]._id]);
       } else {
         await insertUnknownUserAttendanceQuery(
           [
-            "PRESENT",
+            "VISITOR",
             new Date(),
             detection.image
           ]
@@ -161,7 +161,7 @@ export const deleteUnidentifiedPerson = async (req, res, next) => {
   try {
     const { id } = req.params;
     const [data] = await deleteUnidentifiedPersonQuery([id]);
-    if(data.affectedRows == 0) {
+    if (data.affectedRows == 0) {
       return successResponse(res, [], "Data not found");
     }
     return successResponse(res, "", 'Data Deleted Successfully');
@@ -176,7 +176,7 @@ export const updateUnidentifiedPerson = async (req, res, next) => {
     let tag = req.body.tag;
     tag = tag.toUpperCase();
     const [data] = await updateUnidentifiedPersonQuery([tag, id]);
-    if(data.affectedRows == 0) {
+    if (data.affectedRows == 0) {
       return successResponse(res, [], "Data not found");
     }
     return successResponse(res, "", 'Data Updated Successfully');
@@ -495,9 +495,9 @@ export const getAllUserAttendanceSummaryExcelBuffer = async (req, res, next) => 
       return res.status(404).json({ error: 'No data found' });
     }
 
-    const splitedDate = startDate.split("-",2);
+    const splitedDate = startDate.split("-", 2);
 
-    const worksheetName = 'Attendance_Summary_'+splitedDate[0]+"_"+splitedDate[1];
+    const worksheetName = 'Attendance_Summary_' + splitedDate[0] + "_" + splitedDate[1];
 
     const workbook = new ExcelJS.Workbook();
     const worksheet = workbook.addWorksheet(worksheetName);
@@ -615,14 +615,14 @@ export const generateAttendanceExcel = async (req, res, next) => {
       return res.status(404).json({ error: 'No attendance data found.' });
     }
 
-    const worksheetName = 'Attendance_Details_'+empId;
+    const worksheetName = 'Attendance_Details_' + empId;
 
     const workbook = new ExcelJS.Workbook();
     const worksheet = workbook.addWorksheet(worksheetName);
 
     let [checkUser] = await checkUserByEmpIdQuery([empId]);
 
-    if(checkUser.length === 0){
+    if (checkUser.length === 0) {
       return res.status(404).json({ error: 'No data found for the empId' });
     }
 
@@ -642,7 +642,7 @@ export const generateAttendanceExcel = async (req, res, next) => {
       worksheet.addRow({
         sno: index + 1,
         emp_id: empId,
-        emp_name: checkUser[0].first_name+" "+checkUser[0].last_name,
+        emp_name: checkUser[0].first_name + " " + checkUser[0].last_name,
         date: item.date,
         status: item.attendance_status,
       });

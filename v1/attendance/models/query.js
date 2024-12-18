@@ -102,7 +102,7 @@ export const insertUnknownUserAttendanceQuery = async (array) => {
     try {
         let query = `
         INSERT INTO unknownUserAttendance
-        (status, date, snapshot)
+        (tag, date, snapshot)
         VALUES(?, ?, ?)
         `;
         return pool.query(query, array);
