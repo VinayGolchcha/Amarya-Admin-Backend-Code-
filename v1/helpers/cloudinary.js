@@ -7,7 +7,7 @@ cloudinary.config({
     api_secret:  process.env.CLOUDINARY_API_SECRET 
   });
 
-export const uploadImageToCloud = (resource_type,buffer, folder_name, format='jpg') => {
+export const uploadImageToCloud = (resource_type,buffer, folder_name, format) => {
     return new Promise((resolve, reject) => {
         cloudinary.uploader.upload_stream(
             { resource_type: resource_type, folder: folder_name, format: format }, 
