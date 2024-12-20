@@ -315,7 +315,7 @@ export const leaveRequest = async (req, res, next) => {
         if(leaveTypeCountByAdmin[0].leave_count>=(total_days+userLeaveTakenCount[0].leave_taken_count)){
             if(file){
                 const max_size = 1 * 1024 * 1024;
-                const allowedFileTypes = ['image/jpeg', 'image/png']; // Add other image MIME types if needed
+                const allowedFileTypes = ['image/jpeg', 'image/png', 'image/jpg']; // Add other image MIME types if needed
                 if (!allowedFileTypes.includes(file.mimetype)) {
                     return errorResponse(res, `File ${file.originalname} must be an image (JPEG, PNG).`, "");
                 }
