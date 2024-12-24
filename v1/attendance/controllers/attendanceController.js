@@ -146,7 +146,7 @@ export const fetchUnidentifiedPeopleList = async (req, res, next) => {
     }
 
     const skip = (page - 1) * limit;
-    const { rows: data } = await fetchUnidentifiedPeopleListQuery(skip, limit);
+    const [data] = await fetchUnidentifiedPeopleListQuery(skip, limit);
 
     if (data.length === 0) {
       return successResponse(res, [], "Data not found");
