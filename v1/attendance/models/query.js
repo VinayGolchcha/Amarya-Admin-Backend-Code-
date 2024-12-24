@@ -227,7 +227,7 @@ export const fetchUnidentifiedPeopleListQuery = async (skip, limit) => {
             * 
         FROM unknownUserAttendance
         ORDER BY date DESC
-        LIMIT $1 OFFSET $2
+        LIMIT ? OFFSET ?
         `;
         return pool.query(query, [limit, skip]);
     } catch (error) {
