@@ -139,13 +139,14 @@ export const fetchUserPresentAttendance = async (req, res, next) => {
 
 export const fetchUnidentifiedPeopleList = async (req, res, next) => {
   try {
-    // const page = req.query.page ? parseInt(req.query.page) : 1;
-    // if (isNaN(page) || page <= 0) {
-    //   return res.status(400).json({ error: 'Invalid page number.' });
-    // }
+    const page = req.query.page ? parseInt(req.query.page) : 1;
+    const limit = req.query.limit ? parseInt(req.query.limit) : 10; // Default to 10 items per page
+    if (isNaN(page) || page <= 0 || isNaN(limit) || limit <= 0) {
+      return res.status(400).json({ error: 'Invalid page or limit parameter.' });
+    }
 
-    // const skip = (page - 1) * 10;
-    const [data] = await fetchUnidentifiedPeopleListQuery();
+    const skip = (page - 1) * limit;
+    const [data] = await fetchUnidentifiedPeopleListQuery(skip, limit);
 
     if (data.length === 0) {
       return successResponse(res, [], "Data not found");
@@ -155,7 +156,8 @@ export const fetchUnidentifiedPeopleList = async (req, res, next) => {
   } catch (error) {
     return internalServerErrorResponse(res, error);
   }
-}
+};
+
 
 export const deleteUnidentifiedPerson = async (req, res, next) => {
   try {

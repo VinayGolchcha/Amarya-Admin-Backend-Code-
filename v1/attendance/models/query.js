@@ -219,20 +219,22 @@ export const fetchUserPresentAttendanceQuery = async (skip) => {
         throw error;
     }
 }
-export const fetchUnidentifiedPeopleListQuery = async (skip) => {
+
+export const fetchUnidentifiedPeopleListQuery = async (skip, limit) => {
     try {
         let query = `
         SELECT 
             * 
         FROM unknownUserAttendance
         ORDER BY date DESC
+        LIMIT ? OFFSET ?
         `;
-        return pool.query(query);
+        return pool.query(query, [limit, skip]);
     } catch (error) {
         console.error("Error executing fetchUnidentifiedPeopleListQuery:", error);
         throw error;
     }
-}
+};
 
 export const deleteUnidentifiedPersonQuery = async (id) => {
     try {
