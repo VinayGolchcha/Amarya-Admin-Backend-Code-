@@ -481,7 +481,6 @@ export const deletingAttendanceLogEveryHourQuery = async (batchSize = 1000, retr
                     SELECT id FROM RankedLogs
                     WHERE row_asc > 5 AND row_desc > 5
                 )
-                LIMIT ?
             `;
             const [result] = await pool.query(query, [batchSize]);
             rowsDeleted = result.affectedRows;
