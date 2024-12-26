@@ -224,7 +224,7 @@ export const fetchUnidentifiedPeopleListQuery = async (skip, limit) => {
     try {
         let query = `
         SELECT 
-            * 
+            *
         FROM unknownUserAttendance
         ORDER BY date DESC
         LIMIT ? OFFSET ?
@@ -232,6 +232,20 @@ export const fetchUnidentifiedPeopleListQuery = async (skip, limit) => {
         return pool.query(query, [limit, skip]);
     } catch (error) {
         console.error("Error executing fetchUnidentifiedPeopleListQuery:", error);
+        throw error;
+    }
+};
+
+export const fetchUnidentifiedTotalCountQuery = async () => {
+    try {
+        let query = `
+        SELECT 
+            COUNT(*) AS total_count
+        FROM unknownUserAttendance
+        `;
+        return pool.query(query);
+    } catch (error) {
+        console.error("Error executing fetchUnidentifiedTotalCountQuery:", error);
         throw error;
     }
 };

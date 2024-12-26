@@ -1,7 +1,7 @@
 import moment from "moment";
 import { checkRtspStatus } from "../../../utils/cameraUtils.js";
 import { cameraDownResponse, cameraUpResponse, internalServerErrorResponse, internalServerErrorResponseForCamera, notFoundResponse, successResponse } from "../../../utils/response.js";
-import { deleteUnidentifiedPersonQuery, fetchUnidentifiedPeopleListQuery, fetchUserPresentAttendanceQuery, getUnknownUserAttendanceQuery, getUserAttendanceByUserIdAndDateQuery, getUserAttendanceLogByUserIdAndDateForInTimeQuery, getUserAttendanceSummaryQuery, getUserByEmpIdQuery, getUserByUserNameQuery, insertUnknownUserAttendanceQuery, insertUserAttendanceLogsQuery, updateInTimeUserAttenQuery, updateUnknownAttendance, updateUserAttendanceQuery, getWeeklyPresentCountQuery, getUserAttendanceLogByUserIdAndDateForOutTimeQuery, updateOutTimeUserAttenQuery, fetchAttedancePercentageOfUsersByDateQuery, fetchMonthlyAllUserAttendanceQuery, updateUnidentifiedPersonQuery, getDailyUserAttendanceQuery, getUserAttendanceByDateQuery, checkUserByEmpIdQuery } from "../models/query.js";
+import { deleteUnidentifiedPersonQuery, fetchUnidentifiedPeopleListQuery, fetchUserPresentAttendanceQuery, getUnknownUserAttendanceQuery, getUserAttendanceByUserIdAndDateQuery, getUserAttendanceLogByUserIdAndDateForInTimeQuery, getUserAttendanceSummaryQuery, getUserByEmpIdQuery, getUserByUserNameQuery, insertUnknownUserAttendanceQuery, insertUserAttendanceLogsQuery, updateInTimeUserAttenQuery, updateUnknownAttendance, updateUserAttendanceQuery, getWeeklyPresentCountQuery, getUserAttendanceLogByUserIdAndDateForOutTimeQuery, updateOutTimeUserAttenQuery, fetchAttedancePercentageOfUsersByDateQuery, fetchMonthlyAllUserAttendanceQuery, updateUnidentifiedPersonQuery, getDailyUserAttendanceQuery, getUserAttendanceByDateQuery, checkUserByEmpIdQuery, fetchUnidentifiedTotalCountQuery } from "../models/query.js";
 import ExcelJS from 'exceljs';
 
 export const saveAttendanceLogs = async (uniqueMockData) => {
@@ -146,13 +146,14 @@ export const fetchUnidentifiedPeopleList = async (req, res, next) => {
     }
 
     const skip = (page - 1) * limit;
-    const [data] = await fetchUnidentifiedPeopleListQuery(skip, limit);
+    let [data] = await fetchUnidentifiedPeopleListQuery(skip, limit);
+    let [total_count] = await fetchUnidentifiedTotalCountQuery()
 
     if (data.length === 0) {
       return successResponse(res, [], "Data not found");
-    }
-
-    return successResponse(res, data, 'Unknown detections fetched successfully');
+    };
+    total_count = total_count[0].total_count
+    return successResponse(res, {data, total_count}, 'Unknown detections fetched successfully');
   } catch (error) {
     return internalServerErrorResponse(res, error);
   }
