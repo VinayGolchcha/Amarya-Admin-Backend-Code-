@@ -8,6 +8,8 @@ node_modules/
 package-lock.json
 .env
 .vscode
+.venv
+.scannerwork
 # Compiled Java class files
 *.class
 

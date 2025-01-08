@@ -1,7 +1,7 @@
 // Schedule script execution every minute
 import cron from "node-cron";
 import pool from "../config/db.js";
-import { generateUserWorksheetExcel, updateEntries, calculatePerformanceForEachEmployee, updateYearlyDataForEachEmployee, updateMonthlyExperienceCron, saveAttendance, deleteAttendanceLogs, sendEmailNotificationForApproval } from "./cronFunctions.js";
+import { generateUserWorksheetExcel, updateEntries, calculatePerformanceForEachEmployee, updateYearlyDataForEachEmployee, updateMonthlyExperienceCron, saveAttendance, deleteAttendanceLogs, sendEmailNotificationForApproval, deleteAttendanceRecordsOlderThanThreeDays } from "./cronFunctions.js";
 import {deletingAttendanceLogEveryHourQuery } from "../v1/attendance/models/query.js";
 
 
@@ -91,7 +91,6 @@ export const runCronJobs = () => {
     
 
     cron.schedule('*/30 * * * *', async () => {
-        // cron.schedule('* * * * *', async () => {
         try {
             console.log("Scheduler called: deleting attendance logs excluding 1st and last 5 entries per user");
             await deletingAttendanceLogEveryHourQuery();
@@ -101,5 +100,12 @@ export const runCronJobs = () => {
     });
 
 
-    
+    cron.schedule('0 19 * * *', async () => {
+        try {
+            console.log("deleteAttendanceRecordsOlderThanThreeDays cron called.");
+            await deleteAttendanceRecordsOlderThanThreeDays();
+        } catch (error) {
+            console.error('Error executing cron deleteAttendanceRecordsOlderThanThreeDays:', error);
+        }
+    });
 }
