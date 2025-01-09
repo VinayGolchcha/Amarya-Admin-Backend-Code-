@@ -465,6 +465,14 @@ export const getAllUserAttendanceSummary = async (req, res, next) => {
     if (!moment(startDate, 'YYYY-MM-DD', true).isValid() || !moment(endDate, 'YYYY-MM-DD', true).isValid()) {
       return res.status(400).json({ error: 'Invalid date format. Use YYYY-MM-DD.' });
     }
+
+    const currentMonth = moment().format('YYYY-MM');
+    const startMonth = moment(startDate).format('YYYY-MM');
+    const endMonth = moment(endDate).format('YYYY-MM');
+
+    if (startMonth > currentMonth || endMonth > currentMonth) {
+      return res.status(400).json({ error: 'StartDate and EndDate cannot be in a future month.' });
+    }
     let [summary] = await fetchMonthlyAllUserAttendanceQuery([startDate, endDate]);
 
     if (summary.length == 0) {

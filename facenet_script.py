@@ -218,6 +218,8 @@ def process_stream(rtsp_url, stream_id):
     while True:
         try:
             cap = cv.VideoCapture(rtsp_url)
+            cap.set(cv.CAP_PROP_FRAME_WIDTH, 1920)
+            cap.set(cv.CAP_PROP_FRAME_HEIGHT, 1080)
             cap.set(cv.CAP_PROP_BUFFERSIZE, 10)
 
             while True:
