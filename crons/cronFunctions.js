@@ -261,10 +261,7 @@ export const deleteAttendanceRecordsOlderThanThreeDays = async () => {
   try {
     let query = `
         DELETE FROM unknownUserAttendance
-        WHERE date < CURDATE() - INTERVAL 3 DAY;
-        
-        DELETE FROM userAttendanceLogs
-        WHERE date < CURDATE() - INTERVAL 3 DAY;
+        WHERE date < CURDATE() - INTERVAL 3 DAY
     `;
     return pool.query(query);
   } catch (error) {
