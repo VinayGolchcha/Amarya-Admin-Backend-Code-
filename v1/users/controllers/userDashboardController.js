@@ -32,11 +32,11 @@ export const userDashboard = async (req, res, next) => {
     let [current_project] = await fetchUserCurrentProjectQuery([emp_id])
     const [project_data] = await fetchUserProjectQuery([emp_id])
     let data = {
-      emp_data: emp_data.length > 0 ? emp_data[0] : null,
-      announcement: announcement_data.length > 0 ? announcement_data : null,
-      activity: activity_data.length > 0 ? activity_data : null,
-      current_project: current_project.length > 0 ? current_project[0] : null,
-      projects_this_year: project_data.length > 0 ? project_data : null
+      emp_data: emp_data.length > 0 ? emp_data[0] : [],
+      announcement: announcement_data.length > 0 ? announcement_data : [],
+      activity: activity_data.length > 0 ? activity_data : [],
+      current_project: current_project.length > 0 ? current_project[0] : [],
+      projects_this_year: project_data.length > 0 ? project_data : []
     }
 
     dashboard_data.push(data)

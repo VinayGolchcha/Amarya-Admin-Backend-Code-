@@ -205,9 +205,9 @@ export const getUserDataByUserIdQuery = (array) =>{
                             WHERE i.emp_id = u.emp_id
                             ORDER BY i.created_at DESC
                             LIMIT 1) AS public_id,
-                        (SELECT COUNT(DISTINCT w.team_id)
-                            FROM worksheets w
-                            WHERE w.emp_id = u.emp_id) AS teams
+                        (SELECT COUNT(DISTINCT up.team_id)
+                            FROM userProjects up
+                            WHERE up.emp_id = u.emp_id) AS teams
                     FROM
                         users u
                     WHERE

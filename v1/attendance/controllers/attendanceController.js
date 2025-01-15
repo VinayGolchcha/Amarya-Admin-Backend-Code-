@@ -12,6 +12,7 @@ export const saveAttendanceLogs = async (uniqueMockData) => {
 
       if (getUsers.length !== 0) {
         await insertUserAttendanceLogsQuery([new Date(), detection.image, getUsers[0]._id]);
+        //add if condition to calculate distance level of the incoming embedding with the existing embeddings present in the database
       } else {
         await insertUnknownUserAttendanceQuery(
           [
@@ -19,6 +20,7 @@ export const saveAttendanceLogs = async (uniqueMockData) => {
             new Date(),
             detection.image
           ]
+          //add embeddings to the DB
         );
         console.log("Attendance marked successfully for unidentified user");
       }
