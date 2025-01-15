@@ -41,7 +41,7 @@ export const getCameraStatus = async (req, res, next) => {
     const url = req.query.rtspUrl;
 
     if (!url) {
-      return res.status(400).json({ error: 'RTSP URL is required.' });
+      return errorResponse(res, '','RTSP URL is required.');
     }
 
     const status = await checkRtspStatus(url);
@@ -66,11 +66,11 @@ export const getUserAttendanceSummary = async (req, res, next) => {
     const endDate = req.query.endDate;
 
     if (!startDate || !endDate || !empId) {
-      return res.status(400).json({ error: 'StartDate, EndDate and EmpId is required.' });
+      return errorResponse(res, '','StartDate, EndDate and EmpId is required.');
     }
 
     if (!moment(startDate, 'YYYY-MM-DD', true).isValid() || !moment(endDate, 'YYYY-MM-DD', true).isValid()) {
-      return res.status(400).json({ error: 'Invalid date format. Use YYYY-MM-DD.' });
+      return errorResponse(res, '', 'Invalid date format. Use YYYY-MM-DD.');
     }
 
     let [checkUser] = await checkUserByEmpIdQuery([empId]);
@@ -123,7 +123,7 @@ export const fetchUserPresentAttendance = async (req, res, next) => {
   try {
     // const page = req.query.page ? parseInt(req.query.page) : 1;
     // if (isNaN(page) || page <= 0) {
-    //   return res.status(400).json({ error: 'Invalid page number.' });
+    //   return errorResponse({ error: 'Invalid page number.' });
     // }
 
     // const skip = (page - 1) * 10;
@@ -144,7 +144,7 @@ export const fetchUnidentifiedPeopleList = async (req, res, next) => {
     const page = req.query.page ? parseInt(req.query.page) : 1;
     const limit = req.query.limit ? parseInt(req.query.limit) : 10; // Default to 10 items per page
     if (isNaN(page) || page <= 0 || isNaN(limit) || limit <= 0) {
-      return res.status(400).json({ error: 'Invalid page or limit parameter.' });
+      return errorResponse(res, '', 'Invalid page or limit parameter.');
     }
 
     const skip = (page - 1) * limit;
@@ -197,11 +197,11 @@ export const getUserAttendancePercentage = async (req, res, next) => {
     const date = req.query.date;
 
     if (!date) {
-      return res.status(400).json({ error: 'Date is required.' });
+      return errorResponse(res, '', 'Date is required.');
     }
 
     if (!moment(date, 'YYYY-MM-DD', true).isValid()) {
-      return res.status(400).json({ error: 'Invalid date format. Use YYYY-MM-DD.' });
+      return errorResponse(res, '', 'Invalid date format. Use YYYY-MM-DD.');
     }
     let [summary] = await fetchAttedancePercentageOfUsersByDateQuery([date]);
 
@@ -223,11 +223,11 @@ export const updateUnknownAttendanceToKnown = async (req, res, next) => {
     const date = req.query.date;
 
     if (!unknownAttendanceId || !date || !empId) {
-      return res.status(400).json({ error: 'unknownAttendanceId and empId is required.' });
+      return errorResponse(res, '', 'unknownAttendanceId and empId is required.');
     }
 
     if (!moment(date, 'YYYY-MM-DD', true).isValid()) {
-      return res.status(400).json({ error: 'Invalid date format. Use YYYY-MM-DD.' });
+      return errorResponse(res, '', 'Invalid date format. Use YYYY-MM-DD.');
     }
 
     const dateOnly = moment(date).format('YYYY-MM-DD');
@@ -235,13 +235,13 @@ export const updateUnknownAttendanceToKnown = async (req, res, next) => {
     let [getUnkwnUserAttend] = await getUnknownUserAttendanceQuery([unknownAttendanceId, dateOnly]);
 
     if (getUnkwnUserAttend.length === 0) {
-      return res.status(400).json({ error: 'unknown user attendance not found.' });
+      return errorResponse(res, '',  'unknown user attendance not found.');
     }
 
     let [getUser] = await getUserByEmpIdQuery(empId);
 
     if (getUser.length === 0) {
-      return res.status(400).json({ error: 'user not found for the empId.' });
+      return errorResponse(res, '',  'user not found for the empId.');
     }
 
     let [checkUserAttendance] = await getUserAttendanceByUserIdAndDateQuery([dateOnly, getUser[0]._id]);
@@ -296,11 +296,11 @@ export const updateMismatchedUserAttendance = async (req, res, next) => {
     const updateType = req.body.updateType;
 
     if (!markedEmpId || !date || !missedEmpId || !updateType) {
-      return res.status(400).json({ error: 'markedEmpId, missedEmpId, updateType and date is required.' });
+      return errorResponse(res, '',  'markedEmpId, missedEmpId, updateType and date is required.');
     }
 
     if (!moment(date, 'YYYY-MM-DD', true).isValid()) {
-      return res.status(400).json({ error: 'Invalid date format. Use YYYY-MM-DD.' });
+      return errorResponse(res, '', 'Invalid date format. Use YYYY-MM-DD.');
     }
 
     const dateOnly = moment(date).format('YYYY-MM-DD');
@@ -310,7 +310,7 @@ export const updateMismatchedUserAttendance = async (req, res, next) => {
     let [getMissedUser] = await getUserByEmpIdQuery([missedEmpId]);
 
     if (getMarkedUser.length === 0 || getMissedUser.length === 0) {
-      return res.status(400).json({ error: 'user not found for the empId.' });
+      return errorResponse(res, '',  'user not found for the empId.');
     }
 
     let [getMarkedUserAttendance] = await getUserAttendanceByUserIdAndDateQuery([dateOnly, getMarkedUser[0]._id]);
@@ -318,7 +318,7 @@ export const updateMismatchedUserAttendance = async (req, res, next) => {
     let [getMissedUserAttendance] = await getUserAttendanceByUserIdAndDateQuery([dateOnly, getMissedUser[0]._id]);
 
     if (getMarkedUserAttendance.length === 0) {
-      return res.status(400).json({ error: 'user attendance not found.' });
+      return errorResponse(res, '',  'user attendance not found.');
     }
 
     let [data] = [null];
@@ -431,7 +431,7 @@ export const updateMismatchedUserAttendance = async (req, res, next) => {
       return successResponse(res);
 
     } else {
-      return res.status(400).json({ error: 'incorrect updateType' });
+      return errorResponse(res, '',  'incorrect updateType');
     }
 
   } catch (error) {
@@ -461,11 +461,11 @@ export const getAllUserAttendanceSummary = async (req, res, next) => {
     const endDate = req.query.endDate;
 
     if (!startDate || !endDate) {
-      return res.status(400).json({ error: 'StartDate, EndDate and EmpId is required.' });
+      return errorResponse(res, '',  'StartDate, EndDate and EmpId is required.');
     }
 
     if (!moment(startDate, 'YYYY-MM-DD', true).isValid() || !moment(endDate, 'YYYY-MM-DD', true).isValid()) {
-      return res.status(400).json({ error: 'Invalid date format. Use YYYY-MM-DD.' });
+      return errorResponse(res, '', 'Invalid date format. Use YYYY-MM-DD.');
     }
 
     const currentMonth = moment().format('YYYY-MM');
@@ -473,7 +473,7 @@ export const getAllUserAttendanceSummary = async (req, res, next) => {
     const endMonth = moment(endDate).format('YYYY-MM');
 
     if (startMonth > currentMonth || endMonth > currentMonth) {
-      return res.status(400).json({ error: 'StartDate and EndDate cannot be in a future month.' });
+      return errorResponse(res, '',  'StartDate and EndDate cannot be in a future month.');
     }
     let [summary] = await fetchMonthlyAllUserAttendanceQuery([startDate, endDate]);
 
@@ -495,11 +495,11 @@ export const getAllUserAttendanceSummaryExcelBuffer = async (req, res, next) => 
     const endDate = req.query.endDate;
 
     if (!startDate || !endDate) {
-      return res.status(400).json({ error: 'StartDate and EndDate are required.' });
+      return errorResponse(res, '',  'StartDate and EndDate are required.');
     }
 
     if (!moment(startDate, 'YYYY-MM-DD', true).isValid() || !moment(endDate, 'YYYY-MM-DD', true).isValid()) {
-      return res.status(400).json({ error: 'Invalid date format. Use YYYY-MM-DD.' });
+      return errorResponse(res, '', 'Invalid date format. Use YYYY-MM-DD.');
     }
 
     const [summary] = await fetchMonthlyAllUserAttendanceQuery([startDate, endDate]);
@@ -568,11 +568,11 @@ export const getDailyUserAttendance = async (req, res, next) => {
     const emp_id = req.query.empId;
 
     if (!start_date || !end_date || !emp_id) {
-      return res.status(400).json({ error: 'StartDate, EndDate and EmpId is required.' });
+      return errorResponse({ error: 'StartDate, EndDate and EmpId is required.' });
     }
 
     if (!moment(start_date, 'YYYY-MM-DD', true).isValid() || !moment(end_date, 'YYYY-MM-DD', true).isValid()) {
-      return res.status(400).json({ error: 'Invalid date format. Use YYYY-MM-DD.' });
+      return errorResponse(res, '', 'Invalid date format. Use YYYY-MM-DD.');
     }
     let [daily_data] = await getDailyUserAttendanceQuery([start_date, end_date, emp_id]);
 
@@ -595,11 +595,11 @@ export const getUserAttendanceByDate = async (req, res, next) => {
 
 
     if (!date) {
-      return res.status(400).json({ error: 'Date is required.' });
+      return errorResponse({ error: 'Date is required.' });
     }
 
     if (!moment(date, 'YYYY-MM-DD', true).isValid()) {
-      return res.status(400).json({ error: 'Invalid date format. Use YYYY-MM-DD.' });
+      return errorResponse(res, '', 'Invalid date format. Use YYYY-MM-DD.');
     }
     let [daily_data] = await getUserAttendanceByDateQuery([date]);
 
@@ -619,7 +619,7 @@ export const generateAttendanceExcel = async (req, res, next) => {
     const { startDate, endDate, empId } = req.query;
 
     if (!startDate || !endDate || !empId) {
-      return res.status(400).json({ error: 'StartDate, EndDate, and EmpId are required.' });
+      return errorResponse({ error: 'StartDate, EndDate, and EmpId are required.' });
     }
 
     const [attendanceData] = await getDailyUserAttendanceQuery([startDate, endDate, empId]);
