@@ -62,8 +62,17 @@ export const updateUserCompletedProjectCountQuery= async (array) =>{
 export const fetchUserProjectQuery= async (array) =>{
     try {
         let query = `SELECT
-        p._id,
-        p.project,
+    p._id,
+    p.project,
+    IF(
+        DATE_FORMAT(
+            STR_TO_DATE(
+                CONCAT('01/', IFNULL(u2.end_month, DATE_FORMAT(NOW(), '%m/%y'))),
+                '%d/%m/%y'
+            ),
+            '%Y%m'
+        ) = DATE_FORMAT(NOW(), '%Y%m'),
+        1,
         IFNULL(
             PERIOD_DIFF(
                 DATE_FORMAT(
@@ -85,17 +94,22 @@ export const fetchUserProjectQuery= async (array) =>{
                     '%Y%m'
                 )
             )
-        ) AS project_duration,
-        u2.start_month
-    FROM
-        users u
-    JOIN userProjects u2 ON
-        u.emp_id = u2.emp_id
-    JOIN projects p ON
-        p._id = u2.project_id
-    WHERE
-        u2.emp_id = ?
-        AND YEAR(STR_TO_DATE(CONCAT('01/', u2.start_month), '%d/%m/%y')) = YEAR(CURDATE());
+        )
+    ) AS project_duration,
+    u2.start_month
+FROM
+    users u
+JOIN userProjects u2 ON
+    u.emp_id = u2.emp_id
+JOIN projects p ON
+    p._id = u2.project_id
+WHERE
+    u2.emp_id = ?
+    AND STR_TO_DATE(CONCAT('01/', u2.start_month), '%d/%m/%y') <= LAST_DAY(NOW())
+    AND (
+        u2.end_month IS NULL OR
+        STR_TO_DATE(CONCAT('01/', u2.end_month), '%d/%m/%y') >= STR_TO_DATE(CONCAT('01/', DATE_FORMAT(NOW(), '%m/%y')), '%d/%m/%y')
+    );
     `;
         return await pool.query(query, array);
     } catch (error) {

@@ -30,12 +30,12 @@ export const setupRoutes = (app) => {
     app.use('/api/v1/skillSet', skillSetRoutes);
     app.use('/api/v1/category', categoryRoutes);
     app.use('/api/v1/project', projectRoutes);
-    app.use("/api/v1/stickynotes", stickynotesRoutes);
-    app.use("/api/v1/activity", activityRoutes);
-    app.use("/api/v1/dashboard", dashboardRoutes);
-    app.use("/api/v1/policy", policiesRoutes);
-    app.use("/api/v1/userDashboard", userDashboardRoutes);
-    app.use("/api/v1/attendance", attendanceRoutes);
+    app.use('/api/v1/stickynotes', stickynotesRoutes);
+    app.use('/api/v1/activity', activityRoutes);
+    app.use('/api/v1/dashboard', dashboardRoutes);
+    app.use('/api/v1/policy', policiesRoutes);
+    app.use('/api/v1/userDashboard', userDashboardRoutes);
+    app.use('/api/v1/attendance', attendanceRoutes);
 
     app.use('/', (req, res) => {
       res.status(403).json({
