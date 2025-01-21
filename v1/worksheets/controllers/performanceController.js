@@ -106,42 +106,52 @@ export const getEmployeeYearlyWeightedAverage = async (req, res, next) => {
         const MAX_WORKING_HOURS = Number(process.env.MAX_WORKING_HOURS) || 8;
         const currentYear = new Date().getFullYear();
         const years = Array.from({ length: 5 }, (_, i) => currentYear - i);
-        
-        const all_years_weighted_averages = {};
-        
-        for (const year of years) {
-            const working_days = await calculateEmpWorkingDaysForEachMonth(year, emp_id);
 
-            if (!working_days || typeof working_days !== 'object') {
-                throw new Error(`Invalid working days data for year ${year}`);
-            }
+        // Fetch weighted averages for all years concurrently
+        const allYearsWeightedAverages = await Promise.all(
+            years.map(async (year) => {
+                const workingDays = await calculateEmpWorkingDaysForEachMonth(year, emp_id);
 
-            const all_months_weighted_average = {};
+                if (!workingDays || typeof workingDays !== 'object') {
+                    throw new Error(`Invalid working days data for year ${year}`);
+                }
 
-            for (const [month, days] of Object.entries(working_days)) {
-                const [weighted_average_data] = await getWeightedAverage(
-                    [`${year}-${month}`, emp_id],
-                    days,
-                    MAX_WORKING_HOURS
+                // Calculate monthly weighted averages concurrently
+                const allMonthsWeightedAverage = await Promise.all(
+                    Object.entries(workingDays).map(async ([month, days]) => {
+                        const [weightedAverageData] = await getWeightedAverage(
+                            [`${year}-${month}`, emp_id],
+                            days,
+                            MAX_WORKING_HOURS
+                        );
+                        return weightedAverageData?.weighted_average_percentage || 0;
+                    })
                 );
 
-                all_months_weighted_average[month] = weighted_average_data?.weighted_average_percentage || 0;
-            }
+                // Filter out invalid values and calculate yearly average
+                const validAverages = allMonthsWeightedAverage.filter((avg) => avg > 0);
+                const yearlyWeightedAverage =
+                    validAverages.length > 0
+                        ? validAverages.reduce((sum, avg) => sum + avg, 0) / validAverages.length
+                        : 0;
 
-            const valid_averages = Object.values(all_months_weighted_average).filter(avg => avg > 0);
-            const yearly_weighted_average_percentage = valid_averages.length
-                ? valid_averages.reduce((sum, avg) => sum + avg, 0) / valid_averages.length
-                : 0;
+                return { year, average: Number(yearlyWeightedAverage.toFixed(2)) };
+            })
+        );
 
-            all_years_weighted_averages[year] = Number(yearly_weighted_average_percentage.toFixed(2));
-        }
-        
+        // Transform results into an object for response
+        const yearlyAveragesObject = allYearsWeightedAverages.reduce(
+            (acc, { year, average }) => ({ ...acc, [year]: average }),
+            {}
+        );
+
         return successResponse(
             res,
-            all_years_weighted_averages,
+            yearlyAveragesObject,
             'Employee yearly performance for the current year and last 4 years.'
         );
     } catch (error) {
+        console.error("Error in getEmployeeYearlyWeightedAverage:", error);
         return internalServerErrorResponse(res, error.message || error);
     }
 };

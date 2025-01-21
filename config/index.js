@@ -27,6 +27,7 @@ import attendanceLogsTable from "../v1/attendance/models/attendanceLogsModel.js"
 import unknownUserAttendanceTable from "../v1/attendance/models/unknownUserAttendanceModel.js";
 import attendanceTable from "../v1/attendance/models/attendanceModel.js";
 import devicesTable from "../v1/attendance/models/devicesModel.js";
+import embeddingTable from "../v1/attendance/models/embeddingModel.js";
 import attendanceSummaryProc from "../v1/attendance/models/attendanceSummaryProc.js";
 import readAnnouncementTable from "../v1/announcements/models/readAnnouncementModel.js";
 import oAuthTable from "../utils/oauthTokenModel.js";
@@ -35,5 +36,5 @@ export default [userTable,oAuthTable, assetTable, trainingTable, usertrainingTab
     holidayTable, leaveTypeTable, leaveDatesAndReasonTable, leaveTypeCountTable, userLeaveCountTable, categoryTable, teamTable,
     projectTable, worksheetTable, skillSetTable , temporaryNotesTable , policiesTable, userTeamsTable,
     userYearlyPerformanceTable, userPerformanceTable, imagesTable, feedbackFormTable, userProjectTable, attendanceLogsTable, unknownUserAttendanceTable,
-    attendanceTable, devicesTable, attendanceSummaryProc
+    attendanceTable, devicesTable, attendanceSummaryProc, embeddingTable
 ];

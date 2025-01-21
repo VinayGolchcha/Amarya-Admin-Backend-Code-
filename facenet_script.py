@@ -5,6 +5,7 @@ import base64
 import time
 import socketio
 import pickle
+import json
 from datetime import datetime
 from threading import Thread
 from mtcnn import MTCNN
@@ -12,6 +13,10 @@ from keras_facenet import FaceNet
 from dotenv import load_dotenv
 from scipy.special import softmax
 from sklearn.preprocessing import LabelEncoder
+from sklearn.metrics.pairwise import cosine_similarity
+from python_db_connection import get_cursor
+import ast
+mydb, mycursor = get_cursor()
 
 load_dotenv()
 print("Python script has started running")
@@ -51,7 +56,7 @@ def disconnect():
 def reconnect_attempt(attempt_number):
     print(f"Attempting to reconnect... Attempt number: {attempt_number}")
 
-model_path = './svm_model_160x160.pkl'
+model_path = './svm_model_160x160_140125_1024.pkl'
 with open(model_path, 'rb') as f:
     model = pickle.load(f)
 
@@ -63,82 +68,32 @@ rtsp_streams = ["rtsp://amarya.ddns.net:5543/5de47dec149522f828aed6711016442a/li
 def get_embedding(face_img):
     face_img = face_img.astype('float32')
     face_img = np.expand_dims(face_img, axis=0)
-    yhat = embedder.embeddings(face_img)
-    return yhat[0]
+    embedding = embedder.embeddings(face_img)
+    return embedding
 
 
-employees = ['rashi_agarwal', 'rashi_agarwal', 'rashi_agarwal', 'rashi_agarwal',
-       'pujita_rao01', 'pujita_rao01', 'pujita_rao01', 'ankit_koshta01',
-       'ankit_koshta01', 'ankit_koshta01', 'ankit_koshta01',
-       'ankit_koshta01', 'ankit_koshta01', 'ankit_koshta01',
-       'ankit_koshta01', 'ankit_koshta01', 'ankit_koshta01',
-       'ankit_koshta01', 'kishanlal_chaurasiya01',
-       'kishanlal_chaurasiya01', 'kishanlal_chaurasiya01',
-       'anmol_chauhan01', 'anmol_chauhan01', 'anmol_chauhan01',
-       'anmol_chauhan01', 'anmol_chauhan01', 'anuj.prajapati01',
-       'anuj.prajapati01', 'anuj.prajapati01', 'anuj.prajapati01',
-       'eish_nigam01', 'eish_nigam01', 'eish_nigam01', 'eish_nigam01',
-       'divij_sahu01', 'divij_sahu01', 'divij_sahu01',
-       'prashant_pandey01', 'prashant_pandey01', 'prashant_pandey01',
-       'prashant_pandey01', 'prashant_pandey01', 'prashant_pandey01',
-       'prashant_pandey01', 'prashant_pandey01', 'prashant_pandey01',
-       'prashant_pandey01', 'prashant_pandey01', 'prashant_pandey01',
-       'prashant_pandey01', 'prashant_pandey01', 'shubham_kushwaha01',
-       'shubham_kushwaha01', 'iteesh_dubey01', 'iteesh_dubey01',
-       'iteesh_dubey01', 'iteesh_dubey01', 'iteesh_dubey01',
-       'ujjwal_upadhyay01', 'ujjwal_upadhyay01', 'ujjwal_upadhyay01',
-       'ujjwal_upadhyay01', 'ujjwal_upadhyay01', 'ujjwal_upadhyay01',
-       'ujjwal_upadhyay01', 'ujjwal_upadhyay01', 'ujjwal_upadhyay01',
-       'ujjwal_upadhyay01', 'ujjwal_upadhyay01', 'ujjwal_upadhyay01',
-       'ujjwal_upadhyay01', 'ujjwal_upadhyay01', 'ujjwal_upadhyay01',
-       'ujjwal_upadhyay01', 'ujjwal_upadhyay01', 'ujjwal_upadhyay01',
-       'ujjwal_upadhyay01', 'ujjwal_upadhyay01', 'ujjwal_upadhyay01',
-       'ujjwal_upadhyay01', 'ujjwal_upadhyay01', 'ujjwal_upadhyay01',
-       'ujjwal_upadhyay01', 'ujjwal_upadhyay01', 'ujjwal_upadhyay01',
-       'ujjwal_upadhyay01', 'ujjwal_upadhyay01', 'ujjwal_upadhyay01',
-       'ujjwal_upadhyay01', 'ujjwal_upadhyay01', 'ujjwal_upadhyay01',
-       'ujjwal_upadhyay01', 'ujjwal_upadhyay01', 'ujjwal_upadhyay01',
-       'ujjwal_upadhyay01', 'ujjwal_upadhyay01', 'ujjwal_upadhyay01',
-       'ujjwal_upadhyay01', 'yogesh', 'yogesh', 'yogesh', 'yogesh',
-       'yogesh', 'yogesh', 'yogesh', 'yogesh', 'yogesh', 'surya_pratap01',
-       'surya_pratap01', 'surya_pratap01', 'surya_pratap01',
-       'surya_pratap01', 'surya_pratap01', 'surya_pratap01',
-       'surya_pratap01', 'surya_pratap01', 'surya_pratap01',
-       'surya_pratap01', 'surya_pratap01', 'surya_pratap01',
-       'surya_pratap01', 'surya_pratap01', 'surya_pratap01',
-       'surya_pratap01', 'surya_pratap01', 'surya_pratap01',
-       'surya_pratap01', 'surya_pratap01', 'surya_pratap01',
-       'surya_pratap01', 'surya_pratap01', 'surya_pratap01',
-       'surya_pratap01', 'surya_pratap01', 'surya_pratap01',
-       'surya_pratap01', 'surya_pratap01', 'surya_pratap01',
-       'surya_pratap01', 'surya_pratap01', 'surya_pratap01',
-       'surya_pratap01', 'surya_pratap01', 'surya_pratap01',
-       'surya_pratap01', 'surya_pratap01', 'surya_pratap01',
-       'surya_pratap01', 'surya_pratap01', 'surya_pratap01',
-       'surya_pratap01', 'surya_pratap01', 'surya_pratap01',
-       'surya_pratap01', 'surya_pratap01', 'surya_pratap01',
-       'tamanna_suhane01', 'tamanna_suhane01', 'tamanna_suhane01',
-       'tamanna_suhane01', 'tamanna_suhane01', 'tamanna_suhane01',
-       'shubham_soni01', 'shubham_soni01', 'shubham_soni01',
-       'shubham_soni01', 'shubham_soni01', 'shubham_soni01',
-       'shubham_soni01', 'shubham_soni01', 'shubham_soni01',
-       'shubham_soni01', 'shubham_soni01', 'shubham_soni01',
-       'shubham_soni01', 'shubham_soni01', 'shubham_soni01',
-       'shubham_soni01', 'shubham_soni01', 'shubham_soni01',
-       'shubham_soni01', 'shubham_soni01', 'shubham_soni01',
-       'shubham_soni01', 'shubham_soni01', 'shubham_soni01',
-       'shubham_soni01', 'shubham_soni01', 'shubham_soni01',
-       'shubham_soni01', 'shubham_soni01', 'shubham_soni01',
-       'shubham_soni01', 'shubham_soni01', 'shubham_soni01',
-       'shubham_soni01', 'shubham_soni01', 'shubham_soni01',
-       'shubham_soni01', 'shubham_soni01', 'shubham_soni01',
-       'shubham_soni01', 'shubham_soni01', 'shubham_soni01',
-       'shubham_soni01', 'shubham_soni01', 'shubham_soni01',
-       'shubham_soni01', 'shubham_soni01', 'shubham_soni01',
-       'shubham_soni01', 'shubham_soni01', 'shubham_soni01',
-       'shubham_soni01', 'shubham_soni01', 'shubham_soni01',
-       'shubham_soni01', 'shubham_soni01', 'shubham_soni01',
-       'shubham_soni01', 'shubham_soni01']
+employees = [
+ 'ankit_koshta01',
+ 'ankit_soni01',
+ 'anmol_chauhan01',
+ 'anuj.prajapati01',
+ 'depanshu_kushwaha01',
+ 'divij_sahu01',
+ 'eish_nigam01',
+ 'himanshu_bachwani01',
+ 'iteesh_dubey01',
+ 'lucky_soni01',
+ 'pradyum_jaiswal01',
+ 'prashant_pandey01',
+ 'pujita_rao01',
+ 'saurabh_singh01',
+ 'shivam_vishwakarma01',
+ 'shubham_kushwaha01',
+ 'shubham_soni01',
+ 'surya_pratap01',
+ 'tamanna_suhane01',
+ 'ujjwal_upadhyay01',
+ 'vishwabhushan_dubey01']
 
 
 Y = np.asarray(employees)
@@ -147,33 +102,29 @@ encoder = LabelEncoder()
 encoder.fit(Y)
 Y = encoder.transform(Y)
 
+
 def process_detections(frame, frame_rgb, stream_id, rtsp_url):
     detections = []
     faces = detector.detect_faces(frame_rgb)
     current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-
+    new_embedding = None  # Initialize new_embedding
+    label = ''
     for face in faces:
         x, y, w, h = face['box']
-        x, y = abs(x), abs(y)
-        
         x, y, w, h = int(x), int(y), int(w), int(h)
         
-        face_img = frame_rgb[y:y + h, x:x + w] # t_im
+        face_img = frame_rgb[y:y + h, x:x + w]
         face_img = cv.resize(face_img, (160, 160))
         embedding = get_embedding(face_img)
-        embedding = [embedding]
+        # print("embedding.shape", embedding.shape)
+        new_embedding = np.array(embedding).reshape(1, 512)  # Ensure it's a 2D array
+        # print("new_embedding.shape", new_embedding.shape)
+        y_preds = model.predict(new_embedding)
 
-        y_preds = model.predict(embedding)
-        
-        
-        decision_scores = model.decision_function(embedding)  # Raw scores
-        probabilities = softmax(decision_scores, axis=1) 
+        decision_scores = model.decision_function(new_embedding)
+        probabilities = softmax(decision_scores, axis=1)
         confidence = np.max(probabilities, axis=1)
         
-        ## new
-        # print(confidence)
-        print(encoder.inverse_transform(y_preds))
-
         predicted_label = encoder.inverse_transform(y_preds)[0]
         confidence_score = confidence[0]
 
@@ -190,17 +141,59 @@ def process_detections(frame, frame_rgb, stream_id, rtsp_url):
         }
         detections.append(detection)
 
-        # Draw bounding box and label
         color = (0, 255, 0) if confidence_score > 0.5 else (0, 0, 255)
         label = f"{predicted_label} ({confidence_score:.2f})" if confidence_score > 0.5 else "Unknown"
+        # print("confidence_score", confidence_score)
+        # print("label inside for loop: ", label)
         frame = cv.rectangle(frame, (x, y), (x + w, y + h), color, 2)
         cv.putText(frame, label, (x, y - 10), cv.FONT_HERSHEY_SIMPLEX, 0.8, color, 2)
-
-    # Emit detections to the Node.js server
-    if detections:
+    # print("label: ", label)
+    if new_embedding is not None and label == "Unknown":  # Ensure new_embedding is not None
+        db_embeddings = mycursor.execute("SELECT embedding FROM embeddings WHERE DATE(created_at) = CURDATE()")
+        db_embeddings = mycursor.fetchall()
+        
+        if db_embeddings:  # Ensure there are embeddings in the database
+            deserialize_embeddings = [np.array(json.loads(embedding[0])) for embedding in db_embeddings]
+            deserialize_embeddings = np.vstack(deserialize_embeddings)
+            # print("deserialize_embeddings_again", deserialize_embeddings)
+            cosine_similarities = cosine_similarity(deserialize_embeddings, new_embedding)
+            print("cosine_similarities", cosine_similarities)
+            print("cosine_similarities_value", np.max(cosine_similarities))
+            if np.max(cosine_similarities) > 0.5:
+                pass  # Ignore the incoming face
+            else:
+                # print("new_embedding inside else else", new_embedding)
+                _, buffer = cv.imencode('.jpg', frame)
+                frame_data = base64.b64encode(buffer.tobytes()).decode('utf-8')
+                sio.emit('detections', {
+                    'detections': detections,
+                    'rtsp_url': rtsp_url,
+                    'stream_id': stream_id,
+                    'image': frame_data
+                })
+                mycursor.execute(
+                    "INSERT INTO embeddings(embedding) VALUES (%s)",
+                    (json.dumps(new_embedding.tolist()),)
+                )
+                mydb.commit()
+        else:
+            # print("new_embedding inside else",new_embedding)
+            _, buffer = cv.imencode('.jpg', frame)
+            frame_data = base64.b64encode(buffer.tobytes()).decode('utf-8')
+            sio.emit('detections', {
+                'detections': detections,
+                'rtsp_url': rtsp_url,
+                'stream_id': stream_id,
+                'image': frame_data
+            })
+            mycursor.execute(
+                "INSERT INTO embeddings(embedding) VALUES (%s)",
+                (json.dumps(new_embedding.tolist()),)
+            )
+            mydb.commit()
+    if detections and label != "Unknown":
         _, buffer = cv.imencode('.jpg', frame)
         frame_data = base64.b64encode(buffer.tobytes()).decode('utf-8')
-
         sio.emit('detections', {
             'detections': detections,
             'rtsp_url': rtsp_url,
@@ -209,7 +202,6 @@ def process_detections(frame, frame_rgb, stream_id, rtsp_url):
         })
 
     return frame
-
 
 def process_stream(rtsp_url, stream_id):
     print(f"Processing stream {stream_id}: {rtsp_url}")
