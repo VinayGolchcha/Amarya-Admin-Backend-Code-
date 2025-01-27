@@ -19,12 +19,10 @@ app.put('/update-unknown-attendance',authenticateAdminSession, updateUnknownAtte
 app.put('/update-missmatched-attendance',authenticateAdminSession, updateMismatchedUserAttendance);
 app.get('/get-all-attendance-summary',authenticateAdminSession, getAllUserAttendanceSummary);
 app.get('/get-all-attendance-summary-excel',authenticateAdminSession, getAllUserAttendanceSummaryExcelBuffer);
-app.get('/get-all-attendance-summary-excel-user',authenticateUserSession, getAllUserAttendanceSummaryExcelBuffer);
 app.get('/get-user-daily-attendance',authenticateUserAdminSession, getDailyUserAttendance);
 app.get('/get-user-attendance-date',authenticateAdminSession, getUserAttendanceByDate);
 app.get('/get-user-daily-attendance-excel', authenticateAdminSession, generateAttendanceExcel);
-
-
+app.get('/get-user-daily-attendance-excel-user/:emp_id', authenticateUserSession, generateAttendanceExcel);
 
 app.use("/", router);
 export default app;
