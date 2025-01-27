@@ -112,41 +112,41 @@ def process_detections(frame, frame_rgb, stream_id, rtsp_url):
     for face in faces:
         x, y, w, h = face['box']
         x, y, w, h = int(x), int(y), int(w), int(h)
-        
-        face_img = frame_rgb[y:y + h, x:x + w]
-        face_img = cv.resize(face_img, (160, 160))
-        embedding = get_embedding(face_img)
-        # print("embedding.shape", embedding.shape)
-        new_embedding = np.array(embedding).reshape(1, 512)  # Ensure it's a 2D array
-        # print("new_embedding.shape", new_embedding.shape)
-        y_preds = model.predict(new_embedding)
+        if(w>50) or (h>50):
+            face_img = frame_rgb[y:y + h, x:x + w]
+            face_img = cv.resize(face_img, (160, 160))
+            embedding = get_embedding(face_img)
+            # print("embedding.shape", embedding.shape)
+            new_embedding = np.array(embedding).reshape(1, 512)  # Ensure it's a 2D array
+            # print("new_embedding.shape", new_embedding.shape)
+            y_preds = model.predict(new_embedding)
 
-        decision_scores = model.decision_function(new_embedding)
-        probabilities = softmax(decision_scores, axis=1)
-        confidence = np.max(probabilities, axis=1)
-        
-        predicted_label = encoder.inverse_transform(y_preds)[0]
-        confidence_score = confidence[0]
+            decision_scores = model.decision_function(new_embedding)
+            probabilities = softmax(decision_scores, axis=1)
+            confidence = np.max(probabilities, axis=1)
+            
+            predicted_label = encoder.inverse_transform(y_preds)[0]
+            confidence_score = confidence[0]
 
-        detection = {
-            "class_name": predicted_label if confidence_score > 0.5 else "Unknown",
-            "confidence": confidence_score,
-            "bounding_box": {
-                "x1": x,
-                "y1": y,
-                "x2": x + w,
-                "y2": y + h
-            },
-            "detection_time": current_time
-        }
-        detections.append(detection)
+            detection = {
+                "class_name": predicted_label if confidence_score > 0.5 else "Unknown",
+                "confidence": confidence_score,
+                "bounding_box": {
+                    "x1": x,
+                    "y1": y,
+                    "x2": x + w,
+                    "y2": y + h
+                },
+                "detection_time": current_time
+            }
+            detections.append(detection)
 
-        color = (0, 255, 0) if confidence_score > 0.5 else (0, 0, 255)
-        label = f"{predicted_label} ({confidence_score:.2f})" if confidence_score > 0.5 else "Unknown"
-        # print("confidence_score", confidence_score)
-        # print("label inside for loop: ", label)
-        frame = cv.rectangle(frame, (x, y), (x + w, y + h), color, 2)
-        cv.putText(frame, label, (x, y - 10), cv.FONT_HERSHEY_SIMPLEX, 0.8, color, 2)
+            color = (0, 255, 0) if confidence_score > 0.5 else (0, 0, 255)
+            label = f"{predicted_label} ({confidence_score:.2f})" if confidence_score > 0.5 else "Unknown"
+            # print("confidence_score", confidence_score)
+            # print("label inside for loop: ", label)
+            frame = cv.rectangle(frame, (x, y), (x + w, y + h), color, 2)
+            cv.putText(frame, label, (x, y - 10), cv.FONT_HERSHEY_SIMPLEX, 0.8, color, 2)
     # print("label: ", label)
     if new_embedding is not None and label == "Unknown":  # Ensure new_embedding is not None
         db_embeddings = mycursor.execute("SELECT embedding FROM embeddings WHERE DATE(created_at) = CURDATE()")
