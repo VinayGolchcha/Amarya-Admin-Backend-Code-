@@ -414,7 +414,7 @@ export const fetchMonthlyAllUserAttendanceQuery = (params) => {
           GROUP BY u.emp_id
       )
       SELECT emp_id, emp_name, no_present_days, no_leaves,
-             ((total_working_days - no_present_days) - no_leaves) AS no_absent_days,
+             (no_leaves + no_holidays) AS no_absent_days,
              no_holidays, total_working_days
       FROM attendance_summary;
     `;
