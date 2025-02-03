@@ -4,7 +4,7 @@ python-ffmpeg==2.0.12
 python-socketio==5.11.4
 websocket-client==1.8.0
 numpy>=1.22,<1.24
-mtcnn==0.1.0
+mtcnn==1.0.0
 keras-facenet==0.3.2
 pickle-mixin==1.0.2
 tensorflow==2.12.0

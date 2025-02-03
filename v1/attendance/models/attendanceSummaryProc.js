@@ -67,7 +67,7 @@ BEGIN
         emp_name,
         (no_present_days + work_from_home) as no_present_days,
         no_leaves,
-        ((total_working_days - no_present_days) - no_leaves) - work_from_home AS no_absent_days,
+        (no_holidays + no_leaves) - work_from_home AS no_absent_days,
         no_holidays,
         total_working_days,
         work_from_home

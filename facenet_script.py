@@ -8,7 +8,8 @@ import pickle
 import json
 from datetime import datetime
 from threading import Thread
-from mtcnn import MTCNN
+# from mtcnn import MTCNN
+from mtcnn.mtcnn import MTCNN
 from keras_facenet import FaceNet
 from dotenv import load_dotenv
 from scipy.special import softmax
@@ -105,7 +106,8 @@ Y = encoder.transform(Y)
 
 def process_detections(frame, frame_rgb, stream_id, rtsp_url):
     detections = []
-    faces = detector.detect_faces(frame_rgb)
+    # faces = detector.detect_faces(frame_rgb)
+    faces = detector.detect_faces(frame_rgb, min_face_size=25, threshold_pnet=0.8, threshold_rnet=0.8,  threshold_onet=0.8)
     current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     new_embedding = None  # Initialize new_embedding
     label = ''
