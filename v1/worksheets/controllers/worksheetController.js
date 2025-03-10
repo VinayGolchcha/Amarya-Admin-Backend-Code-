@@ -18,7 +18,7 @@ export const createUserWorksheet = async (req, res, next) => {
         const [total_hours] = await getWorksheetTotalHoursQuery([emp_id, date]);
         let MAX_WORKING_HOURS = parseFloat(process.env.MAX_WORKING_HOURS) || 8;
         let MIN_WORKING_HOURS = parseFloat(process.env.MIN_WORKING_HOURS) || 0;
-        if(total_hours[0].total_hours > MAX_WORKING_HOURS){
+        if(total_hours[0].total_hours >= MAX_WORKING_HOURS){
             return errorResponse(res, '', "You have exceeded the maximum working hours for the day.");
         } 
         const current_date = new Date();

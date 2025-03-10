@@ -20,12 +20,12 @@ export const addActivity = async (req, res, next) => {
     if(files.length == 0) {
       return errorResponse(res, "", "Please add images to proceed.");
     }
-    const current_date = new Date();
+    // const current_date = new Date();
     const check_from_date = new Date(from_date);
     const check_to_date = new Date(to_date);
-    if(check_from_date.toISOString().split('T')[0] < current_date.toISOString().split('T')[0] ){
-        return errorResponse(res, errors.array(), "From date should be greater than or equal to current date");
-    }
+    // if(check_from_date.toISOString().split('T')[0] < current_date.toISOString().split('T')[0] ){
+    //     return errorResponse(res, errors.array(), "From date should be greater than or equal to current date");
+    // }
     if(check_to_date < check_from_date){
         return errorResponse(res, errors.array(), "To date should be greater than or equal to the from date");
     }
