@@ -117,7 +117,7 @@ export const updateUserPasswordQuery = (array) =>{
 
 export const getAllLeaveCounts = () =>{
     try {
-        let query = `SELECT _id, leave_type, leave_count FROM leaveTypeCounts`
+        let query = `SELECT leave_type_id AS _id, leave_type, leave_count FROM leaveTypeCounts`
         return pool.query(query);
     } catch (error) {
         console.error("Error executing getAllLeaveCounts:", error);
