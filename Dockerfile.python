@@ -12,7 +12,7 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy your YOLO model and script files into the container
-COPY svm_model_160x160.pkl . 
+COPY svm_model_160x160_140125_1024.pkl . 
 COPY facenet_script.py .
 COPY python_db_connection.py .
 
