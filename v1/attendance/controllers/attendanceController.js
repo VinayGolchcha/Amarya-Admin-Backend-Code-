@@ -108,7 +108,8 @@ export const getUserAttendanceSummary = async (req, res, next) => {
 
 export const fetchWeeklyPresentCount = async (req, res, next) => {
   try {
-    const [empWeeklyData] = await getWeeklyPresentCountQuery()
+    const [empWeeklyData] = await getWeeklyPresentCountQuery();
+    empWeeklyData.sort((a,b) => new Date(a.attendance_date) - new Date(b.attendance_date))
     if (empWeeklyData.length == 0) {
       return successResponse(res, [], "Data not found");
     }
