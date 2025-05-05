@@ -24,7 +24,7 @@ export const fetchHolidayListQuery = async () => {
     try{
         let query = `SELECT _id, date, holiday 
         FROM holidays 
-        WHERE YEAR(created_at) = YEAR(CURDATE())`
+        WHERE YEAR(date) = YEAR(CURDATE())`
         return await pool.query(query);
     } catch (error) {
         console.error("Error executing fetchHolidayListQuery:", error);
