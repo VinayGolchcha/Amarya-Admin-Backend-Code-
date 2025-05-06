@@ -18,6 +18,7 @@ CREATE TABLE IF NOT EXISTS users (
     designation varchar(255),
     designation_type varchar(50) ,
     joining_date date ,
+    last_working_date date ,
     experience float,
     completed_projects int ,
     performance float ,

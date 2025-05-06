@@ -195,6 +195,7 @@ export const getUserDataByUserIdQuery = (array) =>{
                         u.designation,
                         u.designation_type,
                         u.joining_date,
+                        u.last_working_date,
                         ROUND(u.experience, 2) AS experience,
                         u.completed_projects,
                         u.performance,
