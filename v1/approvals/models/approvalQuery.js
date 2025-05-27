@@ -35,7 +35,8 @@ export const fetchUnassignedAssetItemQuery = async(array) =>{
         let query = `
         SELECT 
             asset_id, 
-            item 
+            item,
+            model_number 
         FROM assets 
         WHERE 
             status = 'unassigned' 
