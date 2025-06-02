@@ -3,6 +3,7 @@ import dotenv from "dotenv"
 import { successResponse, errorResponse, notFoundResponse, unAuthorizedResponse, internalServerErrorResponse } from "../../../utils/response.js"
 import { incrementId, createDynamicUpdateQuery } from "../../helpers/functions.js"
 import { deleteProjectQuery, getAllProjectQuery, insertProjectQuery, updateProjectWorksheetQuery, checkProjectIdAndCategoryIdQuery } from "../models/query.js";
+import { getProjectsQuery } from "../models/userProjectQuery.js";
 dotenv.config();
 
 export const createProject = async (req, res, next) => {
@@ -93,3 +94,23 @@ export const deleteProject = async (req, res, next) => {
         return internalServerErrorResponse(res, error);
     }
 };
+
+export const fetchWorksheetProjects = async(req, res, next) =>{
+    try {
+        const errors = validationResult(req);
+
+        if (!errors.isEmpty()) {
+            return errorResponse(res, errors.array(), "")
+        }
+
+        const emp_id = req.params.emp_id;
+
+        const [data] = await getProjectsQuery([emp_id]);
+        if (data.length == 0) {
+            return successResponse(res, [], 'Data not found.');
+        }
+        return successResponse(res, data,'Projects fetched successfully.');
+    } catch (error) {
+        return internalServerErrorResponse(res, error);
+    }
+}
