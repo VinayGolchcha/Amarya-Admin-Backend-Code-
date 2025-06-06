@@ -10,9 +10,11 @@ import {
     updateUserLeaveQuery,
     fetchUserLeaveTakenOverviewQuery,
     deleteUserLeaveCountsByLeaveTypeId,
-    updateLeaveTypeDescriptionQuery
+    updateLeaveTypeDescriptionQuery,
+    insertEmployeesIds,
+    addCompensatoryLeaveCountQuery
 } from "../../leaves/models/leaveQuery.js"
-import { checkIfAlreadyRequestedQuery, getUserGender, leaveTakenCountQuery } from "../../approvals/models/leaveApprovalQuery.js"
+import { checkIfAlreadyRequestedQuery, cLeaveTakenCountQuery, getUserGender, leaveTakenCountQuery } from "../../approvals/models/leaveApprovalQuery.js"
 import { successResponse, errorResponse, notFoundResponse, unAuthorizedResponse, internalServerErrorResponse } from "../../../utils/response.js"
 import { incrementId, createDynamicUpdateQuery } from "../../helpers/functions.js"
 import { validationResult } from "express-validator";
@@ -303,8 +305,15 @@ export const leaveRequest = async (req, res, next) => {
         // Convert the difference to days
         let daysCount = Math.ceil(diffInMs / (1000 * 60 * 60 * 24));
         let total_days = daysCount + 1
-        let [userLeaveTakenCount] = await leaveTakenCountQuery([emp_id, leave_type])
-        let [leaveTypeCountByAdmin] = await getLeaveTypeCountByAdmin([leave_type])
+        let userLeaveTakenCount;
+        let leaveTypeCountByAdmin;
+        if(leave_type == "compensatory leave"){
+            [userLeaveTakenCount] = await cLeaveTakenCountQuery([emp_id, leave_type]);
+            [leaveTypeCountByAdmin] =  await cLeaveTakenCountQuery([emp_id, leave_type]);
+        }else{
+            [userLeaveTakenCount] = await leaveTakenCountQuery([emp_id, leave_type]);
+            [leaveTypeCountByAdmin] = await getLeaveTypeCountByAdmin([leave_type]);
+        }
         let message = ""
         if(leaveTypeCountByAdmin.length==0){
             message = "Please select valid leave type."
@@ -353,7 +362,7 @@ export const leaveRequest = async (req, res, next) => {
 export const getUserLeaveDataForDashboard =async (req, res, next) => {
     try {
         const emp_id = req.params.id
-        const [user_data] = await getAllUsersLeaveCountQuery([emp_id]);
+        const [user_data] = await getAllUsersLeaveCountQuery([emp_id, emp_id]);
         const [holiday_list_data] = await fetchHolidayListQuery();
         if (user_data.length == 0) {
             return successResponse(res, '', 'Data not found.');
@@ -367,7 +376,7 @@ export const getUserLeaveDataForDashboard =async (req, res, next) => {
 export const getUserLeaveData = async (req, res, next) => {
     try {
         const {emp_id} = req.body;
-        const [data] = await getUserLeaveDataQuery([emp_id]);
+        const [data] = await getUserLeaveDataQuery([emp_id, emp_id]);
         if (data.length == 0) {
             return successResponse(res, [], 'Data not found.');
         }
@@ -461,3 +470,43 @@ export const updateUserLeaveData = async (req, res, next) => {
         return internalServerErrorResponse(res, error);
     }
 }
+
+export const addUpdateCompensatoryLeave = async (req, res, next) => {
+    try {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return errorResponse(res, errors.array(), "")
+        }
+        const { emp_id, count } = req.body;
+
+        const data = await addCompensatoryLeaveCountQuery([count, emp_id]);
+        return successResponse(res, data, `Compensatory leave added successfully.`);
+    } catch (error) {
+        return internalServerErrorResponse(res, error);
+    }
+}
+
+// export const addEmployees = async (req, res, next) => {
+//     let connection;
+//     try {
+//         const errors = validationResult(req);
+//         if (!errors.isEmpty()) {
+//             return errorResponse(res, errors.array(), "")
+//         }
+//         connection = await pool.getConnection();
+//         await connection.beginTransaction();
+
+//      const [employees] = await fetchAllEmployeesQuery(connection)
+
+//      if (employees.length > 0) {
+//             const userLeaveCountData = employees.map(({ emp_id }) => [ emp_id ]);
+
+//             const fuck = await insertEmployeesIds(userLeaveCountData);
+//             return successResponse(res, fuck, `Holiday added successfully.`);
+//         }
+       
+//     } catch (error) {
+//         return internalServerErrorResponse(res, error);
+//     }
+
+// }

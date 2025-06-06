@@ -35,13 +35,24 @@ export const leaveApprovalQuery = async (array1, array2, array3) => {
 export const getUserLeaveDaysQuery = async (array) => {
     try {
         const query = `SELECT 
-        DATEDIFF(issued_till, issued_from) AS days_count, 
-        item AS leave_type,
-        (SELECT leave_count FROM leaveTypeCounts WHERE leaveTypeCounts.leave_type = approvals.item) AS leave_count
-    FROM 
-        approvals 
-    WHERE 
-        foreign_id = ?;
+                        DATEDIFF(issued_till, issued_from) AS days_count, 
+                        item AS leave_type,
+                        CASE 
+                            WHEN approvals.item = 'compensatory leave' THEN 
+                                (SELECT clc.leave_count 
+                                FROM compensatoryLeaveCounts clc 
+                                WHERE clc.emp_id = ? 
+                                LIMIT 1)
+                            ELSE 
+                                (SELECT ltc.leave_count 
+                                FROM leaveTypeCounts ltc 
+                                WHERE ltc.leave_type = approvals.item 
+                                LIMIT 1)
+                        END AS leave_count
+                    FROM 
+                        approvals 
+                    WHERE 
+                        foreign_id = ?;
     `;
 
         const result = await pool.query(query, array);
@@ -151,3 +162,45 @@ export const checkIfLeaveAlreadyApprovedQuery = async (array) => {
         throw error;
     }
 }
+
+export const cLeaveTakenCountQuery = async (array) =>{
+
+    let query = `SELECT leave_taken_count, leave_count FROM compensatoryLeaveCounts WHERE emp_id = ? AND leave_type = ?;`
+    try {
+        const result = await pool.query(query, array);
+        return result
+    } catch (error) {
+        console.error("Error executing cLeaveTakenCountQuery:", error);
+        throw error;
+    }
+}
+
+export const cLeaveApprovalQuery = async (array1, array2, array3) => {
+    const query1 = `UPDATE compensatoryLeaveCounts
+    SET leave_taken_count = leave_taken_count + ?
+    WHERE emp_id = ? AND leave_type = ?;`;
+
+    const query2 = `UPDATE approvals
+    SET
+        status = ?,
+        approval_date = ?
+    WHERE
+        emp_id = ? AND
+        foreign_id = ?;`;
+    const query3 = `UPDATE leaveDatesAndReasons
+    SET 
+        status = ?
+    WHERE
+        _id = ? AND
+        leave_type = ?;`;
+
+    try {
+        await pool.query(query1, array1);
+        await pool.query(query2, array2);
+        await pool.query(query3, array3);
+    } catch (error) {
+        console.error("Error executing leaveApprovalQuery:", error);
+        // Handle the error appropriately
+        throw error;
+    }
+};

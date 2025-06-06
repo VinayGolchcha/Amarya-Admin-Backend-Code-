@@ -6,7 +6,9 @@ import { addHoliday, updateHoliday, addLeaveTypeAndCount,
     getUserLeaveData, fetchLeaveTakenOverview, updateLeaveTypeAndCount, deleteLeaveTypeAndCount,fetchHolidayList, deleteHoliday, 
     getUserAllLeaveData,
     updateUserLeaveData,
-    fetchUserLeaveTakenOverview} from '../controllers/leaveController.js';
+    fetchUserLeaveTakenOverview,
+    // addEmployees,
+    addUpdateCompensatoryLeave} from '../controllers/leaveController.js';
 import {addHolidayVal, updateHolidayVal, addLeaveCountVal, leaveRequestVal, updateLeaveTypeAndCountVal, deleteLeaveTypeAndCountVal, getUserLeaveDashboardData, fetchLeaveOverviewVal, getTrnVal} from '../../../utils/validation.js';
 import {authenticateUserSession} from "../../../middlewares/userAuth.js"
 import {authenticateAdminSession} from "../../../middlewares/adminAuth.js"
@@ -22,6 +24,7 @@ app.post('/admin/add-leave-type-and-count', authenticateAdminSession, addLeaveCo
 app.put('/admin/update-leave-type-and-count/:id/:leave_type_id', authenticateAdminSession, updateLeaveTypeAndCountVal, updateLeaveTypeAndCount);
 app.delete('/admin/delete-leave-type-and-count/:id/:leave_type_id', authenticateAdminSession, deleteLeaveTypeAndCountVal, deleteLeaveTypeAndCount);
 app.get('/fetch-leave-type-and-count', authenticateUserAdminSession, fetchLeaveTypesAndTheirCount);
+// app.get('/add-employees', addEmployees);
 app.post('/leave-request',upload.single('file'), authenticateUserSession,leaveRequestVal, leaveRequest);
 app.get('/get-user-leave-dashboard-data/:id', authenticateUserAdminSession, getUserLeaveDashboardData, getUserLeaveDataForDashboard);
 app.get('/user-leave-data', getUserLeaveData);
@@ -31,6 +34,7 @@ app.post('/fetch-user-leave-overview', authenticateUserSession, fetchLeaveOvervi
 app.get('/fetch-holiday-list', authenticateUserAdminSession, fetchHolidayList);
 app.delete('/admin/delete-holiday/:id', authenticateAdminSession, deleteHoliday);
 app.put('/update-leave-request/:id/:emp_id', authenticateUserSession, updateUserLeaveData);
+app.post('/admin/add-compensatory-leave', authenticateAdminSession, addUpdateCompensatoryLeave);
 
 app.use("/", router);
 

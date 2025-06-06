@@ -1,3 +1,4 @@
+import { policysimulator } from "googleapis/build/src/apis/policysimulator/index.js";
 import pool from "../../../config/db.js"
 
 export const createHoliday = (array) => {
@@ -79,7 +80,6 @@ export const insertUserLeaveCountBatch = (data, connection = pool) => {
 export const createLeaveType = (array, connection = pool) => {
         let query = `INSERT INTO leaveTypes SET leave_type = ?, description = ?`
         return connection.query(query, array);
-
 }
 
 export const fetchLeavesTypesQuery = () => {
@@ -281,8 +281,24 @@ export const getAllUsersLeaveCountQuery = async (array)=>{
                 (u.gender = ltc.gender AND ltc.gender IN ('male', 'female')) 
                 OR ltc.gender = 'both'
             )
+
+        UNION
+
+        SELECT 
+            u.emp_id,
+            'Compensatory Leave' AS leave_type, 
+            IFNULL(clc.leave_taken_count, 0) AS leave_taken_count,
+            IFNULL(clc.leave_count, 0) AS leave_count 
+        FROM 
+            compensatoryLeaveCounts clc
+        JOIN 
+            users u 
+        ON 
+            clc.emp_id = u.emp_id
+        WHERE 
+            u.emp_id = ?
         ORDER BY 
-            ulc.leave_type;
+            leave_type; 
 
         `
         return await pool.query(query, array);
@@ -295,10 +311,15 @@ export const getAllUsersLeaveCountQuery = async (array)=>{
 export const getUserLeaveDataQuery = async(array)=>{
     try {
         let query = `
-        SELECT leave_type, leave_count, leave_taken_count 
-        FROM
-            userLeaveCounts
-        WHERE emp_id = ?;
+            SELECT leave_type, leave_count, leave_taken_count
+            FROM userLeaveCounts
+            WHERE emp_id = ?
+
+            UNION
+
+            SELECT leave_type, leave_count, leave_taken_count
+            FROM compensatoryLeaveCounts
+            WHERE emp_id = ?;
         `
         return await pool.query(query, array);
     } catch (error) {
@@ -349,4 +370,14 @@ export const getUserLeaveDataByIdQuery = async(array)=>{
 
 export const updateUserLeaveQuery = (query, array)=>{
     return pool.query(query, array);
+}
+
+export const addCompensatoryLeaveCountQuery = (array) => {
+    let query = `UPDATE compensatoryLeaveCounts SET leave_count = ? WHERE emp_id = ?`
+    return pool.query(query, array);
+}
+
+export const insertEmployeesIds = (data) => {
+        let query = `INSERT INTO compensatoryLeaveCounts (emp_id) VALUES ?`
+        return pool.query(query, [data]);
 }

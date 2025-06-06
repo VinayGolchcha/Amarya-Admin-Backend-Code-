@@ -3,7 +3,7 @@ import dotenv from "dotenv"
 import { successResponse, errorResponse, notFoundResponse, internalServerErrorResponse } from "../../../utils/response.js"
 import {assetApprovalQuery, fetchAssetDataQuery, assetRejectionQuery, deleteAssetQuery, checkIfAlreadyAssigned, changeAssetStatusToAvailable} from "../models/assetApprovalQuery.js"
 import {fetchTrainingDataQuery, trainingApprovalQuery, trainingRejectionQuery, deleteTrainingQuery} from "../models/trainingApprovalQuery.js"
-import {leaveApprovalQuery, deleteLeaveQuery, leaveRejectionQuery, getUserLeaveDaysQuery, leaveTakenCountQuery, checkIfLeaveAlreadyApprovedQuery} from "../models/leaveApprovalQuery.js"
+import {leaveApprovalQuery, cLeaveApprovalQuery, deleteLeaveQuery, leaveRejectionQuery, getUserLeaveDaysQuery, leaveTakenCountQuery, checkIfLeaveAlreadyApprovedQuery, cLeaveTakenCountQuery} from "../models/leaveApprovalQuery.js"
 import { fetchUnassignedAssetItemQuery } from "../models/approvalQuery.js";
 dotenv.config();
 
@@ -117,7 +117,7 @@ export const approvalByAdmin = async (req, res, next) => {
             let statusCode = 200; // Default success code
         
             // Fetch user leave data
-            let [userLeaveData] = await getUserLeaveDaysQuery([foreign_id]);
+            let [userLeaveData] = await getUserLeaveDaysQuery([emp_id, foreign_id]);
             if (userLeaveData.length === 0) {
                 message = "Leave data not found.";
                 statusCode = 404;
@@ -149,11 +149,23 @@ export const approvalByAdmin = async (req, res, next) => {
                     return { message, statusCode };
                 }
         
-                let [userLeaveTakenCount] = await leaveTakenCountQuery([emp_id, leave_type]);
+                let userLeaveTakenCount;
+                if(leave_type == "compensatory leave"){
+                    [userLeaveTakenCount] = await cLeaveTakenCountQuery([emp_id, leave_type]);
+                }else{
+                    [userLeaveTakenCount] = await leaveTakenCountQuery([emp_id, leave_type]);
+                }
+                
                 const total_leave_taken = userLeaveTakenCount ? userLeaveTakenCount[0].leave_taken_count + leave_taken_count : leave_taken_count;
         
                 if (leave_type_count_by_admin >= total_leave_taken) {
-                    await leaveApprovalQuery([leave_taken_count, emp_id, leave_type], [status, current_date, emp_id, foreign_id], [status, foreign_id, leave_type]);
+                    if(leave_type == "compensatory leave"){
+                        await cLeaveApprovalQuery([leave_taken_count, emp_id, leave_type], [status, current_date, emp_id, foreign_id], [status, foreign_id, leave_type]);
+                    }
+                    else{
+                        await leaveApprovalQuery([leave_taken_count, emp_id, leave_type], [status, current_date, emp_id, foreign_id], [status, foreign_id, leave_type]);
+                    }
+                   
                     message = "Leave approved successfully.";
                 } else {
                     message = `User exceeded the leave count by ${total_leave_taken - leave_type_count_by_admin}.`;
