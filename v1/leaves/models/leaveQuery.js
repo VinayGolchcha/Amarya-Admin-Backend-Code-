@@ -237,6 +237,27 @@ export const insertApprovalForLeaveQuery = (array) => {
     }
 }
 
+export const insertApprovalForUserLeave = (array) => {
+    try {
+        const query = `INSERT INTO approvals(
+            emp_id,
+            foreign_id,
+            request_type,
+            item,
+            request_date,
+            issued_from,
+            issued_till,
+            subject,
+            body,
+            status
+        ) VALUES (?,?,?,?,?,?,?,?,?,?);`
+        return pool.query(query, array)
+    } catch (error) {
+        console.error("Error executing insertApprovalForLeaveQuery:", error);
+        throw error; 
+    }
+}
+
 export const getLastLeaveId = () => {
     try {
         let query = `SELECT _id from leaveDatesAndReasons ORDER BY _id DESC LIMIT 1`

@@ -347,6 +347,87 @@ export const leaveRequest = async (req, res, next) => {
     }
 }
 
+
+export const addUserLeaves = async (req, res, next) => {
+    try {
+        const errors = validationResult(req);
+
+        if (!errors.isEmpty()) {
+            return errorResponse(res, errors.array(), "")
+        }
+        let { leave_type, emp_id, subject, body, from_date, to_date } = req.body;
+        leave_type = leave_type.toLowerCase();
+        const current_date = new Date().toISOString().split('T')[0];
+        let from = new Date(from_date);
+        let to = new Date(to_date);
+        const [getUserData] = await getUserGender([emp_id]);
+        if(getUserData[0].gender == "male" && leave_type == "maternity leaves") {
+            return notFoundResponse(res, "", "Maternity leave is not applicable for male employees.");
+        }
+        const [existingData] = await checkIfAlreadyRequestedQuery(emp_id, from_date, to_date)
+        if(existingData.length > 0){
+            return notFoundResponse(res, "", "The requested leave period overlaps with an existing leave request.");
+        }
+        let new_from_date =  new Date(from).toISOString().split('T')[0];
+        if (new_from_date < current_date) {
+            return notFoundResponse(res, "", "The 'from' date cannot be in the past.");
+        }
+        
+        if (to < from) {
+            return notFoundResponse(res, "", "The 'to' date cannot be before the 'from' date.");
+        }
+        
+        // Calculate the difference in milliseconds
+        let diffInMs = Math.abs(to - from);
+
+        // Convert the difference to days
+        let daysCount = Math.ceil(diffInMs / (1000 * 60 * 60 * 24));
+        let total_days = daysCount + 1
+        let [userLeaveTakenCount] = await leaveTakenCountQuery([emp_id, leave_type])
+        let [leaveTypeCountByAdmin] = await getLeaveTypeCountByAdmin([leave_type])
+        let message = ""
+        if(leaveTypeCountByAdmin.length==0){
+            message = "Please select valid leave type."
+            return notFoundResponse(res, "", message);
+        }
+        let file=req.file;
+        let file_response;
+        if(leaveTypeCountByAdmin[0].leave_count>=(total_days+userLeaveTakenCount[0].leave_taken_count)){
+            if(file){
+                const max_size = 1 * 1024 * 1024;
+                const allowedFileTypes = ['image/jpeg', 'image/png', 'image/jpg']; // Add other image MIME types if needed
+                if (!allowedFileTypes.includes(file.mimetype)) {
+                    return errorResponse(res, `File ${file.originalname} must be an image (JPEG, PNG).`, "");
+                }
+                if (file.size > max_size) {
+                    return errorResponse(res, `File ${file.originalname} exceeds the size limit.`, "");
+                }
+                // file_response=await uploadFileToDrive(file)
+                file_response=await uploadImageToCloud('image',file.buffer,'leave_documents')
+            }
+            await insertUserLeaveDataQuery([
+                emp_id, 
+                leave_type,
+                from_date,
+                to_date,
+                subject,
+                body,
+                file_response?file_response.secure_url:null
+            ]);
+            const [foreign_id] = await getLastLeaveId();
+            const status = 'approved'
+            await insertApprovalForLeaveQuery([emp_id, foreign_id[0]._id, "leave", leave_type, current_date, from_date, to_date, subject, body , status])
+            message = 'User leave added successfully'
+        }else{
+            message = `User exceeded the leave count by ${(total_days+userLeaveTakenCount[0].leave_taken_count)-leaveTypeCountByAdmin[0].leave_count}`
+        }
+
+        return successResponse(res, "", message);
+    } catch (error) {
+        return internalServerErrorResponse(res, error);
+    }
+}
+
 export const getUserLeaveDataForDashboard =async (req, res, next) => {
     try {
         const emp_id = req.params.id
