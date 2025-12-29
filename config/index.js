@@ -10,6 +10,7 @@ import leaveDatesAndReasonTable from "../v1/leaves/models/leaveDatesAndReasonMod
 import leaveTypeCountTable from "../v1/leaves/models/leaveTypeCountModel.js";
 import leaveTypeTable from "../v1/leaves/models/leaveTypeModel.js";
 import userLeaveCountTable from "../v1/leaves/models/userLeaveCountModel.js";
+import compensatoryLeaveCountTable from "../v1/leaves/models/compensatoryLeaveModel.js";
 import categoryTable from "../v1/categories/models/categoryModel.js";
 import teamTable from "../v1/teams/models/teamModel.js";
 import projectTable from "../v1/projects/models/projectModel.js";
@@ -36,5 +37,5 @@ export default [userTable,oAuthTable, assetTable, trainingTable, usertrainingTab
     holidayTable, leaveTypeTable, leaveDatesAndReasonTable, leaveTypeCountTable, userLeaveCountTable, categoryTable, teamTable,
     projectTable, worksheetTable, skillSetTable , temporaryNotesTable , policiesTable, userTeamsTable,
     userYearlyPerformanceTable, userPerformanceTable, imagesTable, feedbackFormTable, userProjectTable, attendanceLogsTable, unknownUserAttendanceTable,
-    attendanceTable, devicesTable, attendanceSummaryProc, embeddingTable
+    attendanceTable, devicesTable, attendanceSummaryProc, embeddingTable, compensatoryLeaveCountTable
 ];

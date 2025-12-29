@@ -89,3 +89,31 @@ export const getUserProjectTimelineQuery = async (array) => {
         throw error;
     }
 }
+
+export const getProjectsQuery = async (array) => {
+    try {
+        let query = `SELECT 
+                    projects._id AS project_id,
+                    projects.category_id,
+                    projects.project,
+                    categories.category,
+                    projects.client_name,
+                    projects.project_status,
+                    projects.project_manager,
+                    projects.project_lead,
+                    projects.start_month,
+                    projects.end_month
+                FROM 
+                    userProjects
+                JOIN 
+                    projects ON userProjects.project_id = projects._id
+                LEFT JOIN 
+                    categories ON projects.category_id = categories._id
+                WHERE 
+                    userProjects.emp_id = ?`
+        return pool.query(query, array);
+    } catch (error) {
+        console.error("Error executing getProjectsQuery:", error);
+        throw error;
+    }
+}
