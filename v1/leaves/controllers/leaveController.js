@@ -12,7 +12,9 @@ import {
     deleteUserLeaveCountsByLeaveTypeId,
     updateLeaveTypeDescriptionQuery,
     insertEmployeesIds,
-    addCompensatoryLeaveCountQuery
+    addCompensatoryLeaveCountQuery,
+    insertApprovalForAddLeaveQuery,
+    insertUserLeaveDataByAdminQuery
 } from "../../leaves/models/leaveQuery.js"
 import { checkIfAlreadyRequestedQuery, cLeaveTakenCountQuery, getUserGender, leaveTakenCountQuery } from "../../approvals/models/leaveApprovalQuery.js"
 import { successResponse, errorResponse, notFoundResponse, unAuthorizedResponse, internalServerErrorResponse } from "../../../utils/response.js"
@@ -381,9 +383,9 @@ export const addUserLeaves = async (req, res, next) => {
             return notFoundResponse(res, "", "The requested leave period overlaps with an existing leave request.");
         }
         let new_from_date =  new Date(from).toISOString().split('T')[0];
-        if (new_from_date < current_date) {
-            return notFoundResponse(res, "", "The 'from' date cannot be in the past.");
-        }
+        // if (new_from_date < current_date) {
+        //     return notFoundResponse(res, "", "The 'from' date cannot be in the past.");
+        // }
         
         if (to < from) {
             return notFoundResponse(res, "", "The 'to' date cannot be before the 'from' date.");
@@ -417,23 +419,24 @@ export const addUserLeaves = async (req, res, next) => {
                 // file_response=await uploadFileToDrive(file)
                 file_response=await uploadImageToCloud('image',file.buffer,'leave_documents')
             }
-            await insertUserLeaveDataQuery([
+            const status = 'approved'
+            await insertUserLeaveDataByAdminQuery([
                 emp_id, 
                 leave_type,
                 from_date,
                 to_date,
                 subject,
                 body,
-                file_response?file_response.secure_url:null
+                file_response?file_response.secure_url:null,
+                status
             ]);
             const [foreign_id] = await getLastLeaveId();
-            const status = 'approved'
-            await insertApprovalForLeaveQuery([emp_id, foreign_id[0]._id, "leave", leave_type, current_date, from_date, to_date, subject, body , status])
+           
+            await insertApprovalForAddLeaveQuery([emp_id, foreign_id[0]._id, "leave", leave_type, current_date, from_date, to_date, subject, body , status])
             message = 'User leave added successfully'
         }else{
             message = `User exceeded the leave count by ${(total_days+userLeaveTakenCount[0].leave_taken_count)-leaveTypeCountByAdmin[0].leave_count}`
         }
-
         return successResponse(res, "", message);
     } catch (error) {
         return internalServerErrorResponse(res, error);

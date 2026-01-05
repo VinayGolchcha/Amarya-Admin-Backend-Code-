@@ -217,6 +217,25 @@ export const insertUserLeaveDataQuery = (array) => {
     }
 }
 
+export const insertUserLeaveDataByAdminQuery = (array) => {
+    try {
+        let query = `INSERT INTO leaveDatesAndReasons (
+            emp_id,
+            leave_type,
+            from_date,
+            to_date,
+            subject,
+            body,
+            document_url,
+            status
+        ) VALUES (?,?,?,?,?,?,?,?);`
+        return pool.query(query, array);
+    } catch (error) {
+        console.error("Error executing insertUserLeaveDataByAdminQuery:", error);
+        throw error; 
+    }
+}
+
 export const insertApprovalForLeaveQuery = (array) => {
     try {
         const query = `INSERT INTO approvals(
@@ -234,6 +253,28 @@ export const insertApprovalForLeaveQuery = (array) => {
     } catch (error) {
         console.error("Error executing insertApprovalForLeaveQuery:", error);
         throw error; 
+    }
+}
+
+export const insertApprovalForAddLeaveQuery = (array) => {
+    try{
+         const query = `INSERT INTO approvals(
+            emp_id,
+            foreign_id,
+            request_type,
+            item,
+            request_date,
+            issued_from,
+            issued_till,
+            subject,
+            body,
+            status
+        ) VALUES (?,?,?,?,?,?,?,?,?,?);`
+        return pool.query(query, array)
+
+    }catch(error){
+        console.error("Error executing insertApprovalForAddLeaveQuery" , error);
+        throw error;
     }
 }
 
