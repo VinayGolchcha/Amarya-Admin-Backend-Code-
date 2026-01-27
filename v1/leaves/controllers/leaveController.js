@@ -14,7 +14,8 @@ import {
     insertEmployeesIds,
     addCompensatoryLeaveCountQuery,
     insertApprovalForAddLeaveQuery,
-    insertUserLeaveDataByAdminQuery
+    insertUserLeaveDataByAdminQuery,
+    updateLeaveApprovalAddingLeavesByAdmin
 } from "../../leaves/models/leaveQuery.js"
 import { checkIfAlreadyRequestedQuery, cLeaveTakenCountQuery, getUserGender, leaveTakenCountQuery } from "../../approvals/models/leaveApprovalQuery.js"
 import { successResponse, errorResponse, notFoundResponse, unAuthorizedResponse, internalServerErrorResponse } from "../../../utils/response.js"
@@ -433,6 +434,7 @@ export const addUserLeaves = async (req, res, next) => {
             const [foreign_id] = await getLastLeaveId();
            
             await insertApprovalForAddLeaveQuery([emp_id, foreign_id[0]._id, "leave", leave_type, current_date, from_date, to_date, subject, body , status])
+            await updateLeaveApprovalAddingLeavesByAdmin([emp_id , total_days]);
             message = 'User leave added successfully'
         }else{
             message = `User exceeded the leave count by ${(total_days+userLeaveTakenCount[0].leave_taken_count)-leaveTypeCountByAdmin[0].leave_count}`

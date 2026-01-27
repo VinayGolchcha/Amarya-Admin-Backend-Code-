@@ -256,6 +256,20 @@ export const insertApprovalForLeaveQuery = (array) => {
     }
 }
 
+export const updateLeaveApprovalAddingLeavesByAdmin = (array) => {
+    try{
+        const query = `UPDATE userLeaveCounts
+        SET leave_taken_count = leave_taken_count + ?
+        WHERE emp_id = ? AND leave_type = ?`;
+
+        return pool.query(query , array);
+        
+    }catch(error){
+        console.error("Error executing updateLeaveApprovalAddingLeavesByAdmin" , error);
+        throw error;
+    }
+}
+
 export const insertApprovalForAddLeaveQuery = (array) => {
     try{
          const query = `INSERT INTO approvals(
